@@ -15,7 +15,7 @@ def test_path_token(path):
 
 
 def test_path_with_single_backslash():
-    with open(Path(__file__).parent / "data" / "test_filename.mxsl", "r") as f:
+    with open(Path(__file__).parent / "data" / "mxsl" / "filenames_1.mxsl", "r") as f:
         code = f.read()
     tokens = scan(code)
     path_token = tokens[-8]
