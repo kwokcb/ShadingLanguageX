@@ -2,12 +2,12 @@
 // interiormapping_room.mxsl
 //
 
-filename wall1_file = "C:/Users/jaket/Pictures/left_wall_2.jpg";
-filename wall2_file = "C:/Users/jaket/Pictures/right_wall_2.jpg";
-filename wall3_file = "C:/Users/jaket/Pictures/back_wall_2.jpg";
-filename ceilg_file = "C:/Users/jaket/Pictures/ceiling_2.jpg";
-filename floor_file = "C:/Users/jaket/Pictures/floor_2.jpg";
-filename table_file = "C:/Users/jaket/Pictures/table_scaled.jpg";
+filename wall1_file = "textures\left_wall_2.jpg";
+filename wall2_file = "textures\right_wall_2.jpg";
+filename wall3_file = "textures\back_wall_2.jpg";
+filename ceilg_file = "textures\ceiling_2.jpg";
+filename floor_file = "textures\floor_2.jpg";
+filename table_file = "textures\table.jpg";
 
 float raycast(vec3 origin, vec3 view_dir)
 {

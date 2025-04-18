@@ -2,11 +2,11 @@
 // interiormapping_words.mxsl
 //
 
-filename wall1 = "C:/Users/jaket/Pictures/left_wall_3.png";
-filename wall2 = "C:/Users/jaket/Pictures/right_wall_3.png";
-filename wall3 = "C:/Users/jaket/Pictures/back_wall_3.png";
-filename ceilg = "C:/Users/jaket/Pictures/ceiling_3.png";
-filename floor = "C:/Users/jaket/Pictures/floor_3.png";
+filename wall1 = "textures\left_wall_1.png";
+filename wall2 = "textures\right_wall_1.png";
+filename wall3 = "textures\back_wall_1.png";
+filename ceilg = "textures\ceiling_1.png";
+filename floor = "textures\floor_1.png";
 
 float raycast(vec3 origin, vec3 view_dir)
 {

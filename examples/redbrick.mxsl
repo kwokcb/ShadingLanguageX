@@ -2,7 +2,7 @@
 // redbrick.mxsl
 //
 
-vec2 uv = texcoord() / 10.0;
+vec2 uv = texcoord() / 2.0;
 color3 albedo = image("textures\albedo.tif", uv);
 float matao = image("textures\matao.tif", uv);
 float metal = image("textures\metal.tif", uv);

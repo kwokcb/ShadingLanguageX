@@ -3,7 +3,7 @@
 // background
 //
 
-filename BG_IMG = "C:\Users\jaket\Pictures\skyline2.png";
+filename BG_IMG = "textures\skyline.png";
 
 color3 background()
 {
