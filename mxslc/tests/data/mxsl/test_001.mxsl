@@ -1,0 +1,3 @@
+float foo = 0.5;
+float bar = 2.0;
+float foobar = foo + bar;

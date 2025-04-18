@@ -1,0 +1,27 @@
+<?xml version="1.0"?>
+<materialx version="1.39">
+  <multiply name="_loop___x" type="float">
+    <input name="in1" type="float" value="2" />
+    <input name="in2" type="float" value="2" />
+  </multiply>
+  <subtract name="global__a2" type="float">
+    <input name="in1" type="float" value="0" />
+    <input name="in2" type="float" nodename="_loop___x" />
+  </subtract>
+  <multiply name="_loop___x2" type="float">
+    <input name="in1" type="float" value="3" />
+    <input name="in2" type="float" value="2" />
+  </multiply>
+  <subtract name="global__a3" type="float">
+    <input name="in1" type="float" nodename="global__a2" />
+    <input name="in2" type="float" nodename="_loop___x2" />
+  </subtract>
+  <multiply name="_loop___x3" type="float">
+    <input name="in1" type="float" value="4" />
+    <input name="in2" type="float" value="2" />
+  </multiply>
+  <subtract name="global__a4" type="float">
+    <input name="in1" type="float" nodename="global__a3" />
+    <input name="in2" type="float" nodename="_loop___x3" />
+  </subtract>
+</materialx>

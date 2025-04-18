@@ -1,0 +1,3 @@
+
+filename fn = "butterfly1.png";
+float n = image(fn, default=0.5, filtertype="cubic");

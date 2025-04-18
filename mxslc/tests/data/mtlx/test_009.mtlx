@@ -1,0 +1,6 @@
+<?xml version="1.0"?>
+<materialx version="1.39">
+  <constant name="global__wall1" type="filename">
+    <input name="value" type="filename" value="C:\Users\jaket\Pictures\left_wall.png" />
+  </constant>
+</materialx>

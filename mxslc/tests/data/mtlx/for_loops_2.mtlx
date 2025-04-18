@@ -1,0 +1,39 @@
+<?xml version="1.0"?>
+<materialx version="1.39">
+  <multiply name="global__a2" type="float">
+    <input name="in1" type="float" value="0" />
+    <input name="in2" type="float" value="7" />
+  </multiply>
+  <multiply name="global__a3" type="float">
+    <input name="in1" type="float" value="0" />
+    <input name="in2" type="float" value="8" />
+  </multiply>
+  <multiply name="global__a4" type="float">
+    <input name="in1" type="float" value="0" />
+    <input name="in2" type="float" value="9" />
+  </multiply>
+  <multiply name="global__a5" type="float">
+    <input name="in1" type="float" value="1" />
+    <input name="in2" type="float" value="7" />
+  </multiply>
+  <multiply name="global__a6" type="float">
+    <input name="in1" type="float" value="1" />
+    <input name="in2" type="float" value="8" />
+  </multiply>
+  <multiply name="global__a7" type="float">
+    <input name="in1" type="float" value="1" />
+    <input name="in2" type="float" value="9" />
+  </multiply>
+  <multiply name="global__a8" type="float">
+    <input name="in1" type="float" value="2" />
+    <input name="in2" type="float" value="7" />
+  </multiply>
+  <multiply name="global__a9" type="float">
+    <input name="in1" type="float" value="2" />
+    <input name="in2" type="float" value="8" />
+  </multiply>
+  <multiply name="global__a10" type="float">
+    <input name="in1" type="float" value="2" />
+    <input name="in2" type="float" value="9" />
+  </multiply>
+</materialx>

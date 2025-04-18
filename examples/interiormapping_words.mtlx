@@ -1,0 +1,388 @@
+<?xml version="1.0"?>
+<materialx version="1.39">
+  <texcoord name="main__uv" type="vector2" />
+  <viewdirection name="node1" type="vector3">
+    <input name="space" type="string" value="object" />
+  </viewdirection>
+  <subtract name="main__view_dir" type="vector3">
+    <input name="in1" type="vector3" value="0, 0, 0" />
+    <input name="in2" type="vector3" nodename="node1" />
+  </subtract>
+  <multiply name="node5" type="vector2">
+    <input name="in1" type="vector2" nodename="main__uv" />
+    <input name="in2" type="float" value="2" />
+  </multiply>
+  <subtract name="node7" type="vector2">
+    <input name="in1" type="vector2" nodename="node5" />
+    <input name="in2" type="float" value="1" />
+  </subtract>
+  <extract name="node8" type="float">
+    <input name="in" type="vector2" nodename="node7" />
+    <input name="index" type="integer" value="0" />
+  </extract>
+  <extract name="node9" type="float">
+    <input name="in" type="vector2" nodename="node7" />
+    <input name="index" type="integer" value="1" />
+  </extract>
+  <subtract name="node11" type="float">
+    <input name="in1" type="float" value="0" />
+    <input name="in2" type="float" value="1" />
+  </subtract>
+  <combine3 name="main__origin" type="vector3">
+    <input name="in1" type="float" nodename="node8" />
+    <input name="in2" type="float" nodename="node9" />
+    <input name="in3" type="float" nodename="node11" />
+  </combine3>
+  <subtract name="node13" type="vector3">
+    <input name="in1" type="vector3" value="0, 0, 0" />
+    <input name="in2" type="vector3" nodename="main__origin" />
+  </subtract>
+  <subtract name="node15" type="vector3">
+    <input name="in1" type="vector3" nodename="node13" />
+    <input name="in2" type="float" value="1" />
+  </subtract>
+  <divide name="raycast__dn" type="vector3">
+    <input name="in1" type="vector3" nodename="node15" />
+    <input name="in2" type="vector3" nodename="main__view_dir" />
+  </divide>
+  <subtract name="node18" type="vector3">
+    <input name="in1" type="vector3" value="0, 0, 0" />
+    <input name="in2" type="vector3" nodename="main__origin" />
+  </subtract>
+  <add name="node20" type="vector3">
+    <input name="in1" type="vector3" nodename="node18" />
+    <input name="in2" type="float" value="1" />
+  </add>
+  <divide name="raycast__dp" type="vector3">
+    <input name="in1" type="vector3" nodename="node20" />
+    <input name="in2" type="vector3" nodename="main__view_dir" />
+  </divide>
+  <max name="raycast__d_min" type="vector3">
+    <input name="in1" type="vector3" nodename="raycast__dn" />
+    <input name="in2" type="vector3" nodename="raycast__dp" />
+  </max>
+  <extract name="node25" type="float">
+    <input name="in" type="vector3" nodename="raycast__dp" />
+    <input name="index" type="integer" value="2" />
+  </extract>
+  <ifgreater name="node27" type="float">
+    <input name="value1" type="float" nodename="node25" />
+    <input name="value2" type="float" value="0" />
+    <input name="in1" type="float" value="1" />
+    <input name="in2" type="float" value="0" />
+  </ifgreater>
+  <extract name="node29" type="float">
+    <input name="in" type="vector3" nodename="raycast__dp" />
+    <input name="index" type="integer" value="2" />
+  </extract>
+  <ifequal name="raycast__d_min_z" type="float">
+    <input name="value1" type="float" nodename="node27" />
+    <input name="value2" type="float" value="1" />
+    <input name="in1" type="float" nodename="node29" />
+    <input name="in2" type="float" value="1e+06" />
+  </ifequal>
+  <min name="node31" type="float">
+    <input name="in1" type="float" nodename="node33" />
+    <input name="in2" type="float" nodename="node35" />
+  </min>
+  <extract name="node33" type="float">
+    <input name="in" type="vector3" nodename="raycast__d_min" />
+    <input name="index" type="integer" value="0" />
+  </extract>
+  <extract name="node35" type="float">
+    <input name="in" type="vector3" nodename="raycast__d_min" />
+    <input name="index" type="integer" value="1" />
+  </extract>
+  <min name="main__room_dist" type="float">
+    <input name="in1" type="float" nodename="raycast__d_min_z" />
+    <input name="in2" type="float" nodename="node31" />
+  </min>
+  <multiply name="node40" type="vector3">
+    <input name="in1" type="vector3" nodename="main__view_dir" />
+    <input name="in2" type="float" nodename="main__room_dist" />
+  </multiply>
+  <add name="main__room_pos" type="vector3">
+    <input name="in1" type="vector3" nodename="main__origin" />
+    <input name="in2" type="vector3" nodename="node40" />
+  </add>
+  <extract name="node42" type="float">
+    <input name="in" type="vector3" nodename="main__room_pos" />
+    <input name="index" type="integer" value="2" />
+  </extract>
+  <subtract name="node44" type="float">
+    <input name="in1" type="float" value="0" />
+    <input name="in2" type="float" value="1" />
+  </subtract>
+  <multiply name="node45" type="float">
+    <input name="in1" type="float" nodename="node42" />
+    <input name="in2" type="float" nodename="node44" />
+  </multiply>
+  <extract name="node46" type="float">
+    <input name="in" type="vector3" nodename="main__room_pos" />
+    <input name="index" type="integer" value="0" />
+  </extract>
+  <extract name="node47" type="float">
+    <input name="in" type="vector3" nodename="main__room_pos" />
+    <input name="index" type="integer" value="1" />
+  </extract>
+  <extract name="node48" type="float">
+    <input name="in" type="vector3" nodename="main__room_pos" />
+    <input name="index" type="integer" value="2" />
+  </extract>
+  <combine3 name="main__room_pos2" type="vector3">
+    <input name="in1" type="float" nodename="node46" />
+    <input name="in2" type="float" nodename="node47" />
+    <input name="in3" type="float" nodename="node45" />
+  </combine3>
+  <add name="node52" type="vector3">
+    <input name="in1" type="vector3" nodename="main__room_pos2" />
+    <input name="in2" type="float" value="1" />
+  </add>
+  <divide name="node54" type="vector3">
+    <input name="in1" type="vector3" nodename="node52" />
+    <input name="in2" type="float" value="2" />
+  </divide>
+  <convert name="node55" type="vector3">
+    <input name="in" type="float" value="1" />
+  </convert>
+  <subtract name="main__wall_uvs" type="vector3">
+    <input name="in1" type="vector3" nodename="node55" />
+    <input name="in2" type="vector3" nodename="node54" />
+  </subtract>
+  <extract name="node57" type="float">
+    <input name="in" type="vector3" nodename="main__room_pos2" />
+    <input name="index" type="integer" value="0" />
+  </extract>
+  <ifgreater name="node59" type="float">
+    <input name="value1" type="float" nodename="node57" />
+    <input name="value2" type="float" value="0.99" />
+    <input name="in1" type="float" value="1" />
+    <input name="in2" type="float" value="0" />
+  </ifgreater>
+  <image name="node60" type="color4">
+    <input name="file" type="filename" value="C:\Users\jaket\Pictures\left_wall_3.png" />
+    <input name="texcoord" type="vector2" nodename="node65" />
+  </image>
+  <extract name="node63" type="float">
+    <input name="in" type="vector3" nodename="main__wall_uvs" />
+    <input name="index" type="integer" value="2" />
+  </extract>
+  <extract name="node64" type="float">
+    <input name="in" type="vector3" nodename="main__wall_uvs" />
+    <input name="index" type="integer" value="1" />
+  </extract>
+  <combine2 name="node65" type="vector2">
+    <input name="in1" type="float" nodename="node63" />
+    <input name="in2" type="float" nodename="node64" />
+  </combine2>
+  <ifequal name="main__words2" type="color4">
+    <input name="value1" type="float" nodename="node59" />
+    <input name="value2" type="float" value="1" />
+    <input name="in1" type="color4" nodename="node60" />
+    <input name="in2" type="color4" value="0, 0, 0, 0" />
+  </ifequal>
+  <extract name="node68" type="float">
+    <input name="in" type="vector3" nodename="main__room_pos2" />
+    <input name="index" type="integer" value="1" />
+  </extract>
+  <subtract name="node70" type="float">
+    <input name="in1" type="float" value="0" />
+    <input name="in2" type="float" value="0.99" />
+  </subtract>
+  <ifgreatereq name="node71" type="float">
+    <input name="value1" type="float" nodename="node70" />
+    <input name="value2" type="float" nodename="node68" />
+    <input name="in1" type="float" value="1" />
+    <input name="in2" type="float" value="0" />
+  </ifgreatereq>
+  <image name="node72" type="color4">
+    <input name="file" type="filename" value="C:\Users\jaket\Pictures\ceiling_3.png" />
+    <input name="texcoord" type="vector2" nodename="node79" />
+  </image>
+  <extract name="node75" type="float">
+    <input name="in" type="vector3" nodename="main__wall_uvs" />
+    <input name="index" type="integer" value="0" />
+  </extract>
+  <extract name="node77" type="float">
+    <input name="in" type="vector3" nodename="main__wall_uvs" />
+    <input name="index" type="integer" value="2" />
+  </extract>
+  <subtract name="node78" type="float">
+    <input name="in1" type="float" value="0" />
+    <input name="in2" type="float" nodename="node77" />
+  </subtract>
+  <combine2 name="node79" type="vector2">
+    <input name="in1" type="float" nodename="node75" />
+    <input name="in2" type="float" nodename="node78" />
+  </combine2>
+  <ifequal name="main__words3" type="color4">
+    <input name="value1" type="float" nodename="node71" />
+    <input name="value2" type="float" value="1" />
+    <input name="in1" type="color4" nodename="node72" />
+    <input name="in2" type="color4" nodename="main__words2" />
+  </ifequal>
+  <extract name="node82" type="float">
+    <input name="in" type="vector3" nodename="main__room_pos2" />
+    <input name="index" type="integer" value="0" />
+  </extract>
+  <subtract name="node84" type="float">
+    <input name="in1" type="float" value="0" />
+    <input name="in2" type="float" value="0.99" />
+  </subtract>
+  <ifgreatereq name="node85" type="float">
+    <input name="value1" type="float" nodename="node84" />
+    <input name="value2" type="float" nodename="node82" />
+    <input name="in1" type="float" value="1" />
+    <input name="in2" type="float" value="0" />
+  </ifgreatereq>
+  <image name="node86" type="color4">
+    <input name="file" type="filename" value="C:\Users\jaket\Pictures\right_wall_3.png" />
+    <input name="texcoord" type="vector2" nodename="node93" />
+  </image>
+  <extract name="node89" type="float">
+    <input name="in" type="vector3" nodename="main__wall_uvs" />
+    <input name="index" type="integer" value="2" />
+  </extract>
+  <subtract name="node90" type="float">
+    <input name="in1" type="float" value="0" />
+    <input name="in2" type="float" nodename="node89" />
+  </subtract>
+  <extract name="node92" type="float">
+    <input name="in" type="vector3" nodename="main__wall_uvs" />
+    <input name="index" type="integer" value="1" />
+  </extract>
+  <combine2 name="node93" type="vector2">
+    <input name="in1" type="float" nodename="node90" />
+    <input name="in2" type="float" nodename="node92" />
+  </combine2>
+  <ifequal name="main__words4" type="color4">
+    <input name="value1" type="float" nodename="node85" />
+    <input name="value2" type="float" value="1" />
+    <input name="in1" type="color4" nodename="node86" />
+    <input name="in2" type="color4" nodename="main__words3" />
+  </ifequal>
+  <extract name="node96" type="float">
+    <input name="in" type="vector3" nodename="main__room_pos2" />
+    <input name="index" type="integer" value="2" />
+  </extract>
+  <subtract name="node98" type="float">
+    <input name="in1" type="float" value="0" />
+    <input name="in2" type="float" value="0.99" />
+  </subtract>
+  <ifgreatereq name="node99" type="float">
+    <input name="value1" type="float" nodename="node98" />
+    <input name="value2" type="float" nodename="node96" />
+    <input name="in1" type="float" value="1" />
+    <input name="in2" type="float" value="0" />
+  </ifgreatereq>
+  <image name="node100" type="color4">
+    <input name="file" type="filename" value="C:\Users\jaket\Pictures\back_wall_3.png" />
+    <input name="texcoord" type="vector2" nodename="node105" />
+  </image>
+  <extract name="node103" type="float">
+    <input name="in" type="vector3" nodename="main__wall_uvs" />
+    <input name="index" type="integer" value="0" />
+  </extract>
+  <extract name="node104" type="float">
+    <input name="in" type="vector3" nodename="main__wall_uvs" />
+    <input name="index" type="integer" value="1" />
+  </extract>
+  <combine2 name="node105" type="vector2">
+    <input name="in1" type="float" nodename="node103" />
+    <input name="in2" type="float" nodename="node104" />
+  </combine2>
+  <ifequal name="main__words5" type="color4">
+    <input name="value1" type="float" nodename="node99" />
+    <input name="value2" type="float" value="1" />
+    <input name="in1" type="color4" nodename="node100" />
+    <input name="in2" type="color4" nodename="main__words4" />
+  </ifequal>
+  <extract name="node108" type="float">
+    <input name="in" type="vector3" nodename="main__room_pos2" />
+    <input name="index" type="integer" value="1" />
+  </extract>
+  <ifgreater name="node110" type="float">
+    <input name="value1" type="float" nodename="node108" />
+    <input name="value2" type="float" value="0.99" />
+    <input name="in1" type="float" value="1" />
+    <input name="in2" type="float" value="0" />
+  </ifgreater>
+  <image name="node111" type="color4">
+    <input name="file" type="filename" value="C:\Users\jaket\Pictures\floor_3.png" />
+    <input name="texcoord" type="vector2" nodename="node116" />
+  </image>
+  <extract name="node114" type="float">
+    <input name="in" type="vector3" nodename="main__wall_uvs" />
+    <input name="index" type="integer" value="0" />
+  </extract>
+  <extract name="node115" type="float">
+    <input name="in" type="vector3" nodename="main__wall_uvs" />
+    <input name="index" type="integer" value="2" />
+  </extract>
+  <combine2 name="node116" type="vector2">
+    <input name="in1" type="float" nodename="node114" />
+    <input name="in2" type="float" nodename="node115" />
+  </combine2>
+  <ifequal name="main__words6" type="color4">
+    <input name="value1" type="float" nodename="node110" />
+    <input name="value2" type="float" value="1" />
+    <input name="in1" type="color4" nodename="node111" />
+    <input name="in2" type="color4" nodename="main__words5" />
+  </ifequal>
+  <clamp name="node119" type="float">
+    <input name="in" type="float" nodename="node125" />
+  </clamp>
+  <distance name="node120" type="float">
+    <input name="in1" type="vector3" nodename="node122" />
+    <input name="in2" type="vector3" nodename="main__room_pos2" />
+  </distance>
+  <convert name="node122" type="vector3">
+    <input name="in" type="float" value="0" />
+  </convert>
+  <subtract name="node125" type="float">
+    <input name="in1" type="float" nodename="node120" />
+    <input name="in2" type="float" value="0.9" />
+  </subtract>
+  <subtract name="main__ao" type="float">
+    <input name="in1" type="float" value="1" />
+    <input name="in2" type="float" nodename="node119" />
+  </subtract>
+  <standard_surface name="main__surface" type="surfaceshader">
+    <input name="base_color" type="color3" nodename="node136" />
+    <input name="specular_roughness" type="float" value="1" />
+  </standard_surface>
+  <clamp name="node126" type="color3">
+    <input name="in" type="color3" nodename="node134" />
+  </clamp>
+  <convert name="node128" type="color3">
+    <input name="in" type="vector3" nodename="main__wall_uvs" />
+  </convert>
+  <extract name="node130" type="float">
+    <input name="in" type="color4" nodename="main__words6" />
+    <input name="index" type="integer" value="0" />
+  </extract>
+  <extract name="node131" type="float">
+    <input name="in" type="color4" nodename="main__words6" />
+    <input name="index" type="integer" value="1" />
+  </extract>
+  <extract name="node132" type="float">
+    <input name="in" type="color4" nodename="main__words6" />
+    <input name="index" type="integer" value="2" />
+  </extract>
+  <combine3 name="node133" type="color3">
+    <input name="in1" type="float" nodename="node130" />
+    <input name="in2" type="float" nodename="node131" />
+    <input name="in3" type="float" nodename="node132" />
+  </combine3>
+  <add name="node134" type="color3">
+    <input name="in1" type="color3" nodename="node128" />
+    <input name="in2" type="color3" nodename="node133" />
+  </add>
+  <multiply name="node136" type="color3">
+    <input name="in1" type="color3" nodename="node126" />
+    <input name="in2" type="float" nodename="main__ao" />
+  </multiply>
+  <surfacematerial name="mxsl_material" type="material">
+    <input name="surfaceshader" type="surfaceshader" nodename="main__surface" />
+  </surfacematerial>
+</materialx>

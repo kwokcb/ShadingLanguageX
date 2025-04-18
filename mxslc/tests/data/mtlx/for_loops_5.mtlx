@@ -1,0 +1,31 @@
+<?xml version="1.0"?>
+<materialx version="1.39">
+  <add name="global__total2" type="float">
+    <input name="in1" type="float" value="0" />
+    <input name="in2" type="float" value="2" />
+  </add>
+  <add name="global__total3" type="float">
+    <input name="in1" type="float" nodename="global__total2" />
+    <input name="in2" type="float" value="3.5" />
+  </add>
+  <add name="global__total4" type="float">
+    <input name="in1" type="float" nodename="global__total3" />
+    <input name="in2" type="float" value="5" />
+  </add>
+  <divide name="global__average" type="float">
+    <input name="in1" type="float" nodename="global__total4" />
+    <input name="in2" type="float" value="3" />
+  </divide>
+  <min name="global__f2" type="float">
+    <input name="in1" type="float" value="8" />
+    <input name="in2" type="float" value="9" />
+  </min>
+  <min name="global__f3" type="float">
+    <input name="in1" type="float" value="9" />
+    <input name="in2" type="float" nodename="global__f2" />
+  </min>
+  <min name="global__f4" type="float">
+    <input name="in1" type="float" value="10" />
+    <input name="in2" type="float" nodename="global__f3" />
+  </min>
+</materialx>
