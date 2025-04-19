@@ -1,3 +1,6 @@
+//
+// shaderart.mxsl (original by Kishimisu, https://www.shadertoy.com/view/mtyGWy)
+//
 
 vec3 palette(float t)
 {

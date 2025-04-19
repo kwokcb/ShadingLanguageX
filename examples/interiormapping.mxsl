@@ -1,12 +1,12 @@
 //
-// interiormapping_words.mxsl
+// interiormapping.mxsl
 //
 
-filename wall1 = "textures\left_wall_1.png";
-filename wall2 = "textures\right_wall_1.png";
-filename wall3 = "textures\back_wall_1.png";
-filename ceilg = "textures\ceiling_1.png";
-filename floor = "textures\floor_1.png";
+filename wall1 = "textures\left_wall.png";
+filename wall2 = "textures\right_wall.png";
+filename wall3 = "textures\back_wall.png";
+filename ceilg = "textures\ceiling.png";
+filename floor = "textures\floor.png";
 
 float raycast(vec3 origin, vec3 view_dir)
 {
