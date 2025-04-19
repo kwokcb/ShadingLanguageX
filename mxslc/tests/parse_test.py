@@ -22,7 +22,7 @@ def _assert_data_file(stem: str) -> None:
     tokens = scan(code)
     statements = parse(tokens)
     _compile(statements)
-    assert mtlx.get_xml() == expected
+    assert mtlx.get_xml().replace("\\", "/") == expected.replace("\\", "/")
 
 
 def test_parse_with_examples():
