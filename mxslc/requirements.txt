@@ -1,2 +1,2 @@
-MaterialX~=1.39.3
 pytest~=8.3.5
+MaterialX~=1.39.3
