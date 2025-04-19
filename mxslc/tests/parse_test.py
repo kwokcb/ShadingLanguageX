@@ -1,7 +1,7 @@
 from pathlib import Path
 
 from mxslc import mtlx, state
-from mxslc.compile import compile
+from mxslc.compile import _compile
 from mxslc.parse import parse
 from mxslc.scan import scan
 
@@ -21,7 +21,7 @@ def _assert_data_file(stem: str) -> None:
     code, expected = _get_code_and_expected(stem)
     tokens = scan(code)
     statements = parse(tokens)
-    compile(statements)
+    _compile(statements)
     assert mtlx.get_xml() == expected
 
 

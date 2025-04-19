@@ -1,1 +1,1 @@
-from .mxslc import *
+from .compile import compile_string, compile_file
