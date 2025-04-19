@@ -36,4 +36,5 @@ def test_mxslc(filename: str, overwrite_expected: bool) -> None:
     else:
         with open(mtlx_path, "r") as f:
             expected_xml = f.read()
-        assert actual_xml == expected_xml
+        # replace slashes to work on both windows and linux
+        assert actual_xml.replace("\\", "/") == expected_xml.replace("\\", "/")
