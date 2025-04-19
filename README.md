@@ -74,7 +74,7 @@ surfaceshader surface = standard_surface();
 surface.base_color = out_color;
 ```
 ## Examples
-put images here
+![](Examples/interiormapping.png)
 ## Install __mxslc__
 There are two ways to use __mxslc__. 
 ### 1. Download the source code and use it in your own python project.
