@@ -1,1 +1,1 @@
-# MXSL
+# MaterialX Shading Language
