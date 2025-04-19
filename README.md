@@ -1,6 +1,6 @@
 # MaterialX Shading Language
 ## Overview
-This repo contains the language specification for the MaterialX Shading Langauge (MXSL) and the code for its open source compiler (mxslc). MXSL is a high level shading language with a syntax similar to C. It can be compiled into a MaterialX (.mtlx) to be used like any other MaterialX file. MXSL allows artists and developers to more quickly and easily create complex MaterialX shaders for their projects.
+This repo contains the language specification for the MaterialX Shading Langauge (MXSL) and the code for its open source compiler (mxslc). MXSL is a high level shading language with a syntax similar to C. It can be compiled into a MaterialX (.mtlx) to be used like any other MaterialX file. MXSL allows artists and developers to more quickly and easily create complex MaterialX shaders for their own projects.
 ## Syntax
 __Variable Declaration__
 ```
