@@ -1,4 +1,7 @@
 # MaterialX Shading Language
+[![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://github.com/jakethorn/MXSL/blob/main/LICENSE)
+[![Version](https://img.shields.io/github/v/release/jakethorn/MXSL)](https://github.com/jakethorn/MXSL/releases/latest)
+[![Build Status](https://github.com/jakethorn/MXSL/workflows/automated-tests/badge.svg)](https://github.com/jakethorn/MXSL/actions)
 ## Overview
 This repo contains the language specification for the MaterialX Shading Langauge (MXSL) and the code for its open source compiler (mxslc). MXSL is a high level shading language with a syntax similar to C. It can be compiled into a MaterialX (.mtlx) to be used like any other MaterialX file. MXSL allows artists and developers to more quickly and easily create complex MaterialX shaders for their own projects.
 ## Syntax
