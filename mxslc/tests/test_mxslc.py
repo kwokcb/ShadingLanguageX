@@ -32,6 +32,7 @@ _overwrite_all_expected = False
     ("test_008", False),
     ("test_009", False),
     ("test_010", False),
+    ("includes_1", False),
 ])
 def test_mxslc(filename: str, overwrite_expected: bool) -> None:
     mxsl_path     = (Path(__file__).parent / "data" / "mxsl" / filename).with_suffix(".mxsl")
