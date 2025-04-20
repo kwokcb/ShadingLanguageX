@@ -2,13 +2,16 @@ from pathlib import Path
 from typing import Any
 
 from .Keyword import AliasType, Keyword
+from .SourceFile import SourceFile
 from .token_types import FLOAT_LITERAL, INT_LITERAL, STRING_LITERAL, FILENAME_LITERAL
 
 
+# TODO file and line probably dont need default values
 class Token:
-    def __init__(self, type: str, lexeme: str = None, line=0):
-        self.__type = type
-        self.__lexeme = lexeme or type
+    def __init__(self, type_: str, lexeme: str = None, file: SourceFile = None, line=0):
+        self.__type = type_
+        self.__lexeme = lexeme or type_
+        self.__file = file
         self.__line = line
 
         # account for aliases

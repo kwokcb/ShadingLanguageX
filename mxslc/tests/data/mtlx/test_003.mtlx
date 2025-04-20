@@ -1,48 +1,21 @@
 <?xml version="1.0"?>
 <materialx version="1.39">
-  <constant name="global__x" type="float">
-    <input name="value" type="float" value="1" />
-  </constant>
-  <dot name="node1" type="float">
-    <input name="in" type="float" nodename="global__x" />
-  </dot>
-  <constant name="node2" type="float">
-    <input name="value" type="float" value="0.25" />
-  </constant>
-  <constant name="node3" type="float">
-    <input name="value" type="float" value="0.25" />
-  </constant>
   <add name="node4" type="float">
-    <input name="in1" type="float" nodename="node2" />
-    <input name="in2" type="float" nodename="node3" />
+    <input name="in1" type="float" value="0.25" />
+    <input name="in2" type="float" value="0.25" />
   </add>
-  <constant name="node5" type="float">
-    <input name="value" type="float" value="1" />
-  </constant>
   <combine3 name="global__my_vec1" type="vector3">
-    <input name="in1" type="float" nodename="node1" />
+    <input name="in1" type="float" value="1" />
     <input name="in2" type="float" nodename="node4" />
-    <input name="in3" type="float" nodename="node5" />
+    <input name="in3" type="float" value="1" />
   </combine3>
-  <dot name="node6" type="vector3">
-    <input name="in" type="vector3" nodename="global__my_vec1" />
-  </dot>
-  <constant name="node7" type="float">
-    <input name="value" type="float" value="1" />
-  </constant>
-  <constant name="node8" type="float">
-    <input name="value" type="float" value="0" />
-  </constant>
-  <constant name="node9" type="float">
-    <input name="value" type="float" value="0" />
-  </constant>
   <combine3 name="node10" type="vector3">
-    <input name="in1" type="float" nodename="node7" />
-    <input name="in2" type="float" nodename="node8" />
-    <input name="in3" type="float" nodename="node9" />
+    <input name="in1" type="float" value="1" />
+    <input name="in2" type="float" value="0" />
+    <input name="in3" type="float" value="0" />
   </combine3>
   <add name="global__my_vec2" type="vector3">
-    <input name="in1" type="vector3" nodename="node6" />
+    <input name="in1" type="vector3" nodename="global__my_vec1" />
     <input name="in2" type="vector3" nodename="node10" />
   </add>
 </materialx>

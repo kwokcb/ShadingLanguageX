@@ -4,5 +4,7 @@
 # TODO add include preprocessor
 # TODO improve assignment_data_type system
 # TODO refactor and add tests
+# TODO add eval(xml)
+# TODO trailing commas are fine
 ```  
   

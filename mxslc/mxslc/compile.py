@@ -8,34 +8,25 @@ from .pre_process import pre_process
 from .scan import scan
 
 
-def compile_string(mxsl_code: str) -> str:
-    mtlx.clear()
-    state.clear()
-
-    mxsl_code = pre_process(mxsl_code, defines=[])
-    tokens = scan(mxsl_code)
-    statements = parse(tokens)
-    _compile(statements)
-    post_process()
-
-    return mtlx.get_xml()
-
-
 def compile_file(mxsl_path: str | Path, mtlx_path: str | Path = None) -> None:
-    mxsl_files = _handle_mxsl_path(mxsl_path)
+    mxsl_filepaths = _handle_mxsl_path(mxsl_path)
 
-    for mxsl_file in mxsl_files:
-        mtlx_file = _handle_mtlx_path(mtlx_path, mxsl_file)
+    for mxsl_filepath in mxsl_filepaths:
+        mtlx_filepath = _handle_mtlx_path(mtlx_path, mxsl_filepath)
 
-        with open(mxsl_file, "r") as file:
-            mxsl_code = file.read()
+        mtlx.clear()
+        state.clear()
 
-        mtlx_xml = compile_string(mxsl_code)
+        mxsl_files = pre_process(mxsl_filepath, other_include_dirs=[], defines=[])
+        tokens = scan(mxsl_files)
+        statements = parse(tokens)
+        _compile(statements)
+        post_process()
 
-        with open(mtlx_file, "w") as file:
-            file.write(mtlx_xml)
+        with open(mtlx_filepath, "w") as file:
+            file.write(mtlx.get_xml())
 
-        print(f"{mxsl_file.name} compiled successfully.")
+        print(f"{mxsl_filepath.name} compiled successfully.")
 
 
 def _handle_mxsl_path(mxsl_path: str | Path) -> list[Path]:
@@ -65,11 +56,10 @@ def _handle_mtlx_path(mtlx_path: str | Path | None, mxsl_file: Path) -> Path:
         return mtlx_path / (mxsl_file.stem + ".mtlx")
     if mtlx_path.suffix != ".mtlx":
         mtlx_path /= (mxsl_file.stem + ".mtlx")
-    mtlx_path.mkdir(parents=True, exist_ok=True)
+    mtlx_path.parent.mkdir(parents=True, exist_ok=True)
     return mtlx_path
 
 
-def _compile(statements: list[Statement]) -> str:
+def _compile(statements: list[Statement]) -> None:
     for statement in statements:
         statement.execute()
-    return mtlx.get_xml()

@@ -1,38 +1,42 @@
 import re
 
 from .Keyword import KEYWORDS
+from .SourceFile import SourceFile
 from .Token import Token
 from .token_types import EOF, IDENTIFIER, FLOAT_LITERAL, INT_LITERAL, FILENAME_LITERAL, STRING_LITERAL
 
 
-def scan(source: str) -> list[Token]:
-    scanner = Scanner()
-    tokens = scanner.scan(source)
+def scan(files: list[SourceFile]) -> list[Token]:
+    tokens = []
+    for file in files:
+        scanner = Scanner()
+        # ignore trailing EOF token
+        tokens.extend(scanner.scan(file)[:-1])
+    tokens.append(Token(EOF))
     return tokens
 
 
 class Scanner:
     def __init__(self):
-        self.__source = ""
+        self.__file = None
         self.__index = 0
         self.__line = 1
 
-    def scan(self, source: str) -> list[Token]:
-        self.__source = source
+    def scan(self, file: SourceFile) -> list[Token]:
+        self.__file = file
         self.__index = 0
         self.__line = 1
 
         tokens = []
-        while self.__index < len(self.__source):
+        while self.__index < len(self.__file.source):
             token = self.__identify_token()
             if token:
-                token.__line = self.__line
                 tokens.append(token)
                 self.__index += len(token.lexeme)
             else:
                 self.__line += self.__peek() == "\n"
                 self.__index += 1
-        tokens.append(self.__token(EOF))
+        tokens.append(Token(EOF))
         return tokens
 
     def __identify_token(self) -> Token | None:
@@ -58,15 +62,15 @@ class Scanner:
             return self.__token(STRING_LITERAL, string_lit)
         return None
 
-    def __peek(self) -> str | None:
-        return self.__source[self.__index] if self.__index < len(self.__source) else None
+    def __peek(self) -> str:
+        return self.__file.source[self.__index]
 
     def __peek_next(self) -> str | None:
         i = self.__index + 1
-        return self.__source[i] if i < len(self.__source) else None
+        return self.__file.source[i] if i < len(self.__file.source) else None
 
     def __peek_all(self) -> str:
-        return self.__source[self.__index:]
+        return self.__file.source[self.__index:]
 
     def __is_single_char_token(self) -> bool:
         return self.__peek() in ["(", ")", "{", "}", "[", "]", ".", ",", ":", ";"]
@@ -95,4 +99,4 @@ class Scanner:
         return match.group() if match else None
 
     def __token(self, type_: str, lexeme: str = None) -> Token:
-        return Token(type_, lexeme, self.__line)
+        return Token(type_, lexeme, self.__file, self.__line)
