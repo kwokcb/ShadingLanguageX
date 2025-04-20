@@ -6,5 +6,6 @@
 # TODO refactor and add tests
 # TODO add eval(xml)
 # TODO trailing commas are fine
+# TODO add filepath to compile error output
 ```  
   
