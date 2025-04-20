@@ -80,7 +80,7 @@ surface.base_color = out_color;
 Red Brick                    |  Interior Mapping
 :---------------------------:|:---------------------------:
 ![](examples/redbrick.png)   |  ![](examples/interiormapping.png)
-Shader Art (by Kishimisu)    |  Rainy Skyline
+Shader Art (by Kishimisu)    |  Procedural Rain
 ![](examples/shaderart.png)  |  ![](examples/rain.png)
 ## Install __mxslc__
 There are two ways to use __mxslc__. 
