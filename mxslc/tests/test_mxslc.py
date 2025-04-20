@@ -50,7 +50,7 @@ def test_mxslc(filename: str, overwrite_expected: bool) -> None:
     with open(expected_path, "r") as f:
         expected = f.read()
 
-    assert actual == expected
+    assert actual.replace("\\", "/") == expected.replace("\\", "/")
 
     if not (overwrite_expected or _overwrite_all_expected):
         actual_path.unlink()
