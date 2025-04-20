@@ -1,4 +1,4 @@
-# Version 0.2-beta (In Development)
+# Version 0.2-beta (in development)
 ## Added 
 * __Node Constructor__
 * __Include Directive__
