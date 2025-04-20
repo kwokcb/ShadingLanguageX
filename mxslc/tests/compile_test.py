@@ -21,6 +21,7 @@ _overwrite_all_expected = False
     ("for_loops_5", False),
     ("named_arguments_1", False),
     ("named_arguments_2", False),
+    ("node_constructors_1", False),
 ])
 def test_mxslc(filename: str, overwrite_expected: bool) -> None:
     mxsl_path = (Path(__file__).parent / "data" / "mxsl" / filename).with_suffix(".mxsl")

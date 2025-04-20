@@ -10,3 +10,4 @@ from .StandardLibraryCall import StandardLibraryCall
 from .SwitchExpression import SwitchExpression
 from .SwizzleExpression import SwizzleExpression
 from .UnaryExpression import UnaryExpression
+from .NodeConstructor import NodeConstructor

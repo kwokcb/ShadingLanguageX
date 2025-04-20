@@ -1,0 +1,28 @@
+<?xml version="1.0"?>
+<materialx version="1.39">
+  <geompropvalue name="global__uv2" type="vector2">
+    <input name="geomprop" type="string" value="uv2" />
+  </geompropvalue>
+  <fractal3d name="global__fractal" type="vector3">
+    <input name="amplitude" type="float" value="2" />
+    <input name="octaves" type="integer" value="3" />
+    <input name="dimish" type="float" value="0.6" />
+  </fractal3d>
+  <position name="node6" type="vector3" />
+  <normal name="node7" type="vector3" />
+  <multiply name="node8" type="vector3">
+    <input name="in1" type="vector3" nodename="node6" />
+    <input name="in2" type="vector3" nodename="node7" />
+  </multiply>
+  <divide name="node10" type="vector3">
+    <input name="in1" type="vector3" nodename="node8" />
+    <input name="in2" type="float" value="2" />
+  </divide>
+  <add name="global__fractal2" type="vector3">
+    <input name="in1" type="vector3" nodename="global__fractal" />
+    <input name="in2" type="vector3" nodename="node10" />
+  </add>
+  <convert name="global__out_color" type="color3">
+    <input name="in" type="vector3" nodename="global__fractal2" />
+  </convert>
+</materialx>

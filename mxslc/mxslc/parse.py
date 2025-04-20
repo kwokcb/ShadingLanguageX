@@ -214,6 +214,9 @@ class Parser:
         # switch
         if token == Keyword.SWITCH:
             return self.__switch_expression()
+        # node constructor
+        if token == "{":
+            return self.__node_constructor()
         raise CompileError(token.line, f"Unexpected token: '{token}'.")
 
     def __if_expression(self) -> Expression:
@@ -277,6 +280,19 @@ class Parser:
                 args.append(self.__argument())
             self.__match(")")
         return FunctionCall(identifier, args)
+
+    def __node_constructor(self) -> NodeConstructor:
+        self.__match("{")
+        category = self.__match(STRING_LITERAL)
+        self.__match(",")
+        data_type = self.__match(*DATA_TYPES)
+        args = []
+        if self.__consume(":"):
+            args.append(self.__argument())
+            while self.__consume(","):
+                args.append(self.__argument())
+        self.__match("}")
+        return NodeConstructor(category, data_type, args)
 
     def __argument(self) -> Argument:
         if self.__peek() == IDENTIFIER and self.__peek_next() == "=":
