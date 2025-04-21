@@ -32,6 +32,7 @@ class StandardLibrary(StrEnum):
     NORMALMAP = auto()
     MIX = auto()
     STANDARD_SURFACE = auto()
+    DISPLACEMENT = auto()
 
     def return_type(self, assignment_data_type: DataType, arg0_data_type: DataType) -> DataType:
         if self in self.IMAGE:
@@ -52,6 +53,9 @@ class StandardLibrary(StrEnum):
     
         if self in self.STANDARD_SURFACE:
             return SURFACESHADER
+
+        if self in self.DISPLACEMENT:
+            return DISPLACEMENTSHADER
     
         raise AssertionError(f"No return type defined for '{self}'.")
 
@@ -89,6 +93,7 @@ class StandardLibrary(StrEnum):
             self.NORMALMAP: [("in", VECTOR3), ("space", STRING), ("scale", [FLOAT, VECTOR2]), ("normal", VECTOR3), ("tangent", VECTOR3), ("bitangent", VECTOR3)],
             self.MIX: [("bg", FLOAT_TYPES), ("fg", FLOAT_TYPES), ("mix", FLOAT_TYPES)],
             self.STANDARD_SURFACE: [("base_color", COLOR3), ("metalness", FLOAT), ("specular_roughness", FLOAT), ("normal", VECTOR3)],
+            self.DISPLACEMENT: [("displacement", [FLOAT, VECTOR3]), ("scale", FLOAT)],
         }
 
         if self in params:

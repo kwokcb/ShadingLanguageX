@@ -29,6 +29,8 @@ class DataType(StrEnum):
     COLOR3 = auto()
     COLOR4 = auto()
     SURFACESHADER = auto()
+    DISPLACEMENTSHADER = auto()
+    MATERIAL = auto()
 
     @property
     def size(self) -> int:
@@ -71,13 +73,15 @@ VECTOR4 = DataType.VECTOR4
 COLOR3 = DataType.COLOR3
 COLOR4 = DataType.COLOR4
 SURFACESHADER = DataType.SURFACESHADER
+DISPLACEMENTSHADER = DataType.DISPLACEMENTSHADER
+MATERIAL = DataType.MATERIAL
 
 # common data type groups
 VECTOR_TYPES = [DataType.VECTOR2, DataType.VECTOR3, DataType.VECTOR4]
 COLOR_TYPES = [DataType.COLOR3, DataType.COLOR4]
 FLOAT_TYPES = [DataType.FLOAT, *VECTOR_TYPES, *COLOR_TYPES]
 NUMERIC_TYPES = [DataType.INTEGER, *FLOAT_TYPES]
-SHADER_TYPES = [DataType.SURFACESHADER]
+SHADER_TYPES = [DataType.SURFACESHADER, DataType.DISPLACEMENTSHADER]
 DATA_TYPES = [t for t in DataType]
 
 # list of all keywords

@@ -7,11 +7,7 @@ from .utils import is_path
 
 
 def post_process() -> None:
-    surfaceshader_nodes = mtlx.get_nodes(StandardLibrary.STANDARD_SURFACE)
-    if len(surfaceshader_nodes) > 0:
-        _add_material_node()
-        # TODO uncomment this once its fixed
-        #_remove_nodes_with_no_outputs()
+    _add_material_node()
     _remove_dot_nodes()
     _remove_constant_nodes()
     _fix_logic_nodes()
@@ -20,10 +16,16 @@ def post_process() -> None:
 
 def _add_material_node() -> None:
     surfaceshader_nodes = mtlx.get_nodes(StandardLibrary.STANDARD_SURFACE)
-    surfaceshader_node = surfaceshader_nodes[-1]
-    mtlx.create_material_node(surfaceshader_node, "mxsl_material")
+    displacementshader_nodes = mtlx.get_nodes(StandardLibrary.DISPLACEMENT)
+    if len(surfaceshader_nodes) > 0 or len(displacementshader_nodes) > 0:
+        material_node = mtlx.create_material_node("mxsl_material")
+        if len(surfaceshader_nodes) > 0:
+            material_node.set_input("surfaceshader", surfaceshader_nodes[-1])
+        if len(displacementshader_nodes) > 0:
+            material_node.set_input("displacementshader", displacementshader_nodes[-1])
 
 
+# TODO this function isnt being called
 # TODO loop until nothing is removed
 def _remove_nodes_with_no_outputs() -> None:
     nodes = mtlx.get_nodes()

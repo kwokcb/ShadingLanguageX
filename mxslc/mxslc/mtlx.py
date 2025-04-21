@@ -6,7 +6,7 @@ from typing import Any
 import MaterialX as mx
 
 from .Keyword import DataType, FILENAME, VECTOR_TYPES, COLOR_TYPES, FLOAT, STRING, SHADER_TYPES, BOOLEAN, INTEGER, \
-    VECTOR2, VECTOR3, VECTOR4, COLOR3, COLOR4
+    VECTOR2, VECTOR3, VECTOR4, COLOR3, COLOR4, MATERIAL
 
 #
 # Document
@@ -111,11 +111,8 @@ def create_node(category: str, data_type: DataType, name="") -> Node:
     return Node(_document.addNode(category, name, data_type))
 
 
-def create_material_node(surfaceshader: Node, name="") -> None:
-    if name == "":
-        name = surfaceshader.name + "_material"
-    surfaceshader_source = _document.getNode(surfaceshader.name)
-    _document.addMaterialNode(name, surfaceshader_source)
+def create_material_node(name: str) -> Node:
+    return create_node("surfacematerial", MATERIAL, name)
 
 
 def remove_node(node: Node) -> None:
