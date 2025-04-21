@@ -17,6 +17,11 @@ Extract vector and color channels using square brackets.
 vec3 n = normal();
 float x = n[0];
 ```
+* __Displacement Shader Support__
+```
+float height = image("heightmap.png");
+displacementshader ds = displacement(tangent(), height);
+```
 # Version 0.1-beta
 ## Supported Features
 * __Variable Declaration__
