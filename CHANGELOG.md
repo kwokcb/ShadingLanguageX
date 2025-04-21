@@ -1,4 +1,6 @@
-# Version 0.2-beta (in development)
+# Version 0.3-beta (in development)
+...
+# Version 0.2-beta
 ## Added 
 * __Node Constructor__  
 Manually define a MaterialX nodes category, type and inputs.  
