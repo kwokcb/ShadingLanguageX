@@ -84,7 +84,7 @@ Red Brick                    |  Interior Mapping
 ![](examples/redbrick.png)   |  ![](examples/interiormapping.png)
 __Shader Art (by Kishimisu)__    |  __Procedural Rain__
 ![](examples/shaderart.png)  |  ![](examples/rain.png)
-__Mountain Displacement__    |  
+__Displacement Mountain__    |  
 ![](examples/mountain.png)  |  
 ## Install __mxslc__
 There are two ways to use __mxslc__. 
