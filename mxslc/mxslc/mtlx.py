@@ -137,8 +137,10 @@ def constant(value: Any) -> Node:
     return node
 
 
-def extract(in_: Node, index: int | str) -> Node:
+def extract(in_: Node, index: Node | int | str) -> Node:
     assert in_.data_type in [*VECTOR_TYPES, *COLOR_TYPES]
+    if isinstance(index, Node):
+        assert index.data_type is INTEGER
     if isinstance(index, str):
         index = {"x": 0, "y": 1, "z": 2, "w": 3, "r": 0, "g": 1, "b": 2, "a": 3}[index]
     node = create_node("extract", FLOAT)

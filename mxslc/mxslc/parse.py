@@ -171,17 +171,21 @@ class Parser:
 
     def __unary(self) -> Expression:
         if op := self.__consume("!", Keyword.NOT, "+", "-"):
-            return UnaryExpression(op, self.__swizzle())
+            return UnaryExpression(op, self.__property())
         else:
-            return self.__swizzle()
+            return self.__property()
 
-    def __swizzle(self) -> Expression:
+    def __property(self) -> Expression:
         expr = self.__primary()
-        if self.__consume("."):
-            swizzle = self.__match(IDENTIFIER)
-            return SwizzleExpression(expr, swizzle)
-        else:
-            return expr
+        while op := self.__consume(".", "["):
+            if op == ".":
+                swizzle = self.__match(IDENTIFIER)
+                expr = SwizzleExpression(expr, swizzle)
+            else:
+                indexer = self.__expression()
+                self.__match("]")
+                expr = IndexingExpression(expr, indexer)
+        return expr
 
     def __primary(self) -> Expression:
         # literal
