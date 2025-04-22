@@ -6,13 +6,14 @@ declaration → var_decl | func_decl;
 var_decl    → TYPE IDENTIFIER "=" expression ";" ;  
 func_decl   → TYPE IDENTIFIER "(" ( parameter ( "," parameter )* )? ")" "{" statement* return "}" ;  
   parameter → TYPE IDENTIFIER ;  
-return      → "return" expression ";" ;  
+  return    → "return" expression ";" ;  
 assignment  → var_assign | cmp_assign ;  
 var_assign  → variable "=" expression ";" ;  
 cmp_assign  → variable ( "+=" | "-=" | "*=" | "/=" | "%=" | "^=" | "&=" | "|=" ) expression ";" ;  
   variable  → IDENTIFIER ( "." IDENTIFIER )?  
 for_loop    → "for" "(" TYPE IDENTIFIER "=" constant ":" constant ( ":" constant )? ")" "{" statement* "}" ;  
   constant  → LITERAL | IDENTIFIER ; 
+expr_stmt   → func_call | stdlib_call ";" ;
   
 expression  → logic ;  
 logic       → equality ( ( "&" | "and" | "|" | "or" ) equality )* ;  
