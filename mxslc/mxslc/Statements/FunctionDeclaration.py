@@ -5,6 +5,7 @@ from ..CompileError import CompileError
 from ..Expressions import Expression
 from ..Keyword import DataType
 from ..Parameter import Parameter
+from ..StandardLibrary import StandardLibrary
 from ..Token import Token
 
 
@@ -18,6 +19,8 @@ class FunctionDeclaration(Statement):
         self.return_expr = return_expr
 
     def execute(self) -> None:
+        if self.name in StandardLibrary:
+            raise CompileError(self.line, f"Function name '{self.name}' already exists in the standard library.")
         state.add_function(self)
 
     def invoke(self, args: list[Argument]) -> mtlx.Node:
