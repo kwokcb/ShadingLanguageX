@@ -17,12 +17,12 @@ def parse(tokens: list[Token]) -> list[Statement]:
 
 class Parser:
     def __init__(self):
-        self.tokens: list[Token] = []
-        self.index = 0
+        self.__tokens: list[Token] = []
+        self.__index = 0
 
     def parse(self, tokens: list[Token]) -> list[Statement]:
-        self.tokens = tokens
-        self.index = 0
+        self.__tokens = tokens
+        self.__index = 0
         return self.__program()
 
     def __program(self) -> list[Statement]:
@@ -36,7 +36,12 @@ class Parser:
         if token in DATA_TYPES:
             return self.__declaration()
         if token == IDENTIFIER:
-            return self.__assignment()
+            if self.__peek_next() == "(":
+                expr = self.__primary() # function or standard library call
+                self.__match(";")
+                return ExpressionStatement(expr)
+            else:
+                return self.__assignment()
         if token == Keyword.FOR:
             return self.__for_loop()
         raise CompileError(token.line, f"Expected return statement, data type keyword, identifier or 'for', but found '{token.lexeme}'.")
@@ -310,13 +315,13 @@ class Parser:
         """
         Peek next token.
         """
-        return self.tokens[self.index]
+        return self.__tokens[self.__index]
 
     def __peek_next(self) -> Token:
         """
         Peek next next token.
         """
-        return self.tokens[self.index + 1]
+        return self.__tokens[self.__index + 1]
 
     def __consume(self, *token_types: str) -> Token | None:
         """
@@ -324,7 +329,7 @@ class Parser:
         """
         token = self.__peek()
         if token in token_types:
-            self.index += 1
+            self.__index += 1
             return token
         return None
 
