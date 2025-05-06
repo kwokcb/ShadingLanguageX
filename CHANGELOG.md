@@ -6,6 +6,16 @@ Allow function and standard library calls to be invoked without a return value a
 vec2 uv = texcoord();
 displacement(tangent("object"), uv.x * uv.y);
 ```
+* __Preprocessor Directives__  
+C-style preprocessor directives that can control the compilation of the shader.
+```
+#define USE_SRGB
+#define GAMMA 2.2
+color3 c = image(...);
+#ifdef USE_SRGB
+c ^= GAMMA;
+#endif
+```
 # Version 0.2-beta
 ## Added 
 * __Node Constructor__  
