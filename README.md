@@ -82,10 +82,10 @@ surface.base_color = out_color;
 Red Brick                    |  Interior Mapping
 :---------------------------:|:---------------------------:
 ![](examples/redbrick.png)   |  ![](examples/interiormapping.png)
-__Shader Art (by Kishimisu)__    |  __Procedural Rain__
-![](examples/shaderart.png)  |  ![](examples/rain.png)
-__Displacement Mountain__    |  
-![](examples/mountain.png)  |  
+__Shader Art (by Kishimisu)__    |  __Interior Mapping with shadows (by VRBN)__
+![](examples/shaderart.png)  |  ![](examples/lit_interiors.png)
+__Displacement Mountain__    |    __Procedural Rain__
+![](examples/mountain.png)   |  ![](examples/rain.png)
 ## Install __mxslc__
 There are two ways to use __mxslc__. 
 ### 1. Download the source code and use it in your own python project.
