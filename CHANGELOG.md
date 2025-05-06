@@ -1,7 +1,7 @@
 # Version 0.3-beta (in development)
 ## Added
 * __Expression Statements__  
-Allow function and standard library calls to be invoked without a return value assignment. 
+Allow function and standard library calls to be invoked without assigning the returned value. 
 ```
 vec2 uv = texcoord();
 displacement(tangent("object"), uv.x * uv.y);
@@ -11,10 +11,15 @@ C-style preprocessor directives that can control the compilation of the shader.
 ```
 #define USE_SRGB
 #define GAMMA 2.2
-color3 c = image(...);
+color3 c = image("albedo.png");
 #ifdef USE_SRGB
 c ^= GAMMA;
 #endif
+```
+* __Ternary Relational Expression__  
+Concise expression for checking if an expression falls within a lower and upper limit.
+```
+bool is_normalized = -1.0 < x < 1.0;
 ```
 # Version 0.2-beta
 ## Added 
