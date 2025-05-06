@@ -143,11 +143,22 @@ class Parser(TokenReader):
         return expr
 
     def __relational(self) -> Expression:
-        expr = self.__term()
-        while op := self._consume(">", ">=", "<", "<="):
+        left = self.__term()
+        middle = None
+        right = None
+
+        relational_operators = [">", ">=", "<", "<="]
+        if op1 := self._consume(*relational_operators):
+            middle = self.__term()
+        if op2 := self._consume(*relational_operators):
             right = self.__term()
-            expr = ComparisonExpression(expr, op, right)
-        return expr
+
+        if middle is None:
+            return left
+        elif right is None:
+            return ComparisonExpression(left, op1, middle)
+        else:
+            return TernaryRelationalExpression(left, op1, middle, op2, right)
 
     def __term(self) -> Expression:
         expr = self.__factor()

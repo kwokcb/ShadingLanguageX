@@ -18,7 +18,8 @@ expr_stmt   → func_call | stdlib_call ";" ;
 expression  → logic ;  
 logic       → equality ( ( "&" | "and" | "|" | "or" ) equality )* ;  
 equality    → relational ( ( "!=" | "==" ) relational )* ;  
-relational  → term ( ( ">" | ">=" | "<" | "<=" ) term )* ;  
+relational  → term | ( term rel_ops term ) | ( term rel_ops term rel_ops term ) ;  
+  rel_ops   → ">" | ">=" | "<" | "<="
 term        → factor ( ( "+" | "-" ) factor )* ;  
 factor      → exponent ( ( "*" | "/" | "%" ) exponent )* ;  
 exponent    → unary ( "^" unary )* ;  

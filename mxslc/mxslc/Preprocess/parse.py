@@ -1,12 +1,10 @@
-from .Expression import Expression, BinaryExpression, UnaryExpression, LiteralExpression, GroupingExpression
+from .Expression import Expression, BinaryExpression, UnaryExpression, LiteralExpression, GroupingExpression, Primitive, \
+    TernaryRelationalExpression
 from ..CompileError import CompileError
 from ..Keyword import Keyword
 from ..Token import Token
 from ..TokenReader import TokenReader
 from ..token_types import INT_LITERAL, FLOAT_LITERAL, STRING_LITERAL, FILENAME_LITERAL
-
-
-type Primitive = bool | int | float | str
 
 
 def parse(tokens: list[Token]) -> Primitive:
@@ -39,11 +37,22 @@ class Parser(TokenReader):
         return expr
 
     def __relational(self) -> Expression:
-        expr = self.__term()
-        while op := self._consume(">", ">=", "<", "<="):
+        left = self.__term()
+        middle = None
+        right = None
+
+        relational_operators = [">", ">=", "<", "<="]
+        if op1 := self._consume(*relational_operators):
+            middle = self.__term()
+        if op2 := self._consume(*relational_operators):
             right = self.__term()
-            expr = BinaryExpression(expr, op, right)
-        return expr
+
+        if middle is None:
+            return left
+        elif right is None:
+            return BinaryExpression(left, op1, middle)
+        else:
+            return TernaryRelationalExpression(left, op1, middle, op2, right)
 
     def __term(self) -> Expression:
         expr = self.__factor()
