@@ -13,4 +13,5 @@
 # TODO if statements
 # TODO python style / for joining two paths
 # TODO decltype
+# TODO allow private members
 ```  
