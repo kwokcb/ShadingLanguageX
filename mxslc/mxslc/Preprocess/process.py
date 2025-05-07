@@ -4,11 +4,10 @@ from .Directive import DIRECTIVES, DEFINE, UNDEF, IF, IFDEF, IFNDEF, INCLUDE, PR
 from .macros import define as define_macro, undefine as undefine_macro, is_defined as is_defined_macro, replace as replace_macro
 from .parse import parse
 from ..CompileError import CompileError
-from ..Keyword import SURFACESHADER
 from ..Token import Token
 from ..TokenReader import TokenReader
 from ..scan import scan
-from ..token_types import EOF, IDENTIFIER, EOL, SURFACE_MAIN
+from ..token_types import EOF, IDENTIFIER, EOL
 
 
 # TODO
@@ -26,16 +25,15 @@ class Processor(TokenReader):
         super().__init__(tokens)
         self.__include_dirs = include_dirs
         self.__is_main = is_main
-        self.__processed_tokens: list[Token] = []
 
     def process(self) -> list[Token]:
+        processed_tokens = []
         self.__define_main()
         while self._peek() != EOF:
-            self.__processed_tokens.extend(self.__process_next())
-        self.__add_call_to_main()
+            processed_tokens.extend(self.__process_next())
         if self.__is_main:
-            self.__processed_tokens.append(self._match(EOF))
-        return self.__processed_tokens
+            processed_tokens.append(self._match(EOF))
+        return processed_tokens
 
     def __process_next(self) -> list[Token]:
         if self._peek() in DIRECTIVES:
@@ -170,14 +168,3 @@ class Processor(TokenReader):
         copy = self.__include_dirs[:]
         copy[-2] = local_dir
         return copy
-
-    def __add_call_to_main(self) -> None:
-        main_lexemes = [str(SURFACESHADER), SURFACE_MAIN, "(", ")", "{"]
-        token_lexemes = [t.lexeme for t in self.__processed_tokens]
-
-        has_main = str(main_lexemes)[1:-1] in str(token_lexemes)[1:-1]
-        if has_main:
-            self.__processed_tokens.append(Token(IDENTIFIER, SURFACE_MAIN))
-            self.__processed_tokens.append(Token("("))
-            self.__processed_tokens.append(Token(")"))
-            self.__processed_tokens.append(Token(";"))

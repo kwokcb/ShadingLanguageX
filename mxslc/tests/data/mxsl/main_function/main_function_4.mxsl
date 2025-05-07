@@ -1,0 +1,11 @@
+void _main()
+{
+    surfaceshader surface = standard_surface();
+    surface.base_color = color3(1.0, 0.0, 0.0);
+}
+
+void main()
+{
+    surfaceshader surface = standard_surface();
+    surface.base_color = color3(0.0, 1.0, 0.0);
+}

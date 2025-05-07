@@ -9,6 +9,14 @@ from .Keyword import DataType, FILENAME, VECTOR_TYPES, COLOR_TYPES, FLOAT, STRIN
     VECTOR2, VECTOR3, VECTOR4, COLOR3, COLOR4, MATERIAL
 
 #
+# Types
+#
+
+
+type Constant = bool | int | float | mx.Vector2 | mx.Vector3 | mx.Vector4 | mx.Color3 | mx.Color4 | str | Path
+
+
+#
 # Document
 #
 
@@ -128,7 +136,7 @@ def get_nodes(category="") -> list[Node]:
 #
 
 
-def constant(value: Any) -> Node:
+def constant(value: Constant) -> Node:
     node = create_node("constant", type_of(value))
     node.set_input("value", value)
     return node
@@ -181,7 +189,7 @@ def convert(in_: Node, output_type: DataType) -> Node:
 #
 
 
-def type_of(value: Any) -> DataType:
+def type_of(value: Node | Constant) -> DataType:
     if isinstance(value, Node):
         return value.data_type
     if isinstance(value, bool):

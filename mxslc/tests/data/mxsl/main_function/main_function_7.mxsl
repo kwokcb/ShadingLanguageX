@@ -1,0 +1,5 @@
+void main(float r, filename img_path)
+{
+    surfaceshader surface = standard_surface();
+    surface.base_color = image(img_path).rgb * color3(r, 0.0, 0.0);
+}

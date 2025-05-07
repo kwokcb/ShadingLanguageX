@@ -1,9 +1,12 @@
 from __future__ import annotations
 
+from pathlib import Path
+
 from . import mtlx
 from .CompileError import CompileError
 from .Statements import FunctionDeclaration, ForLoop
 from .Token import Token
+from .token_types import IDENTIFIER
 
 
 class _State:
@@ -109,7 +112,9 @@ def add_function(func: FunctionDeclaration) -> None:
     _state.add_function(func)
 
 
-def get_function(identifier: Token) -> FunctionDeclaration:
+def get_function(identifier: Token | str) -> FunctionDeclaration:
+    if isinstance(identifier, str):
+        identifier = Token(IDENTIFIER, identifier)
     return _state.get_function(identifier)
 
 

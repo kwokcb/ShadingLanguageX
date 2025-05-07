@@ -11,7 +11,9 @@ from ..Token import Token
 
 class FunctionDeclaration(Statement):
     def __init__(self, data_type: Token, identifier: Token, params: list[Parameter], body: list[Statement], return_expr: Expression):
+        self.file = identifier.file
         self.line = identifier.line
+
         self.data_type = DataType(data_type.type)
         self.name = identifier.lexeme
         self.params = params

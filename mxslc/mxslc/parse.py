@@ -1,7 +1,7 @@
 from .Argument import Argument
 from .CompileError import CompileError
 from .Expressions import *
-from .Keyword import DATA_TYPES, Keyword
+from .Keyword import DATA_TYPES, Keyword, INTEGER
 from .Parameter import Parameter
 from .StandardLibrary import StandardLibrary
 from .Statements import *
@@ -31,6 +31,8 @@ class Parser(TokenReader):
         token = self._peek()
         if token in DATA_TYPES:
             return self.__declaration()
+        if token == Keyword.VOID:
+            return self.__void_function_declaration()
         if token == IDENTIFIER:
             if self._peek_next() == "(":
                 expr = self.__primary() # function or standard library call
@@ -76,6 +78,25 @@ class Parser(TokenReader):
         self._match(";")
         self._match("}")
         return FunctionDeclaration(data_type, identifier, params, statements, return_expr)
+
+    def __void_function_declaration(self) -> FunctionDeclaration:
+        self._match(Keyword.VOID)
+        identifier = self._match(IDENTIFIER)
+        self._match("(")
+        if self._consume(")"):
+            params = []
+        else:
+            params = [self.__parameter()]
+            while self._consume(","):
+                params.append(self.__parameter())
+            self._match(")")
+        self._match("{")
+        statements = []
+        while self._peek() != "}":
+            statements.append(self.__statement())
+        self._match("}")
+        return_expr = ConstantExpression(0)
+        return FunctionDeclaration(Token(INTEGER), identifier, params, statements, return_expr)
 
     def __parameter(self) -> Parameter:
         data_type = self._match(*DATA_TYPES)

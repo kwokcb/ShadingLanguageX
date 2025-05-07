@@ -1,6 +1,10 @@
 from pathlib import Path
+from typing import Sequence
 
 from . import mtlx, state
+from .Argument import Argument
+from .CompileError import CompileError
+from .Expressions import ConstantExpression
 from .Preprocess import macros
 from .Preprocess.process import process as preprocess
 from .Statements import Statement
@@ -9,7 +13,12 @@ from .post_process import post_process
 from .scan import scan
 
 
-def compile_file(mxsl_path: str | Path, mtlx_path: str | Path = None, *, add_include_dirs: list[Path] = None) -> None:
+def compile_file(mxsl_path: str | Path,
+                 mtlx_path: str | Path = None,
+                 *,
+                 main_function: str = None,
+                 main_args: Sequence[mtlx.Constant] = None,
+                 add_include_dirs: Sequence[Path] = None) -> None:
     mxsl_filepaths = _handle_mxsl_path(mxsl_path)
 
     for mxsl_filepath in mxsl_filepaths:
@@ -25,6 +34,7 @@ def compile_file(mxsl_path: str | Path, mtlx_path: str | Path = None, *, add_inc
         processed_tokens = preprocess(tokens, include_dirs)
         statements = parse(processed_tokens)
         _compile(statements)
+        _call_main(mxsl_filepath, main_function, main_args or [])
         post_process()
 
         with open(mtlx_filepath, "w") as file:
@@ -67,3 +77,17 @@ def _handle_mtlx_path(mtlx_path: str | Path | None, mxsl_file: Path) -> Path:
 def _compile(statements: list[Statement]) -> None:
     for statement in statements:
         statement.execute()
+
+
+def _call_main(file: Path, name: str | None, args: Sequence[mtlx.Constant]) -> None:
+    try:
+        main = state.get_function(name or "main")
+    except CompileError as e:
+        if name is not None:
+            raise e
+    else:
+        if name is not None or main.file == file:
+            main.invoke(_to_arg_list(args))
+
+def _to_arg_list(args: Sequence[mtlx.Constant]) -> list[Argument]:
+    return [Argument(ConstantExpression(a)) for a in args]

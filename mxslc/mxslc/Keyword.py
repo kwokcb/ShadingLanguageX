@@ -15,6 +15,7 @@ class Keyword(StrEnum):
     AND = auto()
     OR = auto()
     NOT = auto()
+    VOID = auto()
 
 
 class DataType(StrEnum):

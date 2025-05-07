@@ -10,5 +10,3 @@ FILENAME_LITERAL = "<filename-literal>"
 COMMENT = "<comment>"
 EOL = "\n"
 EOF = chr(26)
-
-SURFACE_MAIN = "main"
