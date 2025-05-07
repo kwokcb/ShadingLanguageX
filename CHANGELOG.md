@@ -21,6 +21,25 @@ Concise expression for checking if an expression falls within a lower and upper 
 ```
 bool is_normalized = -1.0 < x < 1.0;
 ```
+* __Improved Main Function__  
+Main function name and arguments can now optionally be specified when calling `mxslc.compile_file(...)`.
+```
+mxslc.compile_file("my_shader.mxsl", main_function="my_function", main_args=[42, 10.0, Path("butterfly1.png")])
+```
+```
+void my_function(int seed, float n, filename img_path)
+{
+    float y = 0.0;
+    for (float i = 0.0 : n)
+    {
+        y += randomfloat(i, seed=seed);
+    }
+
+    vec2 uv = vec2(texcoord().x, y / n);
+    surfaceshader surface = standard_surface();
+    surface.base_color = image(img_path, texcoord=uv);
+}
+```
 # Version 0.2-beta
 ## Added 
 * __Node Constructor__  
