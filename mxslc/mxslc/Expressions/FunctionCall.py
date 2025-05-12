@@ -10,7 +10,7 @@ class FunctionCall(Expression):
     Represents a call to a user-defined function.
     """
     def __init__(self, identifier: Token, args: list[Argument]):
-        super().__init__(identifier.line, *[a.expression for a in args])
+        super().__init__(identifier, *[a.expression for a in args])
         self.__func = None
         self.__identifier = identifier
         self.__args = args

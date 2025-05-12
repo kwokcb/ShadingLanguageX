@@ -6,7 +6,7 @@ from ..Token import Token
 
 class IdentifierExpression(Expression):
     def __init__(self, identifier: Token):
-        super().__init__(identifier.line)
+        super().__init__(identifier)
         self.__identifier = identifier
 
     @property

@@ -7,7 +7,7 @@ from ..Token import Token
 
 class ConstructorCall(Expression):
     def __init__(self, data_type: Token, args: list[Argument]):
-        super().__init__(data_type.line, *[a.expression for a in args])
+        super().__init__(data_type, *[a.expression for a in args])
         self.__data_type = DataType(data_type.type)
         self.__args = args
 

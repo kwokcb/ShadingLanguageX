@@ -13,7 +13,7 @@ class UnaryExpression(Expression):
         vec3 v = vec3(-1.0, +1.0, -1.0);
     """
     def __init__(self, op: Token, right: Expression):
-        super().__init__(op.line, right)
+        super().__init__(op, right)
         self.__op = op
         self.__right = right
 

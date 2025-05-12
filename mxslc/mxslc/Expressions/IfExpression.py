@@ -8,7 +8,6 @@ from ..Token import Token
 # TODO implement if else
 class IfExpression(Expression):
     def __init__(self, token: Token, clause: Expression, then: Expression, otherwise: Expression):
-        # TODO fix the -1
         super().__init__(token, clause, then, otherwise)
         self.clause = clause
         self.then = then

@@ -1,8 +1,6 @@
 from pathlib import Path
 from typing import Sequence
 
-import MaterialX as mx
-
 from . import mtlx, state
 from .Interactive.ShaderInterface import ShaderInterface
 from .Preprocess import macros

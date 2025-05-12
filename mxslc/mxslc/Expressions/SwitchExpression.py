@@ -9,7 +9,6 @@ from ..Token import Token
 # TODO implement indexed switch expressions
 class SwitchExpression(Expression):
     def __init__(self, token: Token, which: Expression, values: list[Expression]):
-        # TODO fix the -1
         super().__init__(token, which, *values)
         self.__which = which
         self.__values = values
