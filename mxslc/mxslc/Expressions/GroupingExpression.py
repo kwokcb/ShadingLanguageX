@@ -5,7 +5,7 @@ from ..Keyword import DataType
 
 class GroupingExpression(Expression):
     def __init__(self, expr: Expression):
-        super().__init__(expr.line, expr)
+        super().__init__(expr.token, expr)
         self.__expr = expr
 
     @property

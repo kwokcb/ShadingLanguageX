@@ -33,13 +33,13 @@ class ShaderInterface:
             return Function(name)
         if name in StandardLibrary:
             return StandardLibraryFunction(name)
-        raise CompileError(-1, f"No variable or function: '{name}'.")
+        raise CompileError(f"No variable or function named '{name}' found.")
 
     def __setitem__(self, name: str, value: mtlx.Value) -> None:
         # TODO type checking
         if state.is_node(name):
             state.set_node(name, _to_mtlx_node(value))
-        raise CompileError(-1, f"No variable: '{name}'.")
+        raise CompileError(f"No variable named '{name}' found.")
 
     def __len__(self) -> int:
         # TODO this. no variables + no functions

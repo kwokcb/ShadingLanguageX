@@ -10,7 +10,7 @@ from ..utils import one
 
 class BinaryExpression(Expression, ABC):
     def __init__(self, left: Expression, operator: Token, right: Expression):
-        super().__init__(operator.line, left, right)
+        super().__init__(operator, left, right)
         self.left = left
         self.operator = operator
         self.right = right
@@ -30,9 +30,9 @@ class ArithmeticExpression(BinaryExpression):
 
     def init(self):
         if one(e.data_type == INTEGER for e in [self.left, self.right]):
-            raise CompileError(self.line, "Integers cannot be combined with other types.")
+            raise CompileError("Integers cannot be combined with other types.", self.token)
         if all(e.data_size > 1 for e in [self.left, self.right]) and self.left.data_type != self.right.data_type:
-            raise CompileError(self.line, f"Cannot {self.node_type} a {self.left.data_type} and a {self.right.data_type}.")
+            raise CompileError(f"Cannot {self.node_type} a {self.left.data_type} and a {self.right.data_type}.", self.token)
 
     @property
     def data_type(self) -> DataType:
@@ -64,7 +64,7 @@ class ComparisonExpression(BinaryExpression):
 
     def init(self):
         if self.left.data_type != self.right.data_type:
-            raise CompileError(self.line, f"Cannot compare a {self.left.data_type} and a {self.right.data_type}.")
+            raise CompileError(f"Cannot compare a {self.left.data_type} and a {self.right.data_type}.", self.token)
 
     @property
     def data_type(self) -> DataType:

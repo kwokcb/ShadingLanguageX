@@ -16,6 +16,7 @@ class FunctionDeclaration(Statement):
         self.line = identifier.line
 
         self.data_type = DataType(data_type.type)
+        self.identifier = identifier
         self.name = identifier.lexeme
         self.params = params
         self.body = body
@@ -23,12 +24,12 @@ class FunctionDeclaration(Statement):
 
     def execute(self) -> None:
         if self.name in StandardLibrary:
-            raise CompileError(self.line, f"Function name '{self.name}' already exists in the standard library.")
+            raise CompileError(f"Function name '{self.name}' already exists in the standard library.", self.identifier)
         state.add_function(self)
 
     def invoke(self, args: list[Argument]) -> mtlx.Node:
         if len(self.params) != len(args):
-            raise CompileError(self.line, f"Incorrect number of arguments for function '{self.name}'.")
+            raise CompileError(f"Incorrect number of arguments for function '{self.name}'.", self.identifier)
 
         # evaluate arguments before entering function scope because they might reference variable from the calling scope
         arg_nodes = []

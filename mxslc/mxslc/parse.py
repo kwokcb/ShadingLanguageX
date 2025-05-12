@@ -42,7 +42,7 @@ class Parser(TokenReader):
                 return self.__assignment()
         if token == Keyword.FOR:
             return self.__for_loop()
-        raise CompileError(token.line, f"Expected return statement, data type keyword, identifier or 'for', but found '{token.lexeme}'.")
+        raise CompileError(f"Expected return statement, data type keyword, identifier or 'for', but found '{token.lexeme}'.", token)
 
     def __declaration(self) -> Statement:
         data_type = self._match(*DATA_TYPES)
@@ -52,7 +52,7 @@ class Parser(TokenReader):
             return self.__variable_declaration(data_type, identifier)
         if token == "(":
             return self.__function_declaration(data_type, identifier)
-        raise CompileError(token.line, f"Expected '=' or '(', but found '{token.lexeme}'.")
+        raise CompileError(f"Expected '=' or '(', but found '{token.lexeme}'.", token)
 
     def __variable_declaration(self, data_type: Token, identifier: Token) -> VariableDeclaration:
         self._match("=")
@@ -111,7 +111,7 @@ class Parser(TokenReader):
             return self.__variable_assignment(identifier, property_)
         if token in ["+=", "-=", "*=", "/=", "%=", "^=", "&=", "|="]:
             return self.__compound_assignment(identifier, property_)
-        raise CompileError(token.line, f"Unexpected token: '{token.lexeme}'.")
+        raise CompileError(f"Unexpected token: '{token.lexeme}'.", token)
 
     def __variable_assignment(self, identifier: Token, property_: Token) -> VariableAssignment:
         self._match("=")
@@ -254,10 +254,10 @@ class Parser(TokenReader):
         # node constructor
         if token == "{":
             return self.__node_constructor()
-        raise CompileError(token.line, f"Unexpected token: '{token}'.")
+        raise CompileError(f"Unexpected token: '{token}'.", token)
 
     def __if_expression(self) -> Expression:
-        self._match(Keyword.IF)
+        keyword = self._match(Keyword.IF)
         self._match("(")
         clause = self.__expression()
         self._match(")")
@@ -270,10 +270,10 @@ class Parser(TokenReader):
             self._match("}")
         else:
             otherwise = None
-        return IfExpression(clause, then, otherwise)
+        return IfExpression(keyword, clause, then, otherwise)
 
     def __switch_expression(self) -> Expression:
-        self._match(Keyword.SWITCH)
+        keyword = self._match(Keyword.SWITCH)
         self._match("(")
         which = self.__expression()
         self._match(")")
@@ -282,7 +282,7 @@ class Parser(TokenReader):
         while self._consume(","):
             values.append(self.__expression())
         self._match("}")
-        return SwitchExpression(which, values)
+        return SwitchExpression(keyword, which, values)
 
     def __constructor_call(self) -> Expression:
         data_type = self._match(*DATA_TYPES)

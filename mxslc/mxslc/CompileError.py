@@ -1,9 +1,15 @@
-from pathlib import Path
+from mxslc.Token import Token
 
 
 class CompileError(Exception):
-    def __init__(self, line: int, message: str, file: Path = None):
-        if file is None:
-            super().__init__(f"Line {line}: {message}")
+    def __init__(self, message: str, token: Token = None):
+        file = None
+        line = None
+        if token is not None:
+            file = token.file
+            line = token.line
+
+        if file is not None and line is not None:
+            super().__init__(f"{token.file.name}, line {token.line}: {message}")
         else:
-            super().__init__(f"{file.name}, line {line}: {message}")
+            super().__init__(message)

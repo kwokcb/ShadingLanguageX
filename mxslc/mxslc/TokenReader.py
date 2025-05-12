@@ -44,4 +44,4 @@ class TokenReader(ABC):
         if token := self._consume(*token_types):
             return token
         token = self._peek()
-        raise CompileError(token.line, f"Expected {token_types}, but found '{token.lexeme}'.")
+        raise CompileError(f"Expected {token_types}, but found '{token.lexeme}'.", token)

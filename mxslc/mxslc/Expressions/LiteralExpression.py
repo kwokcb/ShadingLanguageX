@@ -7,7 +7,7 @@ from ..token_types import INT_LITERAL, FLOAT_LITERAL, FILENAME_LITERAL, STRING_L
 
 class LiteralExpression(Expression):
     def __init__(self, literal: Token):
-        super().__init__(literal.line)
+        super().__init__(literal)
         self.__literal = literal
 
     @property

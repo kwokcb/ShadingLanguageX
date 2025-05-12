@@ -10,18 +10,18 @@ from ..utils import type_of_swizzle
 
 class SwizzleExpression(Expression):
     def __init__(self, left: Expression, swizzle: Token):
-        super().__init__(swizzle.line, left)
+        super().__init__(swizzle, left)
         self.left = left
         self.swizzle = swizzle.lexeme
         self.is_vector_swizzle = re.match(r"[xyzw]", self.swizzle)
 
     def init(self):
         if not re.fullmatch(r"([xyzw]{1,4}|[rgba]{1,4})", self.swizzle):
-            raise CompileError(self.line, f"'{self.swizzle}' is not a valid swizzle.")
+            raise CompileError(f"'{self.swizzle}' is not a valid swizzle.", self.token)
         if self.left.data_size < 4 and ("w" in self.swizzle or "a" in self.swizzle):
-            raise CompileError(self.line, f"'{self.swizzle}' is not a valid swizzle for a {self.left.data_type}.")
+            raise CompileError(f"'{self.swizzle}' is not a valid swizzle for a {self.left.data_type}.", self.token)
         if self.left.data_size < 3 and ("z" in self.swizzle or "b" in self.swizzle):
-            raise CompileError(self.line, f"'{self.swizzle}' is not a valid swizzle for a {self.left.data_type}.")
+            raise CompileError(f"'{self.swizzle}' is not a valid swizzle for a {self.left.data_type}.", self.token)
 
     @property
     def data_type(self) -> DataType:

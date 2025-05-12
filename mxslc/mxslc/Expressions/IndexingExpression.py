@@ -5,7 +5,7 @@ from mxslc.Keyword import DataType, FLOAT, INTEGER, VECTOR_TYPES, COLOR_TYPES
 
 class IndexingExpression(Expression):
     def __init__(self, expr: Expression, indexer: Expression):
-        super().__init__(indexer.line, expr, indexer)
+        super().__init__(indexer.token, expr, indexer)
         self.__expr = expr
         self.__indexer = indexer
 

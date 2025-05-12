@@ -104,13 +104,13 @@ class Processor(TokenReader):
         return condition, tokens
 
     def __process_include(self) -> list[Token]:
-        self._match(INCLUDE)
+        directive = self._match(INCLUDE)
         path_tokens = []
         while self._peek() != EOL:
             path_tokens.extend(self.__process_next())
         path_tokens.append(self._match(EOL))
         path = parse(path_tokens)
-        included_files = self.__search_in_include_dirs(path)
+        included_files = self.__search_in_include_dirs(directive, path)
         included_tokens = []
         for included_file in included_files:
             included_tokens.extend(process(scan(included_file), self.__new_include_dirs(included_file.parent), is_main=False))
@@ -141,9 +141,9 @@ class Processor(TokenReader):
             define_macro("__INCLUDE__")
             undefine_macro("__MAIN__")
 
-    def __search_in_include_dirs(self, path: str) -> list[Path]:
+    def __search_in_include_dirs(self, token: Token, path: str) -> list[Path]:
         if not isinstance(path, str):
-            raise CompileError(-1, "Path must be a string.")
+            raise CompileError(f"Incorrect data type for include directive. Expected a string, but got a {type(path)}.", token)
 
         path = Path(path)
         if path.is_absolute():
@@ -159,8 +159,7 @@ class Processor(TokenReader):
             if full_path.is_dir():
                 return list(full_path.glob("*.mxsl"))
 
-        # TODO fix -1
-        raise CompileError(-1, f"File or directory not found: {path}.")
+        raise CompileError(f"File or directory not found: {path}.", token)
 
     def __new_include_dirs(self, local_dir: Path) -> list[Path]:
         copy = self.__include_dirs[:]

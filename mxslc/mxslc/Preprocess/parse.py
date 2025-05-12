@@ -89,4 +89,4 @@ class Parser(TokenReader):
             self._match(")")
             return GroupingExpression(expr)
         token = self._peek()
-        raise CompileError(token.line, f"Unexpected token: '{token}'.")
+        raise CompileError(f"Unexpected token: '{token}'.", token)

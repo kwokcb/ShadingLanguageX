@@ -2,20 +2,21 @@ from . import Expression
 from .. import mtlx
 from ..CompileError import CompileError
 from ..Keyword import DataType, BOOLEAN, NUMERIC_TYPES
+from ..Token import Token
 
 
 # TODO implement if else
 class IfExpression(Expression):
-    def __init__(self, clause: Expression, then: Expression, otherwise: Expression):
+    def __init__(self, token: Token, clause: Expression, then: Expression, otherwise: Expression):
         # TODO fix the -1
-        super().__init__(-1, clause, then, otherwise)
+        super().__init__(token, clause, then, otherwise)
         self.clause = clause
         self.then = then
         self.otherwise = otherwise
 
     def init(self):
         if self.then.data_type != self.otherwise.data_type:
-            raise CompileError(self.line, f"Branches must be of same data type, but were {self.then.data_type} and {self.otherwise.data_type}.")
+            raise CompileError(f"Branches must be of same data type, but were {self.then.data_type} and {self.otherwise.data_type}.", self.token)
 
     @property
     def data_type(self) -> DataType:

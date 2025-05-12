@@ -5,12 +5,13 @@ from abc import ABC, abstractmethod
 from .. import mtlx
 from ..CompileError import CompileError
 from ..Keyword import DataType, INTEGER, FLOAT, DATA_TYPES
+from ..Token import Token
 from ..utils import as_list
 
 
 class Expression(ABC):
-    def __init__(self, line: int, *child_expressions: Expression):
-        self.__line = line
+    def __init__(self, token: Token, *child_expressions: Expression):
+        self.__token = token
         self.__child_expressions = child_expressions
         self.__initialized = False
 
@@ -36,8 +37,8 @@ class Expression(ABC):
         return self.data_type.size
 
     @property
-    def line(self) -> int:
-        return self.__line
+    def token(self) -> Token:
+        return self.__token
 
     def evaluate(self, valid_types: DataType | list[DataType] = None) -> mtlx.Node:
         self.__init()
@@ -47,7 +48,7 @@ class Expression(ABC):
         valid_types = as_list(valid_types) or DATA_TYPES
         node = _implicit_int_to_float(node, valid_types)
         if node.data_type not in valid_types:
-            raise CompileError(self.line, f"Invalid data type. Expected one of {valid_types}, but got {node.data_type}.")
+            raise CompileError(f"Invalid data type. Expected one of {valid_types}, but got {node.data_type}.", self.token)
 
         return node
 

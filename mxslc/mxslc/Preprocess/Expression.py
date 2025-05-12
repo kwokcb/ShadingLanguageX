@@ -44,7 +44,7 @@ class UnaryExpression(Expression):
         if o == "-": return -r
         if o == "!": return not r
         if o == Keyword.NOT: return not r
-        raise CompileError(self.__op.line, f"Invalid preprocessor expression: '{o}{r}'.")
+        raise CompileError(f"Invalid preprocessor expression: '{o}{r}'.", self.__op)
 
 
 class BinaryExpression(Expression):
@@ -72,7 +72,7 @@ class BinaryExpression(Expression):
         if o == Keyword.AND: return l and r
         if o == "|": return l or r
         if o == Keyword.OR: return l or r
-        raise CompileError(self.__op.line, f"Invalid preprocessor expression: '{l} {o} {r}'.")
+        raise CompileError(f"Invalid preprocessor expression: '{l} {o} {r}'.", self.__op)
 
 
 class TernaryRelationalExpression(Expression):

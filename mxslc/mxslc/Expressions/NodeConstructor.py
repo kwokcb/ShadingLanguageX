@@ -11,7 +11,7 @@ from ..Token import Token
 # TODO it doesnt even need to be assignment, let Expression.evaluate handle it instead of VariableDeclaration
 class NodeConstructor(Expression):
     def __init__(self, category: Token, data_type: Token, args: list[Argument]):
-        super().__init__(category.line, *[a.expression for a in args])
+        super().__init__(category, *[a.expression for a in args])
         self.__category = category.value
         self.__data_type = DataType(data_type.type)
         self.__args = args
@@ -20,7 +20,7 @@ class NodeConstructor(Expression):
         # Check arguments are valid
         for arg in self.__args:
             if arg.name is None:
-                raise CompileError(self.line, "Unnamed argument in node constructors.")
+                raise CompileError("Unnamed argument in node constructors.", self.token)
 
     @property
     def data_type(self) -> DataType:

@@ -39,4 +39,4 @@ def _get_loop_value(token: Token) -> float:
         if node.category == "constant":
             return node.get_input("value")
         else:
-            raise CompileError(token.line, "For loop variables can only be float literals or constant values.")
+            raise CompileError("For loop variables can only be float literals or constant values.", token)

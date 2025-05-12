@@ -7,84 +7,96 @@ from .Token import Token
 from .scan import as_token
 
 
-class _State:
-    def __init__(self, namespace: str, global_: _State = None, parent: _State = None):
-        self.namespace = namespace
-        self.global_ = global_ or self
-        self.parent = parent
-        self.nodes: dict[str, mtlx.Node] = {}
-        self.functions: dict[str, FunctionDeclaration] = {}
+class State:
+    def __init__(self, namespace: str, global_: State = None, parent: State = None):
+        self.__namespace = namespace
+        self.__global = global_ or self
+        self.__parent = parent
+        self.__nodes: dict[str, mtlx.Node] = {}
+        self.__functions: dict[str, FunctionDeclaration] = {}
+
+    @property
+    def is_global(self) -> bool:
+        return self == self.__global
+
+    @property
+    def global_(self) -> State:
+        return self.__global
+
+    @property
+    def parent(self) -> State:
+        return self.__parent
 
     def add_node(self, identifier: Token, node: mtlx.Node) -> None:
         name = identifier.lexeme
-        if name in self.nodes:
-            raise CompileError(identifier.line, f"Variable name '{name}' already exists.")
-        assert node not in self.nodes.values()
-        self.nodes[name] = node
+        if name in self.__nodes:
+            raise CompileError(f"Variable name '{name}' already exists.", identifier)
+        assert node not in self.__nodes.values()
+        self.__nodes[name] = node
         node.name = self.get_full_name(name)
 
     def get_node(self, identifier: Token) -> mtlx.Node:
         name = identifier.lexeme
-        if name in self.nodes:
-            return self.nodes[name]
-        if self.namespace == ForLoop.NAMESPACE:
+        if name in self.__nodes:
+            return self.__nodes[name]
+        if self.__namespace == ForLoop.NAMESPACE:
             try:
-                return self.parent.get_node(identifier)
+                return self.__parent.get_node(identifier)
             except CompileError:
                 ...
-        if name in self.global_.nodes:
-            return self.global_.nodes[name]
-        raise CompileError(identifier.line, f"Variable name '{name}' does not exist.")
+        if name in self.__global.__nodes:
+            return self.__global.__nodes[name]
+        raise CompileError(f"Variable name '{name}' does not exist.", identifier)
 
     def set_node(self, identifier: Token, node: mtlx.Node) -> None:
         name = identifier.lexeme
-        assert node not in self.nodes.values()
-        if name in self.nodes:
-            self.nodes[name] = node
+        assert node not in self.__nodes.values()
+        if name in self.__nodes:
+            self.__nodes[name] = node
             node.name = self.get_full_name(name)
             return
-        if self.namespace == ForLoop.NAMESPACE:
+        if self.__namespace == ForLoop.NAMESPACE:
             try:
-                self.parent.set_node(identifier, node)
+                self.__parent.set_node(identifier, node)
                 return
             except CompileError:
                 ...
         # If I wanted to let developers set global variables I would do it here
-        raise CompileError(identifier.line, f"Variable name '{name}' does not exist.")
+        raise CompileError(f"Variable name '{name}' does not exist.", identifier)
 
     def clear(self) -> None:
-        self.nodes.clear()
-        self.functions.clear()
+        self.__nodes.clear()
+        self.__functions.clear()
 
     def get_full_name(self, name: str) -> str:
-        return f"{self.namespace}__{name}"
+        return f"{self.__namespace}__{name}"
 
     def add_function(self, func: FunctionDeclaration) -> None:
-        if func.name in self.functions:
-            raise CompileError(func.line, f"Function name '{func.name}' already exists.")
-        assert func not in self.functions.values()
-        self.functions[func.name] = func
+        if func.name in self.__functions:
+            raise CompileError(f"Function name '{func.name}' already exists.", func.identifier)
+        assert func not in self.__functions.values()
+        self.__functions[func.name] = func
 
     def get_function(self, identifier: Token) -> FunctionDeclaration:
         name = identifier.lexeme
-        if name in self.functions:
-            return self.functions[name]
-        if name in self.global_.functions:
-            return self.global_.functions[name]
-        raise CompileError(identifier.line, f"Function name '{name}' does not exist.")
+        if name in self.__functions:
+            return self.__functions[name]
+        if name in self.__global.__functions:
+            return self.__global.__functions[name]
+        raise CompileError(f"Function name '{name}' does not exist.", identifier)
 
     def __str__(self) -> str:
         output = ""
-        output += "self: " + self.namespace + "\n"
-        output += "parent: " + (self.parent.namespace if self.parent else "None") + "\n"
-        output += "global: " + self.global_.namespace + "\n"
+        output += "self: " + self.__namespace + "\n"
+        output += "parent: " + (self.__parent.__namespace if self.__parent else "None") + "\n"
+        output += "global: " + self.__global.__namespace + "\n"
         output += "----------------" + "\n"
-        for name, node in self.nodes.items():
+        for name, node in self.__nodes.items():
             output += f"{name}: {node.data_type} {node.name}\n"
         return output
 
 
-_state = _State("global")
+_state = State("global")
 
 
 def add_node(identifier: Token, node: mtlx.Node) -> None:
@@ -109,8 +121,8 @@ def is_node(identifier: str) -> bool:
 
 def clear() -> None:
     global _state
-    while _state.namespace != "global":
-        _state = _state.parent
+    while not _state.is_global:
+        _state = _state.__parent
     _state.clear()
 
 
@@ -132,7 +144,7 @@ def is_function(identifier: str) -> bool:
 
 def enter_scope(namespace: str) -> None:
     global _state
-    _state = _State(namespace, _state.global_, _state)
+    _state = State(namespace, _state.global_, _state)
 
 
 def exit_scope() -> None:

@@ -10,7 +10,7 @@ from ..Token import Token
 # TODO named arguments are not working
 class StandardLibraryCall(Expression):
     def __init__(self, func: Token, args: list[Argument]):
-        super().__init__(func.line, *[a.expression for a in args])
+        super().__init__(func, *[a.expression for a in args])
         self.func = StandardLibrary(func.lexeme)
         self.args = args
         # TODO extend this to work in other places, if multiple types are allowed, fill the largest color, then largest vector
@@ -24,16 +24,16 @@ class StandardLibraryCall(Expression):
             if arg.is_named:
                 args_are_named = True
             elif args_are_named:
-                raise CompileError(self.line, f"Named arguments must come after positional argument.")
+                raise CompileError(f"Named arguments must come after positional argument.", self.token)
 
         # check number of arguments
         if len(self.args) > len(self.func.parameters(self.args)):
-            raise CompileError(self.line, f"Too many arguments given for function '{self.func}'.")
+            raise CompileError(f"Too many arguments given for function '{self.func}'.", self.token)
 
         # check named arguments have valid names
         for arg in self.args:
             if arg.is_named and arg.name not in [a.name for a in self.func.parameters(self.args)]:
-                raise CompileError(self.line, f"Invalid named argument for function '{self.func}'.")
+                raise CompileError(f"Invalid named argument for function '{self.func}'.", self.token)
 
     @property
     def data_type(self) -> DataType:
@@ -59,9 +59,9 @@ class StandardLibraryCall(Expression):
 
     def create_min_max_nodes(self) -> mtlx.Node:
         if len(self.args) < 2:
-            raise CompileError(self.line, f"Not enough arguments for function '{self.func}'.")
+            raise CompileError(f"Not enough arguments for function '{self.func}'.", self.token)
         if any(arg.data_type != self.args[0].data_type for arg in self.args):
-            raise CompileError(self.line, f"All arguments must have the same data type for function '{self.func}'.")
+            raise CompileError(f"All arguments must have the same data type for function '{self.func}'.", self.token)
 
         # iteratively create min nodes or max nodes until all parameters have been included
         node = mtlx.create_node(self.func, self.data_type)

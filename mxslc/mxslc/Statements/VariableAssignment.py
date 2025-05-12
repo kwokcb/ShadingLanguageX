@@ -33,7 +33,7 @@ class VariableAssignment(Statement):
         if self.swizzle in params:
             input_type = params[self.swizzle].data_types[0]
         else:
-            raise CompileError(self.identifier.line, f"Input '{self.swizzle}' does not exist in the standard surface.")
+            raise CompileError(f"Input '{self.swizzle}' does not exist in the standard surface.", self.identifier)
         surface_node.set_input(self.swizzle, self.evaluate_right(input_type))
 
     def execute_as_swizzle(self, old_node: mtlx.Node) -> None:
