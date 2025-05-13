@@ -1,1 +1,1 @@
-# MaterialX Shading Language Compiler (mxslc)
+# ShadingLanguageX Compiler (mxslc)
