@@ -20,7 +20,7 @@ Alternatively, you can directly download the compiler executable from the most r
 ```
 ./mxslc.exe grass.mxsl
 ```
-Both methods have the same input signature, a mandatory path to a __ShadingLanguageX__ source file and then several optional arguments.
+Both methods will output a `grass.mtlx` file which can then be used as you would any other MaterialX file. Both methods also have the same input signature, a mandatory path to a __ShadingLanguageX__ source file and then several optional arguments, such as setting the output files directory and name.
 
 ## Language Specification
 __ShadingLanguageX__ is a high level shading with a syntax similar to C, but with many aspects directly linked to the MaterialX specification. `vector2`, `vector3`, `vector4`, `color3` and `color4` data types are native to the language. All expressions in __ShadingLanguageX__ compile directly to one or more underlying MaterialX nodes, for example, the `+` operator (e.g., `float x = 1.0 + 1.0;`) intuitively compiles to the `add` node, and the same for all other mathematical operators. `if` expressions compile to either of the `ifgreater`, `ifgreatereq` or `ifequal` nodes. `switch` expressions compile to the `switch` node. The swizzle operator (e.g., `some_vector.xy`) compiles to `extract` and `combine` nodes. Most MaterialX nodes are represented by a standard library of functions that is built into the language, such as `color3 c = image("butterfly1.png");` which would compile to the `image` node. Additionally, declaring a variable (e.g., `vec3 up = vec3(0, 1, 0);`) compiles to a `constant` node (or a `combine` node depending on the inputs to the expression).  
