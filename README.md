@@ -23,8 +23,8 @@ Alternatively, you can directly download the compiler executable from the most r
 Both methods have the same input signature, a mandatory path to a ShadingLanguageX source file and then several optional arguments.
 
 ## Language Syntax
-For information about ShadingLanguageX syntax and additional compiler options, see the __Language Specification__.  
-You can also look through the examples __here__ to see some uses of ShadingLanguageX.
+For information about ShadingLanguageX syntax and additional compiler options, see the [language specification](https://github.com/jakethorn/ShadingLanguageX/blob/main/language-spec/LanguageSpecification_v0_1-beta.md) document.  
+You can also look through example source files [here](https://github.com/jakethorn/ShadingLanguageX/tree/main/examples) to see some uses of ShadingLanguageX.
 
 
 # Examples
