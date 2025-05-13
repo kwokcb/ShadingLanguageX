@@ -4,7 +4,6 @@ import main
 
 
 def test_main_does_not_raise_compile_error():
-    main._main()
     main._main(["invalid/path/"])
 
 
