@@ -5,7 +5,7 @@
 # ShadingLanguageX
 __ShadingLanguageX__ is a high level shading language that can be used to create complex MaterialX materials.  
   
-![](examples/readme_example.png)
+![](examples/screenshots/readme_example.png)
 
 
 # Getting Started
@@ -33,11 +33,11 @@ You can also look through example source files [here](https://github.com/jaketho
 # Examples
 Red Brick                    |  Interior Mapping
 :---------------------------:|:---------------------------:
-![](examples/redbrick.png)   |  ![](examples/interiormapping.png)
+![](examples/screenshots/redbrick.png)   |  ![](examples/screenshots/interiormapping.png)
 __Shader Art (by Kishimisu)__    |  __Interior Mapping with shadows (by VRBN)__
-![](examples/shaderart.png)  |  ![](examples/lit_interiors.png)
+![](examples/screenshots/shaderart.png)  |  ![](examples/screenshots/lit_interiors.png)
 __Displacement Mountain__    |    __Procedural Rain__
-![](examples/mountain.png)   |  ![](examples/rain.png)
+![](examples/screenshots/mountain.png)   |  ![](examples/screenshots/rain.png)
 
 # Contributing
 Please try out __ShadingLanguageX__ and start a discussion about a feature you'd like to see or an issue if you find a bug, or feel free to contribute directly to the project by opening a pull request!
