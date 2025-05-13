@@ -1,7 +1,7 @@
 from pathlib import Path
 
 from .Directive import DIRECTIVES, DEFINE, UNDEF, IF, IFDEF, IFNDEF, INCLUDE, PRAGMA, PRINT, ELIF, ELSE, ENDIF
-from .macros import define as define_macro, undefine as undefine_macro, is_defined as is_defined_macro, replace as replace_macro
+from .macros import Macro, define_macro, undefine_macro, is_macro_defined, replace_macro
 from .parse import parse
 from ..CompileError import CompileError
 from ..Token import Token
@@ -61,7 +61,7 @@ class Processor(TokenReader):
         while self._peek() != EOL:
             value.extend(self.__process_next())
         self._match(EOL)
-        define_macro(identifier, value)
+        define_macro(Macro(identifier, value))
         return []
 
     def __process_undef(self) -> list[Token]:
@@ -90,10 +90,10 @@ class Processor(TokenReader):
             condition_tokens.append(self._match(EOL))
             condition = parse(condition_tokens)
         elif branch_type == IFDEF:
-            condition = is_defined_macro(self._match(IDENTIFIER))
+            condition = is_macro_defined(self._match(IDENTIFIER))
             self._match(EOL)
         elif branch_type == IFNDEF:
-            condition = not is_defined_macro(self._match(IDENTIFIER))
+            condition = not is_macro_defined(self._match(IDENTIFIER))
             self._match(EOL)
         else:
             condition = True
@@ -129,7 +129,7 @@ class Processor(TokenReader):
         token = self._consume()
         if token == EOL:
             return []
-        if is_defined_macro(token):
+        if is_macro_defined(token):
             return replace_macro(token)
         return [token]
 

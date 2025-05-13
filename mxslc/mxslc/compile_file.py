@@ -3,7 +3,7 @@ from typing import Sequence
 
 from . import mtlx, state
 from .Interactive.ShaderInterface import ShaderInterface
-from .Preprocess import macros
+from .Preprocess.macros import undefine_all_macros, Macro, define_macro
 from .compile import compile_
 from .file_utils import handle_mxsl_path, handle_mtlx_path
 from .post_process import post_process
@@ -13,21 +13,29 @@ def compile_file(mxsl_path: str | Path,
                  mtlx_path: str | Path = None,
                  *,
                  main_function: str = None,
-                 main_args: Sequence[mtlx.Constant] = None,
-                 add_include_dirs: Sequence[Path] = None) -> None:
+                 main_args: Sequence[mtlx.Value] = None,
+                 add_include_dirs: Sequence[Path] = None,
+                 add_macros: Sequence[Macro] = None) -> None:
+    main_args = main_args or []
+    add_include_dirs = add_include_dirs or []
+    add_macros = add_macros or []
+
     mxsl_filepaths = handle_mxsl_path(mxsl_path)
 
     for mxsl_filepath in mxsl_filepaths:
         mtlx_filepath = handle_mtlx_path(mtlx_path, mxsl_filepath)
 
-        macros.clear()
+        undefine_all_macros()
         mtlx.clear()
         state.clear()
 
-        include_dirs = (add_include_dirs or []) + [mxsl_filepath.parent, Path(".")]
+        include_dirs = add_include_dirs + [mxsl_filepath.parent, Path(".")]
+
+        for macro in add_macros:
+            define_macro(macro)
 
         compile_(mxsl_filepath, include_dirs, is_main=True)
-        _call_main(mxsl_filepath, main_function, main_args or [])
+        _call_main(mxsl_filepath, main_function, main_args)
         post_process()
 
         with open(mtlx_filepath, "w") as file:

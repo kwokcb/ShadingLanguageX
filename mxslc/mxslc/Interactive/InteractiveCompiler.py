@@ -5,7 +5,7 @@ import MaterialX as mx
 
 from .ShaderInterface import ShaderInterface
 from .. import mtlx, state
-from ..Preprocess import macros
+from ..Preprocess.macros import undefine_all_macros
 from ..compile import compile_
 from ..file_utils import handle_mxsl_path
 from ..post_process import post_process
@@ -49,6 +49,6 @@ class InteractiveCompiler:
             file.write(mtlx.get_xml())
 
     def clear(self) -> None:
-        macros.clear()
+        undefine_all_macros()
         mtlx.clear()
         state.clear()

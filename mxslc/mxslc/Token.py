@@ -17,19 +17,19 @@ class Token:
             self.__type = AliasType(self.__type).real
 
         # parse value
-        self.value = None
+        self.__value = None
         if self.__type == Keyword.TRUE:
-            self.value = True
+            self.__value = True
         if self.__type == Keyword.FALSE:
-            self.value = False
+            self.__value = False
         if self.__type == FLOAT_LITERAL:
-            self.value = float(lexeme)
+            self.__value = float(lexeme)
         if self.__type == INT_LITERAL:
-            self.value = int(lexeme)
+            self.__value = int(lexeme)
         if self.__type == STRING_LITERAL:
-            self.value = lexeme.strip('"')
+            self.__value = lexeme.strip('"')
         if self.__type == FILENAME_LITERAL:
-            self.value = Path(lexeme.strip('"'))
+            self.__value = Path(lexeme.strip('"'))
 
     @property
     def type(self) -> str:
@@ -38,6 +38,10 @@ class Token:
     @property
     def lexeme(self) -> str:
         return self.__lexeme
+
+    @property
+    def value(self) -> bool | int | float | str | Path:
+        return self.__value
 
     @property
     def file(self) -> Path:

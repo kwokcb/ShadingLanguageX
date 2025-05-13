@@ -1,6 +1,7 @@
 import re
 from pathlib import Path
 
+from .CompileError import CompileError
 from .Keyword import KEYWORDS
 from .Token import Token
 from .token_types import IDENTIFIER, FLOAT_LITERAL, INT_LITERAL, FILENAME_LITERAL, STRING_LITERAL, EOL, COMMENT
@@ -17,7 +18,12 @@ def scan(source: str | Path) -> list[Token]:
 def as_token(value: str | Token) -> Token:
     if isinstance(value, Token):
         return value
-    return scan(value)[0]
+    tokens = scan(value)
+    if len(tokens) == 0:
+        raise CompileError(f"Value '{value}' could not be tokenized.")
+    if len(tokens) > 1:
+        raise CompileError(f"Value '{value}' contains too many tokens.")
+    return tokens[0]
 
 
 class Scanner:
