@@ -19,7 +19,7 @@ def _parse_main_args(args: list[str]) -> list[bool | int | float | str | Path]:
 def _main(raw_args: list[str] = None):
     parser = ArgumentParser()
     parser.add_argument("mxsl_path", type=Path, help="Input path to mxsl file or containing folder")
-    parser.add_argument("-o", "--output-path", type=Path, help="Output path to generated mtlx file or containing folder")
+    parser.add_argument("-o", "--output-path", type=Path, help="Output path of generated mtlx file or containing folder")
     parser.add_argument("-m", "--main-func", type=str, help="Name of main entry function into the program")
     parser.add_argument("-a", "--main-args", nargs="+", default=[], help="Arguments to be passed to the main function")
     parser.add_argument("-i", "--include-dirs", nargs="+", default=[], type=Path, help="Additional directories to search when including files")
