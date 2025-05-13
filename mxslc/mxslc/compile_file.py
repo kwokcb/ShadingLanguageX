@@ -15,7 +15,7 @@ def compile_file(mxsl_path: str | Path,
                  main_function: str = None,
                  main_args: Sequence[mtlx.Value] = None,
                  add_include_dirs: Sequence[Path] = None,
-                 add_macros: Sequence[Macro] = None) -> None:
+                 add_macros: Sequence[str | Macro] = None) -> None:
     main_args = main_args or []
     add_include_dirs = add_include_dirs or []
     add_macros = add_macros or []

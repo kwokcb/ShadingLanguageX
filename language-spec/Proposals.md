@@ -17,4 +17,6 @@
 # TODO ^ is pow for number types and xor for bools
 # TODO my_var[0] = 1.0;
 # TODO defines as a command line argument
+# TODO #if defined(X)
+# TODO -l --log argument that outputs a logfile with the error and stacktrace
 ```  

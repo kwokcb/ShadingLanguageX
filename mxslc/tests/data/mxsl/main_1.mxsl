@@ -1,0 +1,15 @@
+void my_function(float x, string space, filename image_path)
+{
+    vec3 i = viewdirection(space);
+    i *= x;
+
+    color3 c = image(image_path);
+
+    #ifdef SRGB
+    c ^= GAMMA;
+    #endif
+
+    surfaceshader surface = standard_surface();
+    surface.base_color = c;
+    surface.normal = i;
+}
