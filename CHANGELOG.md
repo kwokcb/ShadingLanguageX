@@ -1,4 +1,7 @@
-# Version 0.3-beta (in development)
+# Version 0.4-beta (in development)
+## Added
+Nothing yet
+# Version 0.3-beta
 ## Added
 * __Expression Statements__  
 Allow function and standard library calls to be invoked without assigning the returned value. 
@@ -39,6 +42,20 @@ void my_function(int seed, float n, filename img_path)
     surfaceshader surface = standard_surface();
     surface.base_color = image(img_path, texcoord=uv);
 }
+```
+* __Additional Compile Arguments__  
+Added several compile arguments to `mxslc.compile_file(...)` and mxslc executable.
+```
+positional arguments:
+  mxsl_path                        Input path to mxsl file or containing folder
+
+options:
+  -h, --help                       show this help message and exit
+  -o, --output-path OUTPUT_PATH    Output path of generated mtlx file or containing folder
+  -m, --main-func MAIN_FUNC        Name of main entry function into the program
+  -a, --main-args MAIN_ARGS        Arguments to be passed to the main function
+  -i, --include-dirs INCLUDE_DIRS  Additional directories to search when including files
+  -d, --define MACROS              Additional macro definitions
 ```
 # Version 0.2-beta
 ## Added 
