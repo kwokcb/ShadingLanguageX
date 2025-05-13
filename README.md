@@ -4,6 +4,8 @@
 
 # ShadingLanguageX
 ShadingLanguageX is a high level shading language that can be used to create complex MaterialX materials.  
+  
+![](examples/readme_example.png)
 ## Quickstart
 TODO
 ## Syntax
