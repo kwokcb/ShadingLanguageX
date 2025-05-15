@@ -1,45 +1,90 @@
 # Overview
 
-ShadingLanguageX is a high level shading language that can be used to write shaders that can be compiled into MaterialX (.mtlx) files.
-The primary use case is to provide a method of creating MaterialX materials without the use a node editor or the MaterialX C++ or Python APIs.
+ShadingLanguageX is a high level shading language that allows developers to write shaders that can be compiled into MaterialX (.mtlx) files.
+The primary use case is to provide a method of creating MaterialX materials without using a node editor or the MaterialX C++ or Python APIs.
 Node editors are useful for creating simple material networks, but become combersome for larger networks. 
-At the same time, the MaterialX API is verbose, making it difficult to quickly iterate when writing a shader.
+At the same time, the MaterialX API can be quite verbose, making it difficult to quickly iterate when writing a shader.
 ShadingLanguageX is a simple, yet powerful language for writing complex MaterialX shaders.
 
 At the end of the day, ShadingLanguageX is based on the MaterialX specification and we've striven for equavilency as much
 as possible. As such, if anything is omitted from this document, you can assume that the behaviour is the same as what is
 described in the official MaterialX specification. For example, we don't specify in this document what is the return 
 type of a `float` multiplied by a `vector3`, as it is already described in the MaterialX Standard Node [document](https://github.com/AcademySoftwareFoundation/MaterialX/blob/main/documents/Specification/MaterialX.StandardNodes.md). 
-This allows this document to be as concise as possible as well as reducing the chance of needing to update it based on changes
-to the official MaterialX documentation.
+This is to keep the document as concise as possible as well as to reduce the chance of needing to update it in the future 
+due to changes to the official MaterialX documentation.
 
 # Data Types
 Data types match the ones found in the MaterialX [specification](https://github.com/AcademySoftwareFoundation/MaterialX/blob/main/documents/Specification/MaterialX.Specification.md#materialx-data-types), with the expection of arrays, matrices, volumeshader and lightshader.  
   
-### Supported Data Types
-* `boolean`
-* `integer`
-* `float`
-* `vector2`
-* `vector3`
-* `vector4`
-* `color3`
-* `color4`
-* `string`
-* `filename`
-* `surfaceshader`
-* `displacementshader`
+## Supported Data Types
 
-### Type Aliases
-* `boolean` ➔ `bool`
-* `integer` ➔ `int`
-* `vector2` ➔ `vec2`
-* `vector3` ➔ `vec3`
-* `vector4` ➔ `vec4`
+| Data Type            | Example                       |
+|----------------------|-------------------------------|
+| `boolean`            | `true` or `false`             |
+| `integer`            | `79`                          |
+| `float`              | `2.2`                         |
+| `vector2`            | `vector2(0.0, 1.0)`           |
+| `vector3`            | `vector3(0.0, 1.0, 2.0)`      |
+| `vector4`            | `vector4(0.0, 1.0, 2.0, 3.0)` |
+| `color3`             | `color3(1.0, 0.0, 0.0)`       |
+| `color4`             | `color4(1.0, 0.0, 0.0, 1.0)`  |
+| `string`             | `"tangent"`                   |
+| `filename`           | `"../textures/albedo.png"`    |
+| `surfaceshader`      | `standard_surface()`          |
+| `displacementshader` | `displacement()`              |
+
+## Type Aliases
+
+ShadingLanguageX provides the following type aliases. They are functionally equivalent to their underlying type.
+In this document I will typically use the aliased version for the sake of brevity.
+
+`boolean` ➔ `bool`  
+`integer` ➔ `int`  
+`vector2` ➔ `vec2`  
+`vector3` ➔ `vec3`  
+`vector4` ➔ `vec4`
+
+# Expressions
+
+Expressions are pieces of code that evaluate to a value, such as `1.0 + 1.0`. This document will cover each expression in detail
+in its own section. The following table gives a quick overview of all the expressions supported by ShadingLanguageX.
+
+| Expression                  | Example                              |
+|-----------------------------|--------------------------------------|
+| Binary Operator             | `a / b`                              |
+| Unary Operator              | `-a`                                 |
+| Ternary Relational Operator | `x < a < y`                          |
+| Swizzle Operator            | `a.xy`                               |
+| Indexing Operator           | `a[0]`                               |
+| Literal                     | `3.14`                               |
+| Identifier                  | `a`                                  |
+| Grouping Expression         | `(a + b)`                            |
+| If Expression               | `if (a < b) { x } else { y }`        |
+| Switch Expression           | `switch (a) { x, y, z }`             |
+| Function Call               | `my_function(a, b)`                  |
+| Standard Library Call       | `image("albedo.png", texcoord=uv)`   |
+| Constructor Call            | `vec2(a, b)`                         |
+| Node Constructor            | `{"mix", color3: bg=a, fg=b, mix=c}` |
+
+# Statements
+
+Statements are pieces of code that change the state of the program, either by storing a named variable or function so it
+can be accessed later or by controlling the flow of the program. Statements are typically termined with the semicolon `;`. 
+This document will cover each statement in detail in its own section. The following table gives a quick overview of all 
+the statements supported by ShadingLanguageX.
+
+| Statement             | Example                                      |
+|-----------------------|----------------------------------------------|
+| Variable Declaration  | `float a = 0.714;`                           |
+| Variable Assignment   | `a = 0.667;`                                 |
+| Compound Assignment   | `a *= 10.0;`                                 |
+| Function Declaration  | `float add_one(float a) { return a + 1.0; }` |
+| For Loop              | `for (int i = 0:10) { a = add_one(a); }`     |
+| Expression Statement  | `standard_surface(base_color=color3(a));`    |
 
 # Operators
 
-| Operation | Compiles To         |
+| Operation | MaterialX Node(s)   |
 |-----------|---------------------|
 | `a + b`   | `add`               |
 | `a - b`   | `subtract`          |
@@ -65,9 +110,9 @@ Data types match the ones found in the MaterialX [specification](https://github.
 | `a.b`     | `extract`+`combine` |
 | `(a)`     | -                   |
 
-## Notes
+### Notes
 
-The `^` operator compiles to a `power` node when used with float types and to an `xor` node when used with booleans.
+The `^` operator compiles to a `power` node when used with numeric types and to an `xor` node when used with booleans.
 
 The MaterialX arithmetic nodes specify that vectors/colors must be the first input if paired with a float, however this 
 is not the case in ShadingLanguageX, a vector/color can be either the left or right value, for example, `2.0 * my_vec3` 
@@ -75,23 +120,23 @@ is equivlant to `my_vec3 * 2.0`.
 
 ## Ternary Relational Operator
 
-ShadingLanguageX supports the Ternary Relational Operator: `a < x < b` is equivalent to `a < x and x < b`.
-This form can be used with any of the relational operators (i.e., `<`, `<=`, `>`, `>=`).
+ShadingLanguageX supports the Ternary Relational Operator: `a < x < b`, which is equivalent to `a < x and x < b`.
+This form can be used with any of the relational operators (i.e., `<` `<=` `>` `>=`).
 
 ## Swizzle Operator
 
 Currently, the only expression that uses the period character `a.b` is the Swizzle Operator. The Swizzle Operator allows
-users to access vector components using any of `x`, `y`, `z`, `w` or color channels using `r`, `g`, `b`, `a` after the period. 
+users to access vector components using any of `x` `y` `z` `w` or color channels using `r` `g` `b` `a` after the period. 
 For example, `vec3 b = a.yyz` is equivalent to `vec3 b = vec3(a.y, a.y, a.z)`.
-The characters `x`, `y`, `z`, `w` can only be used to access components from a vector, it is a syntax error to use them with
-a color type variable. The opposite is then true to `r`, `g`, `b`, `a`. 
+The characters `x` `y` `z` `w` can only be used to access components from a vector, it is a syntax error to use them with
+a color type variable. The opposite is then true for `r` `g` `b` `a`. 
 Swizzles can be made from any combination of valid characters, with a maximum number of 4 characters. However, a character cannot
 be used that goes beyond the length of original vector, for example, `a.xyz` is an invalid swizzle for a variable of type 
-`vector2` because it does not have a z component.
+`vec2` because it does not have a z component.
 Finally, vector swizzles will always return a vector or `float` type variable, the specific type is dependant on the swizzle, for example 
-`a.xy` return a `vector2`, while `a.zyzy` returns a `vector4`. Appropriately, color swizzles only return color or `float` type variables.
+`a.xy` return a `vec2`, while `a.zyzy` returns a `vec4`. Appropriately, color swizzles only return color or `float` type variables.
 
-#### Examples
+### Examples
 
 `float alpha = image("alpha_mask.png").a;`  
 `vec2 left_wall_uv = position().yz;`  
@@ -99,18 +144,120 @@ Finally, vector swizzles will always return a vector or `float` type variable, t
 
 ## Precendence 
 
-| Precendence (higher operations evaluate first) |
-|------------------------------------------------|
-| `(a)`                                          |
-| `a.b` `a[b]`                                   |
-| `-a` `+a` `!a` `not a`                         |
-| `a ^ b`                                        |
-| `a * b` `a / b` `a % b`                        |
-| `a + b` `a - b`                                |
-| `a > b` `a >= b` `a < b` `a <= b`              |
-| `a == b` `a != b`                              |
-| `a & b` `a and b` `a \| b` `a or b`            |
+| Order of Precendence (higher operations evaluate first) |
+|---------------------------------------------------------|
+| `(a)`                                                   |
+| `a.b` `a[b]`                                            |
+| `-a` `+a` `!a` `not a`                                  |
+| `a ^ b`                                                 |
+| `a * b` `a / b` `a % b`                                 |
+| `a + b` `a - b`                                         |
+| `a > b` `a >= b` `a < b` `a <= b`                       |
+| `a == b` `a != b`                                       |
+| `a & b` `a and b` `a \| b` `a or b`                     |
 
-When two operators are used with equal precedence, the leftmost operator with evaluate first.  
+When two operators with equal precedence are used, the leftmost operator with evaluate first.  
 As shown in the table above, precendence can be controlled using the Grouping Operator `(a)`. For example, in the expression
-`a + b * c`, the `b * c` will evaluate first, however, in this expression `(a + b) * c`, the `a + b` will evaluate first.
+`a + b * c`, the `b * c` will evaluate first, however, in the expression `(a + b) * c`, the `a + b` will evaluate first.
+
+# Variable Declaration
+
+`type name = initial-value;`  
+`type` can be any supported data type as listed earlier.  
+`name` must have the following format: `[_a-zA-Z][_a-zA-Z0-9]+`. In other words, any combination of one or more alphanumeric 
+characters or underscores, but not starting with a number.  
+`initial-value` is any valid expression.  
+
+### Notes
+
+The `initial-value` is not optional as in most other languages.
+
+Variables cannot be re-declared. Declaring a variable that has already been declared in the current scope will result in a compile error. 
+
+### Examples
+
+`float a = 1.0;`  
+`float b = a;`  
+`bool is_positive = b > 0.0;`  
+`int uv_channel = 3;`  
+`vec2 uv = 1.0 - texcoord(uv_channel);`  
+`string space = "world";`  
+`surfaceshader surface = standard_surface();`
+
+# Variable Assignment
+
+`name = value;`  
+`name` must be the name of an previously declared variable.  
+`value` is any valid expression.
+
+### Examples
+
+`color4 albedo = color4();`  
+`albedo = if (cond1) { image("butterfly1.png") };`  
+`albedo = if (cond2) { image("butterfly2.png") };`  
+`albedo = if (cond3) { image("butterfly3.png") };`
+
+## Compound Assignment
+
+| Assignment  | Expands to     |
+|-------------|----------------|
+| `a += b;`   | `a = a + b;`   |
+| `a -= b;`   | `a = a - b;`   |
+| `a *= b;`   | `a = a * b;`   |
+| `a /= b;`   | `a = a / b;`   |
+| `a %= b;`   | `a = a % b;`   |
+| `a ^= b;`   | `a = a ^ b;`   |
+| `a &= b;`   | `a = a & b;`   |
+| `a \|= b;`  | `a = a \| b;`  |
+
+# Constructors
+
+`type(...)`  
+`type` can be `bool` `int` `float` `vec2` `vec3` `vec4` `color3` `color4`.  
+
+The constructor has the same name as the type itself and accepts zero or more arguments. 
+The behaviour of the constructor changes depending on the number of arguments provided,
+but will always return a variable of the corresponding type.
+
+## Zero Arguments
+
+In the case that no arguments are passed to the constructor a default value will be returned.
+
+| Data Type | Default Value                |
+|-----------|------------------------------|
+| `bool`    | `false`                      |
+| `int`     | `0`                          |
+| `float`   | `0.0`                        |
+| `vec2`    | `vec2(0.0, 0.0)`             |
+| `vec3`    | `vec3(0.0, 0.0, 0.0)`        |
+| `vec4`    | `vec4(0.0, 0.0, 0.0, 1.0)`   |
+| `color3`  | `color3(0.0, 0.0, 0.0)`      |
+| `color4`  | `color4(0.0, 0.0, 0.0, 1.0)` |
+
+## One Argument
+
+With a single argument, the constructor will convert the argument to the type of the constructor.
+Currently, this simply compiles to the `convert` node. For information regarding supported conversions, 
+see the MaterialX Standard Node document.
+
+### Notes
+
+ShadingLanguageX does not support implicit conversions. Explicit conversions can be achieved using constructors with a single argument.
+
+### Examples
+
+`float shadow = float(x > y);`  
+`color3 white = color3(1.0);`  
+`color3 i_debug = color3(viewdirection());`
+
+## Two Or More Arguments
+
+Two or more arguments has the following behaviour. It will take components from incoming arguments until all of its own
+components have been filled and then discard the rest. If not enough components were provided, then the remaining will be `0.0`.
+
+### Examples
+
+`vec2 a = vec2(1.0, 2.0);`  
+`vec3 b = vec3(a, 3.0); // will be vec3(1.0, 2.0, 3.0)`  
+`vec4 c = vec4(4.0, a); // will be vec4(4.0, 1.0, 2.0, 0.0)`
+
