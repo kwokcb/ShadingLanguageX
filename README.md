@@ -9,13 +9,16 @@ __ShadingLanguageX__ is a high level shading language that can be used to create
 
 
 # How It Works
-...
+![](examples/screenshots/howitworks.jpg)  
+
+__ShadingLanguageX__ source files are compiled to MaterialX (.mtlx) files using the mxslc compiler. Internally, the source file is tokenized and parsed into a list of statements and expressions which in turn map to one or more MaterialX nodes. These nodes are then written to the MaterialX output file as shown in the diagram above.  
+For example, the `+` operator (e.g., `float x = 1.0 + 1.0;`) intuitively compiles to the `add` node, and the same for all other mathematical operators. `if` expressions compile to either of the `ifgreater`, `ifgreatereq` or `ifequal` nodes depending on the condition. `switch` expressions compile to the `switch` node. The swizzle operator (e.g., `some_vector.xy`) compiles to `extract` and `combine` nodes. Most MaterialX nodes are represented by a standard library of functions that is built into the language, such as `color3 c = image("albedo.png");` which compiles to the `image` node. Additionally, declaring a variable (e.g., `vec3 up = vec3(0, 1, 0);`) compiles to a `constant` node (or a `combine` node depending on the inputs to the expression).  
 
 
 # Getting Started
 
 ## Installation
-__ShadingLanguageX__ source files are compiled to MaterialX (.mtlx) files using its open source compiler. The compiler is written in python and can be cloned or downloaded as a package and called from your own python project. 
+__ShadingLanguageX__ source files are compiled to MaterialX (.mtlx) files using its open source compiler (mxslc). The compiler is written in python and can be cloned or downloaded as a package and called from your own python project. 
 ```
 import mxslc
 mxslc.compile_file("grass.mxsl")
@@ -27,7 +30,9 @@ Alternatively, you can download the compiler executable from the most recent rel
 Both methods will output a `grass.mtlx` file which can then be used as you would any other MaterialX file. Both methods also have the same input signature, a mandatory path to a __ShadingLanguageX__ source file and then several optional arguments, such as setting the output files directory and name.
 
 ## Language Specification
-__ShadingLanguageX__ is a high level shading with a syntax similar to C, but with many aspects directly linked to the MaterialX specification. `vector2`, `vector3`, `vector4`, `color3` and `color4` data types are native to the language. All expressions in __ShadingLanguageX__ compile directly to one or more underlying MaterialX nodes. The `+` operator (e.g., `float x = 1.0 + 1.0;`) intuitively compiles to the `add` node, and the same for all other mathematical operators. `if` expressions compile to either of the `ifgreater`, `ifgreatereq` or `ifequal` nodes. `switch` expressions compile to the `switch` node. The swizzle operator (e.g., `some_vector.xy`) compiles to `extract` and `combine` nodes. Most MaterialX nodes are represented by a standard library of functions that is built into the language, such as `color3 c = image("butterfly1.png");` which would compile to the `image` node. Additionally, declaring a variable (e.g., `vec3 up = vec3(0, 1, 0);`) compiles to a `constant` node (or a `combine` node depending on the inputs to the expression).  
+__ShadingLanguageX__ is a high level shading with a syntax similar to C. There are additional data types like `vector2`, `vector3`, `vector4`, `color3` and `color4` that match those from the MaterialX specification. The language also supports preprocessor directives like `#include`, `#if`, `#define` and others. It, however, does not support true control flow. If statements are replaced with if expressions and for loops must have a constant terminator.  
+
+It comes with a built-in standard library of functions which is equivalent to the standard nodes found in the MaterialX specification found [here](https://github.com/AcademySoftwareFoundation/MaterialX/blob/main/documents/Specification/MaterialX.StandardNodes.md). Function parameters are one-to-one with their corresponding node inputs.
   
 For more information about __ShadingLanguageX__ syntax and additional compiler options, see the [language specification](https://github.com/jakethorn/ShadingLanguageX/blob/main/language-spec/LanguageSpecification_v0_1-beta.md).  
   
