@@ -19,7 +19,7 @@ For example, the `+` operator (e.g., `float x = 1.0 + 1.0;`) intuitively compile
 
 ## Installation
 __ShadingLanguageX__ source files are compiled to MaterialX (.mtlx) files using its open source compiler (mxslc). The compiler is written in python and can be cloned or downloaded as a package and called from your own python project. 
-```
+```python
 import mxslc
 mxslc.compile_file("grass.mxsl")
 ```
