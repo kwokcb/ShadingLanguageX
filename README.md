@@ -8,6 +8,10 @@ __ShadingLanguageX__ is a high level shading language that can be used to create
 ![](examples/screenshots/readme_example.png)
 
 
+# How It Works
+...
+
+
 # Getting Started
 
 ## Installation
