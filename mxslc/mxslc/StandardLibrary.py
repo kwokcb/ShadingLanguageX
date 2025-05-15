@@ -92,7 +92,7 @@ class StandardLibrary(StrEnum):
             self.CROSSPRODUCT: [("in1", VECTOR3), ("in2", VECTOR3)],
             self.NORMALMAP: [("in", VECTOR3), ("space", STRING), ("scale", [FLOAT, VECTOR2]), ("normal", VECTOR3), ("tangent", VECTOR3), ("bitangent", VECTOR3)],
             self.MIX: [("bg", FLOAT_TYPES), ("fg", FLOAT_TYPES), ("mix", FLOAT_TYPES)],
-            self.STANDARD_SURFACE: [("base_color", COLOR3), ("metalness", FLOAT), ("specular_roughness", FLOAT), ("normal", VECTOR3)],
+            self.STANDARD_SURFACE: [("base_color", COLOR3), ("metalness", FLOAT), ("specular_roughness", FLOAT), ("normal", VECTOR3), ("emission", FLOAT)],
             self.DISPLACEMENT: [("displacement", [FLOAT, VECTOR3]), ("scale", FLOAT)],
         }
 

@@ -17,4 +17,6 @@
 # TODO my_var[0] = 1.0;
 # TODO #if defined(X)
 # TODO -l --log argument that outputs a logfile with the error and stacktrace
+# TODO colorspace in image nodes
+# TODO add remaining inputs to standard_input function
 ```  
