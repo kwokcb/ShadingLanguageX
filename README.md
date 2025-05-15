@@ -32,7 +32,7 @@ Both methods will output a `grass.mtlx` file which can then be used as you would
 ## Language Specification
 __ShadingLanguageX__ is a high level shading with a syntax similar to C. There are additional data types like `vector2`, `vector3`, `vector4`, `color3` and `color4` that match those from the MaterialX specification. Vectors also have the aliases `vec2`, `vec3` and `vec4`. The language also supports preprocessor directives like `#include`, `#if`, `#define` and others. It, however, does not support true control flow. If statements are replaced with if expressions and for loops must have a constant terminator. It comes with a built-in standard library of functions which is equivalent to the standard nodes found in the MaterialX specification found [here](https://github.com/AcademySoftwareFoundation/MaterialX/blob/main/documents/Specification/MaterialX.StandardNodes.md). Function parameters are one-to-one with their corresponding nodes inputs.
   
-For more information about __ShadingLanguageX__ syntax and additional compiler options, see the [language specification](https://github.com/jakethorn/ShadingLanguageX/blob/main/language-spec/LanguageSpecification_v0_1-beta.md).  
+For more information about __ShadingLanguageX__ syntax and additional compiler options, see the [language specification](https://github.com/jakethorn/ShadingLanguageX/blob/main/language-spec/LanguageSpecification_v0_3-beta.md).  
   
 You can also look through example source files [here](https://github.com/jakethorn/ShadingLanguageX/tree/main/examples) to see uses of __ShadingLanguageX__.
 
