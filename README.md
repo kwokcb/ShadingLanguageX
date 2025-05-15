@@ -38,6 +38,7 @@ You can also look through example source files [here](https://github.com/jaketho
 
 ## Interactive Compiler (Experimental)
 The python installation also comes with an interactive compiler which allows the user to call __ShadingLanguageX__ functions and access variables from python. This is useful if more complex logic is needed when compiling the shader, such as checking for missing textures files, or updating values or logic based on a configuration file.
+For example:
 ```
 color3 logic_1(filename texture_path)
 {
