@@ -166,7 +166,7 @@ When two operators with equal precedence are used, the leftmost operator with ev
 As shown in the table above, precendence can be controlled using the Grouping Operator `(a)`. For example, in the expression
 `a + b * c`, the `b * c` will evaluate first, however, in the expression `(a + b) * c`, the `a + b` will evaluate first.
 
-# Variable Declaration
+# Variable Declarations
 
 `type name = initial-value;`  
 `type` can be any supported data type as listed earlier.  
@@ -273,7 +273,7 @@ Unlike most languages, ShaderLanguageX does not support if statements, but inste
 are a better match for how MaterialX handles conditionals. You can think of if expressions as similar to the C ternary operator.
 
 `if (condition) { value_if_true } else { value_if_false }`  
-`condition` must evaluate to a bool type  
+`condition` must evaluate to a bool type.  
 The if expression will evaluate to `value_if_true` if the condition is true, otherwise `value_if_false`. 
 
 The syntax `if (condition) { value_if_true }` can be used during an assignment statement. In this case, if the condition
@@ -298,4 +298,79 @@ else
 };
 ```
 
+# Switch Expressions
 
+ShaderLanguageX also does not support switch statements, but instead uses switch expressions, for the same reasons as if 
+expressions above. They are similar to switch expressions found in the C# language.
+
+`switch (which) { in1, in2, in3 }`  
+`which` can evaluate to either an `int` or `float` type.  
+The switch expression will evaluate to either `in1`, `in2`, `in3`, or a default value depending on the value of `which`.
+See the `switch` node in the MaterialX Standard Node document for more information.
+
+### Examples
+
+```
+color4 albedo = switch (wall_id)
+{
+    image("left_wall.png", texcoord=uv),
+    image("right_wall.png", texcoord=uv),
+    image("back_wall.png", texcoord=uv),
+    image("ceiling.png", texcoord=uv),
+    image("floor.png", texcoord=uv)
+}
+```
+
+# For Loops
+
+Unlike if and switch expressions, loops are compiled as statements in ShadingLanguageX, with the caveat that the number of
+loop iterations must be known at compile time. 
+
+```
+for (type name = start-value:end-value)
+{
+    statement*
+}
+```
+`type` can either be `int` or `float`.  
+`name` can be any valid identifier.  
+`start-value` is the value that the iteration value will start from.  
+`end-value` is the value that the iteration value will stop at. It is included in the loop.  
+For example, `0:3` will iterate through the values `0` `1` `2` `3`.
+
+For loops can also be declared with an incremement value. Instead of increasing the iteration value by 
+`1` each loop, it will be increased by the value of the specified increment instead. The syntax in this case looks like
+this: `start-value:increment-value:end-value`. For example, `0:2:6` would result in the following sequence: `0` `2` `4` `6`.
+
+### Examples
+
+```
+// render 10 randomly sized white circles
+color3 c = color3();
+for (int i = 0:9)
+{
+    vec2 center = vec2(randomfloat(seed=i), randomfloat(seed=i+10));
+    c = if (distance(center, texcoord()) < randomfloat(max=0.1, seed=i+20)) { color3(1.0) };
+}
+standard_surface(base_color=c);
+```
+
+# Function Declarations
+
+TODO
+
+# Whitespace
+
+All whitespace is treated equally in ShaderLanguageX. A single space character is the same as 10 new line characters. For example:  
+  
+`float a = 1.0;`  
+  
+is equivalent to:
+```
+float
+a
+=
+1.0
+;
+```
+although we do not recommend the latter for readability reasons.
