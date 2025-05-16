@@ -1,16 +1,22 @@
 # Overview
 
 ShadingLanguageX is a high level shading language that allows developers to write shaders that can be compiled into MaterialX (.mtlx) files.
-The primary use case is to provide a method of creating MaterialX materials without using a node editor or the MaterialX C++ or Python APIs.
-Node editors are useful for creating simple material networks, but become combersome for larger networks. 
+The primary use case is to provide a method of creating MaterialX shaders without using a node editor or the MaterialX C++ or Python APIs.
+Node editors are useful for creating simple material networks, but can become combersome for larger networks. 
 At the same time, the MaterialX API can be quite verbose, making it difficult to quickly iterate when writing a shader.
 ShadingLanguageX is a simple, yet powerful language for writing complex MaterialX shaders.
+
+A core aim of ShadingLanguageX is to maximize portability. At the time of writing, many renderers and frameworks only support 
+a subset of the MaterialX specification. To ensure that ShaderLanguageX is compatible with as many platforms as possible, 
+it compiles only to standard node elements. More advanced elements like `<nodedef>` or `<nodegraph>` are not used in ShadingLanguageX
+despite being the best choice for statements like function declarations or for loops. As support for MaterialX becomes more
+mature and as we continue to work on ShadingLanguageX more features will become utilised.
 
 At the end of the day, ShadingLanguageX is based on the MaterialX specification and we've striven for equavilency as much
 as possible. As such, if anything is omitted from this document, you can assume that the behaviour is the same as what is
 described in the official MaterialX specification. For example, we don't specify in this document what is the return 
-type of a `float` multiplied by a `vector3`, as it is already described in the MaterialX Standard Node [document](https://github.com/AcademySoftwareFoundation/MaterialX/blob/main/documents/Specification/MaterialX.StandardNodes.md). 
-This is to keep the document as concise as possible as well as to reduce the chance of needing to update it in the future 
+type of a `vector3` multiplied by a `float`, as it is already described in the MaterialX Standard Node [document](https://github.com/AcademySoftwareFoundation/MaterialX/blob/main/documents/Specification/MaterialX.StandardNodes.md). 
+This is to keep this document as concise as possible as well as to reduce the chance of needing to update it in the future 
 due to changes to the official MaterialX documentation.
 
 # Data Types
@@ -63,7 +69,7 @@ in its own section. The following table gives a quick overview of all the expres
 | Switch Expression           | `switch (a) { x, y, z }`             |
 | Function Call               | `my_function(a, b)`                  |
 | Standard Library Call       | `image("albedo.png", texcoord=uv)`   |
-| Constructor Call            | `vec2(a, b)`                         |
+| Constructor Call            | `vec3()`                             |
 | Node Constructor            | `{"mix", color3: bg=a, fg=b, mix=c}` |
 
 # Statements
@@ -115,8 +121,8 @@ the statements supported by ShadingLanguageX.
 The `^` operator compiles to a `power` node when used with numeric types and to an `xor` node when used with booleans.
 
 The MaterialX arithmetic nodes specify that vectors/colors must be the first input if paired with a float, however this 
-is not the case in ShadingLanguageX, a vector/color can be either the left or right value, for example, `2.0 * my_vec3` 
-is equivlant to `my_vec3 * 2.0`.
+is not the case in ShadingLanguageX, a vector/color can be either the left or right value, for example, `2.0 * vec3()` 
+is equivlant to `vec3() * 2.0`.
 
 ## Ternary Relational Operator
 
@@ -127,7 +133,7 @@ This form can be used with any of the relational operators (i.e., `<` `<=` `>` `
 
 Currently, the only expression that uses the period character `a.b` is the Swizzle Operator. The Swizzle Operator allows
 users to access vector components using any of `x` `y` `z` `w` or color channels using `r` `g` `b` `a` after the period. 
-For example, `vec3 b = a.yyz` is equivalent to `vec3 b = vec3(a.y, a.y, a.z)`.
+For example, `vec3 b = a.yyz;` is equivalent to `vec3 b = vec3(a.y, a.y, a.z);`.
 The characters `x` `y` `z` `w` can only be used to access components from a vector, it is a syntax error to use them with
 a color type variable. The opposite is then true for `r` `g` `b` `a`. 
 Swizzles can be made from any combination of valid characters, with a maximum number of 4 characters. However, a character cannot
@@ -260,4 +266,36 @@ components have been filled and then discard the rest. If not enough components 
 `vec2 a = vec2(1.0, 2.0);`  
 `vec3 b = vec3(a, 3.0); // will be vec3(1.0, 2.0, 3.0)`  
 `vec4 c = vec4(4.0, a); // will be vec4(4.0, 1.0, 2.0, 0.0)`
+
+# If Expressions
+
+Unlike most languages, ShaderLanguageX does not support if statements, but instead uses if expressions. This is because if expressions
+are a better match for how MaterialX handles conditionals. You can think of if expressions as similar to the C ternary operator.
+
+`if (condition) { value_if_true } else { value_if_false }`  
+`condition` must evaluate to a bool type  
+The if expression will evaluate to `value_if_true` if the condition is true, otherwise `value_if_false`. 
+
+The syntax `if (condition) { value_if_true }` can be used during an assignment statement. In this case, if the condition
+evaluates to false, the variable will retain its original value.
+
+As mentioned earlier, ShadingLanguageX does not support implicit type conversions. As such, both sides of the if expression
+are expected to evaluate to the same type. 
+
+### Examples
+
+`float a = if (x > y) { 0.05 } else { 0.07 };`  
+`a = if (z > x) { 0.09 };` equivalent to `a = if (z > x) { 0.09 } else { a };`  
+
+```
+vec3 upaxis = if (target_platform == UNREAL) 
+{ 
+    vec3(0.0, 0.0, 1.0) 
+} 
+else 
+{ 
+    vec3(0.0, 1.0, 0.0) 
+};
+```
+
 
