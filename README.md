@@ -24,6 +24,8 @@ Reuse Functionality
 
 Iterate Quickly
 
+Code Readability
+
 
 # Getting Started
 
