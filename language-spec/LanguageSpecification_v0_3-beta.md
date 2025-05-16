@@ -118,9 +118,8 @@ the statements supported by ShadingLanguageX.
 
 ### Notes
 
-The `^` operator compiles to a `power` node when used with numeric types and to an `xor` node when used with booleans.
-
-The MaterialX arithmetic nodes specify that vectors/colors must be the first input if paired with a float, however this 
+* The `^` operator compiles to a `power` node when used with numeric types and to an `xor` node when used with booleans.
+* The MaterialX arithmetic nodes specify that vectors/colors must be the first input if paired with a float, however this 
 is not the case in ShadingLanguageX, a vector/color can be either the left or right value, for example, `2.0 * vec3()` 
 is equivlant to `vec3() * 2.0`.
 
@@ -176,9 +175,8 @@ characters or underscores, but not starting with a number.
 
 ### Notes
 
-The `initial-value` is not optional as in most other languages.
-
-Variables cannot be re-declared. Declaring a variable that has already been declared in the current scope will result in a compile error. 
+* The `initial-value` is not optional as in most other languages.
+* Variables cannot be re-declared. Declaring a variable that has already been declared in the current scope will result in a compile error. 
 
 ### Examples
 
@@ -357,7 +355,41 @@ standard_surface(base_color=c);
 
 # Function Declarations
 
-TODO
+Users can declare there own functions in ShadingLanguageX using the following syntax:
+```
+type name(param1_type param1_name, param2_type param2_name...)
+{
+    statement*
+    return value;
+}
+```
+`type` can be any valid type. It can also be `void` to indicate that function does not return a value.
+In this case, the return statement should also be omitted.  
+`name` can be any valid identifier.  
+`paramN_type` can be any valid type and `paramN_name` can be any valid identifier. Functions can declare number of parameters (including zero).
+There is no concept of pointers or out parameters in ShadingLanguageX. Arguments are purely used to pass data into the function.
+
+### Examples
+
+```
+float mad(float m, float a, float b)
+{
+    return m * a + b;
+}
+
+void main(float my_value)
+{
+    float f = mad(1.0, my_value, randomfloat());
+}
+```
+
+### Notes
+
+* Currently, ShadingLanguageX does not support function overloading, but it is in the list of proposals for language features.  
+* All parameters must be fulfilled when calling the function, i.e., if a function declares two parameters, then two arguments must be given when calling that function.  
+* Functions must be declared prior to being called.  
+* Functions can be declared within other functions, but will only be available to be called from within the enclosing function
+and only after the enclosed function has been declared.
 
 # Whitespace
 
