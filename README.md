@@ -2,6 +2,7 @@
 [![Version](https://img.shields.io/github/v/release/jakethorn/MXSL)](https://github.com/jakethorn/MXSL/releases/latest)
 [![Build Status](https://github.com/jakethorn/MXSL/workflows/automated-tests/badge.svg)](https://github.com/jakethorn/MXSL/actions)
 
+
 # ShadingLanguageX
 __ShadingLanguageX__ is a high level shading language that can be used to create complex MaterialX materials.  
   
@@ -13,6 +14,11 @@ __ShadingLanguageX__ is a high level shading language that can be used to create
 
 __ShadingLanguageX__ source files are compiled to MaterialX (.mtlx) files using the mxslc compiler. Internally, the source file is tokenized and parsed into a list of statements and expressions which in turn map to one or more MaterialX nodes. These nodes are then written to the MaterialX output file as shown in the diagram above.  
 For example, the `+` operator (e.g., `float x = 1.0 + 1.0;`) intuitively compiles to the `add` node, and the same for all other mathematical operators. `if` expressions compile to either of the `ifgreater`, `ifgreatereq` or `ifequal` nodes depending on the condition. `switch` expressions compile to the `switch` node. The swizzle operator (e.g., `some_vector.xy`) compiles to `extract` and `combine` nodes. Most MaterialX nodes are represented by a standard library function that is built into the language, such as `color3 c = image("albedo.png");` which compiles to the `image` node. Additionally, declaring a variable (e.g., `vec3 up = vec3(0, 1, 0);`) compiles to a `constant` node (or a `combine` node depending on the inputs to the expression).  
+
+
+# ShaderLanguageX Use Cases
+
+TODO
 
 
 # Getting Started
