@@ -88,6 +88,56 @@ the statements supported by ShadingLanguageX.
 | For Loop              | `for (int i = 0:10) { a = add_one(a); }`     |
 | Expression Statement  | `standard_surface(base_color=color3(a));`    |
 
+# Identifiers
+
+Identifiers are the names given to user-defined variables and functions so they can be accessed later in the program.
+Identifiers can contain letters, numbers and the underscore character, but the first character cannot be a number.
+They cannot be the same as a ShadingLanguageX reserved keyword (see below) or a MaterialX Standard Node.
+
+### Examples
+
+```
+int i = 0;
+int _i = i + 1;
+vec3 __UP__ = vec3(0.0, 1.0, 0.0);
+float n_angle = dotproduct(__UP__, normal());
+float pi2 = 3.14 * 2.0;
+```
+
+# Reserved Keywords
+
+The following identifiers have a special meaning in ShadingLanguageX and cannot be used for user-defined variables or functions.
+
+`if` `else` `switch` `for` `return` `true` `false` `and` `or` `not` `void`
+
+All data types and alias types are also reserved keywords.
+
+### Notes
+
+ShadingLanguageX is an evolving language. Keywords might be added in each update which might cause shaders to raise a compile
+error which were previously working correctly. In general, try not to use identifiers that are popular keywords in other
+languages (e.g., `const` `struct` `typeof`) or a term that is prominantly used in the MaterialX specification. 
+
+# Whitespace
+
+All whitespace is treated equally in ShaderLanguageX. A single space character is the same as 10 new line characters. For example:  
+  
+`float a = 1.0;`  
+  
+is equivalent to:
+```
+float
+a
+=
+1.0
+;
+```
+although we do not recommend the latter for readability reasons.
+
+# Comments
+
+Comments in ShandingLanguageX take the sole form of: `// this is a comment`.
+
 # Operators
 
 | Operation | MaterialX Node(s)   |
@@ -169,9 +219,8 @@ As shown in the table above, precendence can be controlled using the Grouping Op
 
 `type name = initial-value;`  
 `type` can be any supported data type as listed earlier.  
-`name` must have the following format: `[_a-zA-Z][_a-zA-Z0-9]+`. In other words, any combination of one or more alphanumeric 
-characters or underscores, but not starting with a number.  
-`initial-value` is any valid expression.  
+`name` can be any valid identifier.  
+`initial-value` can be any valid expression that evaluates to `type`.   
 
 ### Notes
 
@@ -353,7 +402,9 @@ for (int i = 0:9)
 standard_surface(base_color=c);
 ```
 
-# Function Declarations
+# User Functions
+
+## Function Declaration
 
 Users can declare there own functions in ShadingLanguageX using the following syntax:
 ```
@@ -363,11 +414,19 @@ type name(param1_type param1_name, param2_type param2_name...)
     return value;
 }
 ```
-`type` can be any valid type. It can also be `void` to indicate that function does not return a value.
+`type` can be any supported data type. It can also be `void` to indicate that function does not return a value.
 In this case, the return statement should also be omitted.  
 `name` can be any valid identifier.  
-`paramN_type` can be any valid type and `paramN_name` can be any valid identifier. Functions can declare number of parameters (including zero).
+`paramN_type` can be any supported data type and `paramN_name` can be any valid identifier. Functions can declare any number of parameters.  
 There is no concept of pointers or out parameters in ShadingLanguageX. Arguments are purely used to pass data into the function.
+
+## Function Calls
+
+The other half of user functions is then calling them.
+
+`name(arg1, arg2...)`  
+`name` is the name of function to be invoked.  
+`argN` is N number of expressions whose data types exactly match those in the function signature.
 
 ### Examples
 
@@ -377,32 +436,74 @@ float mad(float m, float a, float b)
     return m * a + b;
 }
 
-void main(float my_value)
+float f = mad(1.0, 2.0, 3.0);
+```
+```
+void main(color3 c, float intensity, vec3 n)
 {
-    float f = mad(1.0, my_value, randomfloat());
+    surfaceshader surface = standard_surface();
+    surface.base_color = c * intensity;
+    surface.normal = n;
 }
+
+vec3 n = image("normals.png");
+main(color3(3.0, 7.0, 5.0), 0.8, n);
 ```
 
 ### Notes
 
 * Currently, ShadingLanguageX does not support function overloading, but it is in the list of proposals for language features.  
-* All parameters must be fulfilled when calling the function, i.e., if a function declares two parameters, then two arguments must be given when calling that function.  
+* All parameters must be fulfilled when calling the function, i.e., if a function declares two parameters, then two arguments of the correct type must be given when calling that function. It is not possible to provide default values to parameters like Python and other languages.
 * Functions must be declared prior to being called.  
-* Functions can be declared within other functions, but will only be available to be called from within the enclosing function
+* Functions can be declared inside other functions, but will only be available to be called from within the enclosing function
 and only after the enclosed function has been declared.
+* Recursion is not possible in ShadingLanguageX. 
 
-# Whitespace
+# Standard Library Call
 
-All whitespace is treated equally in ShaderLanguageX. A single space character is the same as 10 new line characters. For example:  
-  
-`float a = 1.0;`  
-  
-is equivalent to:
+
+
+# Node Constructors
+
+Node constructors are a unique expression to ShadingLanguageX, but provide crucial functionality.
+
+`{string, type: input1=value1, input2=value2...}`  
+`string` can be any valid string value.    
+`type` can be any supported data type.  
+`inputN` can be any valid identifier.
+`valueN` can be any valid expression.
+
+Node constructors compile to the node specified by `string` and a type specified by `type`. Node inputs are specified by
+the list of inputs that come after the colon `:`. It's important to note that, unlike the rest of ShadingLanguageX, node 
+constructors do not perform any type checking. In fact, the data type of the inputs is determined by the values that are
+passed to them.
+
+Node constructors give developers the ability to define any node that they want, regardless of whether it is implemented
+in ShadingLanguageX or not. For example, the `normalmap` node from the MaterialX Standard Node specification changed signature
+in v1.39. However, many renderers are still using the v1.38 signature. Node constructors can be used to create node elements
+with the old input signature to ensure compatability with as many renderers as possible. Node constructos can also be used to declare nodes that are not defined
+in the MaterialX specification, such as renderer specific nodes.
+
+### Examples
+
+#### Normalmap compatability
 ```
-float
-a
-=
-1.0
-;
+vec3 nt = image("normals.png");
+vec3 nm = {"normalmap", vec3: in=nt, space="tangent", scale=0.1};
 ```
-although we do not recommend the latter for readability reasons.
+Compiled .mtlx file:
+```
+...
+<normalmap name="nm" type="vector3">
+  <input name="in" type="vector3" nodename="nt" />
+  <input name="space" type="string" value="tangent" />
+  <input name="scale" type="float" value="0.1" />
+</normalmap>
+...
+```
+
+#### Renderer-specific nodes
+```
+// Houdini bias node
+float bias = {"hmtlxbias", float: in=0.0, bias=0.5};
+```
