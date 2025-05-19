@@ -37,7 +37,7 @@ mxslc.compile_file("concrete.mxsl")
 ```
 Alternatively, you can download the compiler executable from the most recent release and call it from the command line.
 ```
-./mxslc.exe concrete.mxsl
+> ./mxslc.exe concrete.mxsl
 ```
 Both methods will output a `concrete.mtlx` file which can then be used as you would any other MaterialX file. Both methods also have the same input signature, a mandatory path to a __ShadingLanguageX__ source file and then several optional arguments, such as setting the output files directory and name.
 
@@ -58,7 +58,7 @@ mxslc.compile_file("hello_world.mxsl", main_function="hello_world", main_args=[P
 ```
 _OR_
 ```
-./mxslc.exe hello_world.mxsl -m hello_world -a textures/albedo.png
+> ./mxslc.exe hello_world.mxsl -m hello_world -a textures/albedo.png
 ```
 _Result: hello_world.mtlx_
 ```xml
