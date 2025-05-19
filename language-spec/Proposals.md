@@ -19,4 +19,5 @@
 # TODO -l --log argument that outputs a logfile with the error and stacktrace
 # TODO colorspace in image nodes
 # TODO add remaining inputs to standard_input function
+# TODO setting addressmode sets vaddressmode and uaddressmode 
 ```  

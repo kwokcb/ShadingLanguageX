@@ -1,9 +1,32 @@
-# Overview
+# Table of Contents
 
-ShadingLanguageX is a high level shading language that allows developers to write shaders that can be compiled into MaterialX (.mtlx) files.
+ 1. [Introduction](#introduction)
+ 2. [Data Types](#data-types)
+ 3. [Expressions](#expressions)
+ 4. [Statements](#statements)
+ 5. [Identifiers](#identifiers)
+ 6. [Reserved Keywords](#reserved-keywords)
+ 7. [Whitespace](#whitespace)
+ 8. [Comments](#comments)
+ 9. [Operators](#operators)
+10. [Variable Declarations](#variable-declarations)
+11. [Variable Assignments](#variable-assignments)
+12. [Constructors](#constructors)
+13. [If Expressions](#if-expressions)
+14. [Switch Expressions](#switch-expressions)
+15. [For Loops](#for-loops)
+16. [User Functions](#user-functions)
+17. [Standard Library Calls](#standard-library-calls)
+18. [Node Constructors](#node-constructors)
+19. [Shaders](#shaders)
+20. [Preprocessor](#preprocessor)
+
+# Introduction
+
+ShadingLanguageX is a high level programming language that allows developers to write shaders that can be compiled into MaterialX (.mtlx) files.
 The primary use case is to provide a method of creating MaterialX shaders without using a node editor or the MaterialX C++ or Python APIs.
 Node editors are useful for creating simple material networks, but can become combersome for larger networks. 
-At the same time, the MaterialX API can be quite verbose, making it difficult to quickly iterate when writing a shader.
+At the same time, the MaterialX API can be quite verbose, reducing code readability and making it difficult to quickly iterate when writing a shader.
 ShadingLanguageX is a simple, yet powerful language for writing complex MaterialX shaders.
 
 A core aim of ShadingLanguageX is to maximize portability. At the time of writing, many renderers and frameworks only support 
@@ -20,7 +43,8 @@ This is to keep this document as concise as possible as well as to reduce the ch
 due to changes to the official MaterialX documentation.
 
 # Data Types
-Data types match the ones found in the MaterialX [specification](https://github.com/AcademySoftwareFoundation/MaterialX/blob/main/documents/Specification/MaterialX.Specification.md#materialx-data-types), with the expection of arrays, matrices, volumeshader and lightshader.  
+
+Supported data types match the ones found in the MaterialX [specification](https://github.com/AcademySoftwareFoundation/MaterialX/blob/main/documents/Specification/MaterialX.Specification.md#materialx-data-types), with the exception of arrays, matrices, volumeshader and lightshader.  
   
 ## Supported Data Types
 
@@ -57,7 +81,7 @@ in its own section. The following table gives a quick overview of all the expres
 
 | Expression                  | Example                              |
 |-----------------------------|--------------------------------------|
-| Binary Operator             | `a / b`                              |
+| Binary Operator             | `a + b`                              |
 | Unary Operator              | `-a`                                 |
 | Ternary Relational Operator | `x < a < y`                          |
 | Swizzle Operator            | `a.xy`                               |
@@ -94,7 +118,7 @@ Identifiers are the names given to user-defined variables and functions so they 
 Identifiers can contain letters, numbers and the underscore character, but the first character cannot be a number.
 They cannot be the same as a ShadingLanguageX reserved keyword (see below) or a MaterialX Standard Node.
 
-### Examples
+### Example
 
 ```
 int i = 0;
@@ -191,7 +215,7 @@ be used that goes beyond the length of original vector, for example, `a.xyz` is 
 Finally, vector swizzles will always return a vector or `float` type variable, the specific type is dependant on the swizzle, for example 
 `a.xy` return a `vec2`, while `a.zyzy` returns a `vec4`. Appropriately, color swizzles only return color or `float` type variables.
 
-### Examples
+### Example
 
 `float alpha = image("alpha_mask.png").a;`  
 `vec2 left_wall_uv = position().yz;`  
@@ -227,7 +251,7 @@ As shown in the table above, precendence can be controlled using the Grouping Op
 * The `initial-value` is not optional as in most other languages.
 * Variables cannot be re-declared. Declaring a variable that has already been declared in the current scope will result in a compile error. 
 
-### Examples
+### Example
 
 `float a = 1.0;`  
 `float b = a;`  
@@ -237,13 +261,13 @@ As shown in the table above, precendence can be controlled using the Grouping Op
 `string space = "world";`  
 `surfaceshader surface = standard_surface();`
 
-# Variable Assignment
+# Variable Assignments
 
 `name = value;`  
 `name` must be the name of an previously declared variable.  
 `value` is any valid expression.
 
-### Examples
+### Example
 
 `color4 albedo = color4();`  
 `albedo = if (cond1) { image("butterfly1.png") };`  
@@ -297,7 +321,7 @@ see the MaterialX Standard Node document.
 
 ShadingLanguageX does not support implicit conversions. Explicit conversions can be achieved using constructors with a single argument.
 
-### Examples
+### Example
 
 `float shadow = float(x > y);`  
 `color3 white = color3(1.0);`  
@@ -308,7 +332,7 @@ ShadingLanguageX does not support implicit conversions. Explicit conversions can
 Two or more arguments has the following behaviour. It will take components from incoming arguments until all of its own
 components have been filled and then discard the rest. If not enough components were provided, then the remaining will be `0.0`.
 
-### Examples
+### Example
 
 `vec2 a = vec2(1.0, 2.0);`  
 `vec3 b = vec3(a, 3.0); // will be vec3(1.0, 2.0, 3.0)`  
@@ -329,7 +353,7 @@ evaluates to false, the variable will retain its original value.
 As mentioned earlier, ShadingLanguageX does not support implicit type conversions. As such, both sides of the if expression
 are expected to evaluate to the same type. 
 
-### Examples
+### Example
 
 `float a = if (x > y) { 0.05 } else { 0.07 };`  
 `a = if (z > x) { 0.09 };` equivalent to `a = if (z > x) { 0.09 } else { a };`  
@@ -355,7 +379,7 @@ expressions above. They are similar to switch expressions found in the C# langua
 The switch expression will evaluate to either `in1`, `in2`, `in3`, or a default value depending on the value of `which`.
 See the `switch` node in the MaterialX Standard Node document for more information.
 
-### Examples
+### Example
 
 ```
 color4 albedo = switch (wall_id)
@@ -389,7 +413,7 @@ For loops can also be declared with an incremement value. Instead of increasing 
 `1` each loop, it will be increased by the value of the specified increment instead. The syntax in this case looks like
 this: `start-value:increment-value:end-value`. For example, `0:2:6` would result in the following sequence: `0` `2` `4` `6`.
 
-### Examples
+### Example
 
 ```
 // render 10 randomly sized white circles
@@ -428,7 +452,7 @@ The other half of user functions is then calling them.
 `name` is the name of function to be invoked.  
 `argN` is N number of expressions whose data types exactly match those in the function signature.
 
-### Examples
+### Example
 
 ```
 float mad(float m, float a, float b)
@@ -459,9 +483,46 @@ main(color3(3.0, 7.0, 5.0), 0.8, n);
 and only after the enclosed function has been declared.
 * Recursion is not possible in ShadingLanguageX. 
 
-# Standard Library Call
+# Standard Library Calls
 
+Standard library calls have the same synax as function calls, but have two extra features.
 
+The first is that not all parameters in a standard library call need to be filled. Most MaterialX node inputs have a default
+value that is used if the input is not set. This works the same way in ShadingLanguageX. For example, `randomfloat` has four
+inputs: `in`, `min`, `max` and `seed`, but they all have default values, so we could simply call `randomfloat()` without 
+any arguments, or only provide the arguments that we need to, `randomfloat(uv.x, -1.0, 1.0)`.
+
+To compliment this, standard library calls also support named arguments. This allows users to pass arguments out of order,
+leaving earlier parameters to their default values. For example, `image` has the following signature:
+`image(file, layer, default, texcoord, uaddressmode, vaddressmode, filtertype)`. All parameters, except file, have default values as described
+in the MaterialX Standard Node document. To pass an argument to `texcoord` without also having to set `layer` and `default`
+we can use the following syntax: `image("butterfly1.png", texcoord=uv)`.
+
+## Return Type
+
+Some standard library functions can have multiple return types. For example, `geompropvalue` can have any return type depending
+on the data it needs to access. `image` also supports multiple return types depending on what and how data should be accessed
+from the texture. In order to specify what type the function should return, you can assign them to a variable of the appropriate type.
+For example:  
+```
+vec3 data = image("data_image.png");
+
+    vvvv compiles to vvvv
+
+<image name="data" type="vector3">
+  <input name="file" type="filename" value="data_image.png" />
+</image>
+```
+
+### Notes
+
+* All standard library functions have the same signature (name, type, inputs) as their corresponding MaterialX node. ShadingLanguageX
+additionally supports:
+  * `min` and `max` can take any number of values. They will return minimum or maximum of all values.
+  * `image` has an overloaded variant, which just takes a `file` and `texcoord`.
+* Named arguments can be in any order, but must come after all positional arguments, for example: `image(texcoord=uv, "butterfly1.png")`
+is invalid syntax because there is a named argument before a positional argument.
+* Standard library and user functions can be called without assigning their return value.
 
 # Node Constructors
 
@@ -473,10 +534,8 @@ Node constructors are a unique expression to ShadingLanguageX, but provide cruci
 `inputN` can be any valid identifier.
 `valueN` can be any valid expression.
 
-Node constructors compile to the node specified by `string` and a type specified by `type`. Node inputs are specified by
-the list of inputs that come after the colon `:`. It's important to note that, unlike the rest of ShadingLanguageX, node 
-constructors do not perform any type checking. In fact, the data type of the inputs is determined by the values that are
-passed to them.
+Node constructors compile to the node element specified by `string` and the type specified by `type`. Node inputs are compiled from
+the list of inputs that come after the colon `:`. 
 
 Node constructors give developers the ability to define any node that they want, regardless of whether it is implemented
 in ShadingLanguageX or not. For example, the `normalmap` node from the MaterialX Standard Node specification changed signature
@@ -484,18 +543,17 @@ in v1.39. However, many renderers are still using the v1.38 signature. Node cons
 with the old input signature to ensure compatability with as many renderers as possible. Node constructos can also be used to declare nodes that are not defined
 in the MaterialX specification, such as renderer specific nodes.
 
-### Examples
+### Example
 
 #### Normalmap compatability
 ```
-vec3 nt = image("normals.png");
-vec3 nm = {"normalmap", vec3: in=nt, space="tangent", scale=0.1};
-```
-Compiled .mtlx file:
-```
-...
+vec normals = image("normals.png");
+vec3 nm = {"normalmap", vec3: in=normals, space="tangent", scale=0.1};
+
+    vvvv compiles to vvvv
+
 <normalmap name="nm" type="vector3">
-  <input name="in" type="vector3" nodename="nt" />
+  <input name="in" type="vector3" nodename="normals" />
   <input name="space" type="string" value="tangent" />
   <input name="scale" type="float" value="0.1" />
 </normalmap>
@@ -507,3 +565,94 @@ Compiled .mtlx file:
 // Houdini bias node
 float bias = {"hmtlxbias", float: in=0.0, bias=0.5};
 ```
+
+### Notes
+
+Unlike the rest of ShadingLanguageX, node constructors do not perform any type checking. In fact, the data type of the inputs
+is determined by the values that are passed to them.
+
+# Shaders
+
+ShadingLanguageX currently supports two shader types: `surfaceshader` and `displacementshader`. They form the final output
+of the programmed shader. At this time, ShadingLanguageX does not directly support the `material` type or creating the `surfacematerial`
+node, instead the compiler (mxslc) will create the `surfacematerial` node for you and assign your surface shader and displacement 
+shader (if you've created one) to the `surfacematerial` inputs.
+
+## Surface Shaders
+
+Surface shaders can be created by calling `standard_surface()`. Shader inputs can either be set by using the period character
+as in the example below or using named arguments in the function call, e.g., `standard_surface(base_color=color3(0.8), metalness=1.0);`.
+
+### Example
+
+```
+void main()
+{
+    surfaceshader goldsrf = standard_surface();
+    goldsrf.base = 1.0;
+    goldsrf.base_color = color3(0.944, 0.776, 0.373);
+    goldsrf.specular = 1.0;
+    goldsrf.specular_color = color3(0.998, 0.981, 0.751);
+    goldsrf.specular_roughness = 0.02;
+    goldsrf.metalness = 1.0;
+}
+
+    vvvv compiles to vvvv
+
+<standard_surface name="main__goldsrf" type="surfaceshader">
+  <input name="base" type="float" value="1"/>
+  <input name="base_color" type="color3" value="0.944, 0.776, 0.373"/>
+  <input name="specular" type="float" value="1"/>
+  <input name="specular_color" type="color3" value="0.998, 0.981, 0.751"/>
+  <input name="specular_roughness" type="float" value="0.02"/>
+  <input name="metalness" type="float" value="1"/>
+</standard_surface>
+<surfacematerial name="mxsl_material" type="material">
+  <input name="surfaceshader" type="surfaceshader" nodename="main__goldsrf"/>
+</surfacematerial>
+```
+
+## Displacement Shaders
+
+Displacement shaders can be created by calling `displacement()`. As for surface shaders, inputs can either be set by using 
+the period character or using named arguments in the function call.
+
+### Example
+
+```
+void main()
+{
+    float height = image("heightmap.png");
+    displacement(displacement=height, scale=1.0);
+    
+    standard_surface(base_color=color3(height));
+}
+
+    vvvv compiles to vvvv
+    
+<image name="main__height" type="float">
+  <input name="file" type="filename" value="heightmap.png" />
+</image>
+<displacement name="node1" type="displacementshader">
+  <input name="displacement" type="float" nodename="main__height" />
+  <input name="scale" type="float" value="1" />
+</displacement>
+<standard_surface name="node5" type="surfaceshader">
+  <input name="base_color" type="color3" nodename="node7" />
+</standard_surface>
+<convert name="node7" type="color3">
+  <input name="in" type="float" nodename="main__height" />
+</convert>
+<surfacematerial name="mxsl_material" type="material">
+  <input name="surfaceshader" type="surfaceshader" nodename="node5" />
+  <input name="displacementshader" type="displacementshader" nodename="node1" />
+</surfacematerial>
+```
+
+# Preprocessor
+
+TODO
+
+# mxslc API
+
+TODO
