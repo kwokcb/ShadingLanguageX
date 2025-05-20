@@ -52,9 +52,9 @@ ShadingLanguageX shaders consist simply of a list of statements that are sequent
 vec2 uv = texcoord();
 surfaceshader surface = standard_surface();
 surface.base_color = color3(uv, 0.0);
-
-    vvvv compiles to vvvv
-
+```
+compiles to:
+```
 <texcoord name="uv" type="vector2" />
 <standard_surface name="surface" type="surfaceshader">
   <input name="base_color" type="color3" nodename="node5" />
@@ -82,6 +82,7 @@ a function called `main`, this function will be the entry into the shader. Other
 to the compiler as an additional argument (see mxslc section). If the entry function accepts any arguments, these can also
 be passed to the compiler.
 
+`> ./mxslc.exe my_shader.mxsl -o gold.mtlx -m my_function -a 1.0 0.72 0.315 1.0`
 ```
 void my_function(float r, float g, float b, float metalness)
 {
@@ -91,7 +92,6 @@ void my_function(float r, float g, float b, float metalness)
 }
 ```
 
-`> ./mxslc.exe my_shader.mxsl -o gold.mtlx -m my_function -a 1.0 0.72 0.315 1.0`
 
 When executing a shader in this manner, all global variables and functions will be defined before the entry function is called.
 
@@ -248,7 +248,7 @@ Comments in ShandingLanguageX take the sole form of: `// this is a comment`.
 * The `^` operator compiles to a `power` node when used with numeric types and to an `xor` node when used with booleans.
 * The MaterialX arithmetic nodes specify that vectors/colors must be the first input if paired with a float, however this 
 is not the case in ShadingLanguageX, a vector/color can be either the left or right value, for example, `2.0 * vec3()` 
-is equivlant to `vec3() * 2.0`.
+is equivalent to `vec3() * 2.0`.
 
 ## Ternary Relational Operator
 
@@ -259,7 +259,7 @@ This form can be used with any of the relational operators (i.e., `<` `<=` `>` `
 
 Currently, the only expression that uses the period character `a.b` is the Swizzle Operator. The Swizzle Operator allows
 users to access vector components using any of `x` `y` `z` `w` or color channels using `r` `g` `b` `a` after the period. 
-For example, `vec3 b = a.yyz;` is equivalent to `vec3 b = vec3(a.y, a.y, a.z);`.
+For example, `vec3 b = a.yyz;` is equivalent to `vec3 b = vec3(a[1], a[1], a[2]);`.
 The characters `x` `y` `z` `w` can only be used to access components from a vector, it is a syntax error to use them with
 a color type variable. The opposite is then true for `r` `g` `b` `a`. 
 Swizzles can be made from any combination of valid characters, with a maximum number of 4 characters. However, a character cannot
@@ -317,8 +317,8 @@ As shown in the table above, precendence can be controlled using the Grouping Op
 # Variable Assignments
 
 `name = value;`  
-`name` must be the name of an previously declared variable.  
-`value` is any valid expression.
+`name` must be the name of a previously declared variable.  
+`value` can be any valid expression that evaluates to the type of `name`.
 
 ### Example
 
@@ -393,11 +393,11 @@ components have been filled and then discard the rest. If not enough components 
 
 # If Expressions
 
-Unlike most languages, ShaderLanguageX does not support if statements, but instead uses if expressions. This is because if expressions
-are a better match for how MaterialX handles conditionals. You can think of if expressions as similar to the C ternary operator.
+Unlike most languages, ShaderLanguageX does not support if statements, but instead uses if expressions. The reason for this is because if expressions
+are better suited for compiling to MaterialX nodes. You can think of if expressions as similar to the C ternary operator.
 
 `if (condition) { value_if_true } else { value_if_false }`  
-`condition` must evaluate to a bool type.  
+`condition` can be any expression that evaluates to a bool type.  
 The if expression will evaluate to `value_if_true` if the condition is true, otherwise `value_if_false`. 
 
 The syntax `if (condition) { value_if_true }` can be used during an assignment statement. In this case, if the condition
@@ -425,10 +425,10 @@ else
 # Switch Expressions
 
 ShaderLanguageX also does not support switch statements, but instead uses switch expressions, for the same reasons as if 
-expressions above. They are similar to switch expressions found in the C# language.
+expressions above. They are similar to switch expressions found in the C# programming language.
 
 `switch (which) { in1, in2, in3 }`  
-`which` can evaluate to either an `int` or `float` type.  
+`which` can be any expression that evaluates to either an `int` or `float` type.  
 The switch expression will evaluate to either `in1`, `in2`, `in3`, or a default value depending on the value of `which`.
 See the `switch` node in the MaterialX Standard Node document for more information.
 
@@ -470,11 +470,11 @@ this: `start-value:increment-value:end-value`. For example, `0:2:6` would result
 
 ```
 // render 10 randomly sized white circles
-color3 c = color3();
+color3 c = color3(0.0);
 for (int i = 0:9)
 {
-    vec2 center = vec2(randomfloat(seed=i), randomfloat(seed=i+10));
-    c = if (distance(center, texcoord()) < randomfloat(max=0.1, seed=i+20)) { color3(1.0) };
+    vec2 center = vec2(randomfloat(in=0, seed=i), randomfloat(in=1, seed=i));
+    c = if (distance(center, texcoord()) < randomfloat(in=2, max=0.1, seed=i)) { color3(1.0) };
 }
 standard_surface(base_color=c);
 ```
@@ -538,7 +538,7 @@ and only after the enclosed function has been declared.
 
 # Standard Library Calls
 
-Standard library calls have the same synax as function calls, but have two extra features.
+Standard library calls have the same synax as function calls, but with two extra features.
 
 The first is that not all parameters in a standard library call need to be filled. Most MaterialX node inputs have a default
 value that is used if the input is not set. This works the same way in ShadingLanguageX. For example, `randomfloat` has four
@@ -553,15 +553,15 @@ we can use the following syntax: `image("butterfly1.png", texcoord=uv)`.
 
 ## Return Type
 
-Some standard library functions can have multiple return types. For example, `geompropvalue` can have any return type depending
+Some standard library functions can have multiple different return types. For example, `geompropvalue` can have any return type depending
 on the data it needs to access. `image` also supports multiple return types depending on what and how data should be accessed
 from the texture. In order to specify what type the function should return, you can assign them to a variable of the appropriate type.
 For example:  
+
+`vec3 data = image("data_image.png");`
+
+compiles to:
 ```
-vec3 data = image("data_image.png");
-
-    vvvv compiles to vvvv
-
 <image name="data" type="vector3">
   <input name="file" type="filename" value="data_image.png" />
 </image>
@@ -571,7 +571,7 @@ vec3 data = image("data_image.png");
 
 * All standard library functions have the same signature (name, type, inputs) as their corresponding MaterialX node. ShadingLanguageX
 additionally supports:
-  * `min` and `max` can take any number of values. They will return minimum or maximum of all values.
+  * `min` and `max` can take any number of values.
   * `image` has an overloaded variant, which just takes a `file` and `texcoord`.
 * Named arguments can be in any order, but must come after all positional arguments, for example: `image(texcoord=uv, "butterfly1.png")`
 is invalid syntax because there is a named argument before a positional argument.
@@ -593,7 +593,7 @@ the list of inputs that come after the colon `:`.
 Node constructors give developers the ability to define any node that they want, regardless of whether it is implemented
 in ShadingLanguageX or not. For example, the `normalmap` node from the MaterialX Standard Node specification changed signature
 in v1.39. However, many renderers are still using the v1.38 signature. Node constructors can be used to create node elements
-with the old input signature to ensure compatability with as many renderers as possible. Node constructos can also be used to declare nodes that are not defined
+with an old input signature to ensure compatability with as many renderers as possible, or to declare nodes that are not defined
 in the MaterialX specification, such as renderer specific nodes.
 
 ### Example
@@ -601,10 +601,12 @@ in the MaterialX specification, such as renderer specific nodes.
 #### Normalmap compatability
 ```
 vec normals = image("normals.png");
+
+// v1.38 normalmap
 vec3 nm = {"normalmap", vec3: in=normals, space="tangent", scale=0.1};
-
-    vvvv compiles to vvvv
-
+```
+compiles to:
+```
 <normalmap name="nm" type="vector3">
   <input name="in" type="vector3" nodename="normals" />
   <input name="space" type="string" value="tangent" />
@@ -634,7 +636,7 @@ shader (if you've created one) to the `surfacematerial` inputs.
 ## Surface Shaders
 
 Surface shaders can be created by calling `standard_surface()`. Shader inputs can either be set by using the period character
-as in the example below or using named arguments in the function call, e.g., `standard_surface(base_color=color3(0.8), metalness=1.0);`.
+as in the example below or using named arguments inside the function call, e.g., `standard_surface(base_color=color3(0.8), metalness=1.0);`.
 
 ### Example
 
@@ -649,9 +651,9 @@ void main()
     goldsrf.specular_roughness = 0.02;
     goldsrf.metalness = 1.0;
 }
-
-    vvvv compiles to vvvv
-
+```
+compiles to:
+```
 <standard_surface name="main__goldsrf" type="surfaceshader">
   <input name="base" type="float" value="1"/>
   <input name="base_color" type="color3" value="0.944, 0.776, 0.373"/>
@@ -667,7 +669,7 @@ void main()
 
 ## Displacement Shaders
 
-Displacement shaders can be created by calling `displacement()`. As for surface shaders, inputs can either be set by using 
+Displacement shaders can be created by calling `displacement()`. Like surface shaders, inputs can either be set by using 
 the period character or using named arguments in the function call.
 
 ### Example
@@ -680,9 +682,9 @@ void main()
     
     standard_surface(base_color=color3(height));
 }
-
-    vvvv compiles to vvvv
-    
+```
+compiles to:
+```
 <image name="main__height" type="float">
   <input name="file" type="filename" value="heightmap.png" />
 </image>
@@ -723,8 +725,8 @@ then you should include each file individually in the necessary order.
 When including a file, paths may be absolute or relative. If the path is relative, ShadingLanguageX will look for the file in
 the following directories in order:
 1. Any additional directories passed to the compiler (see Command Line Options below)
-2. The containing directory of the `.mxsl` file currently being compiled.
-3. The containing directory of the mxslc.exe compiler.
+2. The parent directory of the `.mxsl` file currently being compiled.
+3. The parent directory of the mxslc executable.
 
 ### Example
 
@@ -750,16 +752,15 @@ Macros are more limited in ShadingLanguageX than in C. Only flag- and object-lik
 
 There is currently one macro pre-defined during shader compilation:
 * `__MAIN__` is defined during compilation of the file originally given to the compiler.
+  
+`> ./mxslc.exe macro_def_example.mxsl`
 ```
-> ./mxslc.exe macro_def_example.mxsl
-
-
 // macro_def_example.mxsl
 #ifdef __MAIN__ // will be defined in this context
 #include "macro_def_incl.mxsl"
 #endif
-
-
+```
+```
 // macro_def_incl.mxsl
 #ifdef __MAIN__ // will not be defined in this context
 ...
@@ -773,7 +774,7 @@ Conditional compilations directives operate as they do in C with no notable chan
 # mxslc
 
 mxslc is the open-source compiler for ShadingLanguageX. It can downloaded from the github repository [releases](https://github.com/jakethorn/ShadingLanguageX/releases) section.
-It can run either using the compiled binary executable or with the Python API.  
+It can be run either using the compiled executable or with the Python API.  
 
 ## Executable
 
@@ -793,6 +794,10 @@ options:
   -i, --include-dirs INCLUDE_DIRS  Additional directories to search when including files
   -d, --define MACROS              Additional macro definitions
 ```
+
+### Example
+
+TODO
 
 ## Python API
 
