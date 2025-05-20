@@ -1,3 +1,5 @@
+<h1 align="center">ShadingLanguageX Language Specification</h1>
+
 # Table of Contents
 
 1. [Introduction](#introduction)
