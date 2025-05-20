@@ -41,26 +41,26 @@ Alternatively, you can download the compiler executable from the most recent rel
 ```
 Both methods will output a `concrete.mtlx` file which can then be used as you would any other MaterialX file. Both methods also have the same input signature, a mandatory path to a __ShadingLanguageX__ source file and then several optional arguments, such as setting the output files directory and name.
 
-## Hello World
-_hello_world.mxsl_
+## ShadingLanguageX - Hello World
 ```
+// hello_world.mxsl
 void hello_world(filename albedo_file)
 {
     surfaceshader surface = standard_surface();
     surface.base_color = image(albedo_file);
 }
 ```
-_Compile using python or executable..._
+Compile using python:
 ```python
 from pathlib import Path
 import mxslc
-mxslc.compile_file("hello_world.mxsl", main_function="hello_world", main_args=[Path("textures/albedo.png")]);
+mxslc.compile_file("hello_world.mxsl", main_func="hello_world", main_args=[Path("textures/albedo.png")]);
 ```
-_OR_
+or executable:
 ```
 > ./mxslc.exe hello_world.mxsl -m hello_world -a textures/albedo.png
 ```
-_Result: hello_world.mtlx_
+Output: hello_world.mtlx
 ```xml
 <?xml version="1.0"?>
 <materialx version="1.39">
