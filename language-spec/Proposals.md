@@ -20,4 +20,5 @@
 # TODO colorspace in image nodes
 # TODO add remaining inputs to standard_input function
 # TODO setting addressmode sets vaddressmode and uaddressmode 
+# TODO use pathlike instead of specific Path/str types
 ```  

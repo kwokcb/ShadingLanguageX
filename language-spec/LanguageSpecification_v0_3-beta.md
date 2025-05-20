@@ -1,25 +1,28 @@
 # Table of Contents
 
- 1. [Introduction](#introduction)
- 2. [Data Types](#data-types)
- 3. [Expressions](#expressions)
- 4. [Statements](#statements)
- 5. [Identifiers](#identifiers)
- 6. [Reserved Keywords](#reserved-keywords)
- 7. [Whitespace](#whitespace)
- 8. [Comments](#comments)
- 9. [Operators](#operators)
-10. [Variable Declarations](#variable-declarations)
-11. [Variable Assignments](#variable-assignments)
-12. [Constructors](#constructors)
-13. [If Expressions](#if-expressions)
-14. [Switch Expressions](#switch-expressions)
-15. [For Loops](#for-loops)
-16. [User Functions](#user-functions)
-17. [Standard Library Calls](#standard-library-calls)
-18. [Node Constructors](#node-constructors)
-19. [Shaders](#shaders)
-20. [Preprocessor](#preprocessor)
+1. [Introduction](#introduction)
+2. [Shader Anatomy]() 
+3. [Data Types](#data-types)
+4. [Expressions](#expressions)
+5. [Statements](#statements)
+6. [Identifiers](#identifiers)
+7. [Reserved Keywords](#reserved-keywords)
+8. [Whitespace](#whitespace)
+9. [Comments](#comments)
+10. [Operators](#operators)
+11. [Variable Declarations](#variable-declarations)
+12. [Variable Assignments](#variable-assignments)
+13. [Constructors](#constructors)
+14. [If Expressions](#if-expressions)
+15. [Switch Expressions](#switch-expressions)
+16. [For Loops](#for-loops)
+17. [User Functions](#user-functions)
+18. [Standard Library Calls](#standard-library-calls)
+19. [Node Constructors](#node-constructors)
+20. [Shader Types](#shader-types)
+21. [Scope](#scope) 
+22. [Preprocessor Directives](#preprocessor-directives)
+23. [mxslc](#mxslc)
 
 # Introduction
 
@@ -41,6 +44,56 @@ described in the official MaterialX specification. For example, we don't specify
 type of a `vector3` multiplied by a `float`, as it is already described in the MaterialX Standard Node [document](https://github.com/AcademySoftwareFoundation/MaterialX/blob/main/documents/Specification/MaterialX.StandardNodes.md). 
 This is to keep this document as concise as possible as well as to reduce the chance of needing to update it in the future 
 due to changes to the official MaterialX documentation.
+
+# Shader Anatomy
+
+ShadingLanguageX shaders consist simply of a list of statements that are sequentially compiled to MaterialX nodes.
+```
+vec2 uv = texcoord();
+surfaceshader surface = standard_surface();
+surface.base_color = color3(uv, 0.0);
+
+    vvvv compiles to vvvv
+
+<texcoord name="uv" type="vector2" />
+<standard_surface name="surface" type="surfaceshader">
+  <input name="base_color" type="color3" nodename="node5" />
+</standard_surface>
+<extract name="node2" type="float">
+  <input name="in" type="vector2" nodename="uv" />
+  <input name="index" type="integer" value="0" />
+</extract>
+<extract name="node3" type="float">
+  <input name="in" type="vector2" nodename="uv" />
+  <input name="index" type="integer" value="1" />
+</extract>
+<combine3 name="node5" type="color3">
+  <input name="in1" type="float" nodename="node2" />
+  <input name="in2" type="float" nodename="node3" />
+  <input name="in3" type="float" value="0" />
+</combine3>
+<surfacematerial name="mxsl_material" type="material">
+  <input name="surfaceshader" type="surfaceshader" nodename="surface" />
+</surfacematerial>
+```
+
+However, ShadingLanguageX shaders can also be executed with a designated entry function like in C. If the shader contains
+a function called `main`, this function will be the entry into the shader. Otherwise, an entry function name can be passed
+to the compiler as an additional argument (see mxslc section). If the entry function accepts any arguments, these can also
+be passed to the compiler.
+
+```
+void my_function(float r, float g, float b, float metalness)
+{
+    surfaceshader surface = standard_surface();
+    surface.base_color = color3(r, g, b);
+    surface.metalness = metalness;
+}
+```
+
+`> ./mxslc.exe my_shader.mxsl -o gold.mtlx -m my_function -a 1.0 0.72 0.315 1.0`
+
+When executing a shader in this manner, all global variables and functions will be defined before the entry function is called.
 
 # Data Types
 
@@ -138,9 +191,9 @@ All data types and alias types are also reserved keywords.
 
 ### Notes
 
-ShadingLanguageX is an evolving language. Keywords might be added in each update which might cause shaders to raise a compile
-error which were previously working correctly. In general, try not to use identifiers that are popular keywords in other
-languages (e.g., `const` `struct` `typeof`) or a term that is prominantly used in the MaterialX specification. 
+ShadingLanguageX is an evolving language. Keywords might be added in each update which might cause shaders to break which 
+were previously working correctly. In general, try not to use identifiers that are popular keywords in other
+languages (e.g., `const` `struct` `typeof`) or a term that is prominantly used in the MaterialX specification (e.g., `node` `uniform` `varying`). 
 
 # Whitespace
 
@@ -571,7 +624,7 @@ float bias = {"hmtlxbias", float: in=0.0, bias=0.5};
 Unlike the rest of ShadingLanguageX, node constructors do not perform any type checking. In fact, the data type of the inputs
 is determined by the values that are passed to them.
 
-# Shaders
+# Shader Types
 
 ShadingLanguageX currently supports two shader types: `surfaceshader` and `displacementshader`. They form the final output
 of the programmed shader. At this time, ShadingLanguageX does not directly support the `material` type or creating the `surfacematerial`
@@ -649,10 +702,98 @@ void main()
 </surfacematerial>
 ```
 
-# Preprocessor
+# Scope
 
 TODO
 
-# mxslc API
+# Preprocessor Directives
+
+ShadingLanguageX supports many of the C preprocessor directives:
+* File inclusion (`#include`)
+* Macro definition (`#define` `#undef`) 
+* Conditional compilation (`#if` `#ifdef` `#ifndef` `#elif` `#else` `#endif`)
+
+## File Inclusion
+
+The `#include` directive works as it does in C, but also allows inclusion of directories as well as specific files. All files
+with the extension `.mxsl` inside the directory will be included. The search is not recursive, i.e., it does not include `.mxsl`
+files from sub-directories and files are not included in any particular order. If the order of included files is important, 
+then you should include each file individually in the necessary order.
+
+When including a file, paths may be absolute or relative. If the path is relative, ShadingLanguageX will look for the file in
+the following directories in order:
+1. Any additional directories passed to the compiler (see Command Line Options below)
+2. The containing directory of the `.mxsl` file currently being compiled.
+3. The containing directory of the mxslc.exe compiler.
+
+### Example
+
+_color_enums.mxsl_:
+```
+#define RED color3(1.0, 0.0, 0.0)
+#define GREEN color3(0.0, 1.0, 0.0)
+#define BLUE color3(0.0, 0.0, 1.0)
+```
+
+_file_incl_example.mxsl_:
+```
+#include "color_enums.mxsl"
+vec2 uv = texcoord();
+color3 c = mix(mix(RED, GREEN, uv.x), BLUE, uv.y);
+standard_surface(base_color=c);
+```
+
+## Macro Definition
+
+Macros are more limited in ShadingLanguageX than in C. Only flag- and object-like macros are supported, e.g., 
+`#define USE_FFT` and `#define PI 3.14159`. Function-like macros as well as macro stringification and token pasting are not supported.
+
+There is currently one macro pre-defined during shader compilation:
+* `__MAIN__` is defined during compilation of the file originally given to the compiler.
+```
+> ./mxslc.exe macro_def_example.mxsl
+
+
+// macro_def_example.mxsl
+#ifdef __MAIN__ // will be defined in this context
+#include "macro_def_incl.mxsl"
+#endif
+
+
+// macro_def_incl.mxsl
+#ifdef __MAIN__ // will not be defined in this context
+...
+#endif
+```
+
+## Conditional Compilation
+
+Conditional compilations directives operate as they do in C with no notable changes.
+
+# mxslc
+
+mxslc is the open-source compiler for ShadingLanguageX. It can downloaded from the github repository [releases](https://github.com/jakethorn/ShadingLanguageX/releases) section.
+It can run either using the compiled binary executable or with the Python API.  
+
+## Executable
+
+The executable is a compiled version of the Python API (compiled using the pyinstaller package) with some added argument parsing functionality.
+
+### Command Line Options
+
+```
+positional arguments:
+  mxsl_path                        Input path to mxsl file or containing folder
+
+options:
+  -h, --help                       show this help message and exit
+  -o, --output-path OUTPUT_PATH    Output path of generated mtlx file or containing folder
+  -m, --main-func MAIN_FUNC        Name of main entry function into the program
+  -a, --main-args MAIN_ARGS        Arguments to be passed to the main function
+  -i, --include-dirs INCLUDE_DIRS  Additional directories to search when including files
+  -d, --define MACROS              Additional macro definitions
+```
+
+## Python API
 
 TODO

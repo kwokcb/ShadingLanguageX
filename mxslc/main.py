@@ -30,7 +30,7 @@ def _main(raw_args: list[str] = None):
         compile_file(
             args.mxsl_path,
             args.output_path,
-            main_function=args.main_func,
+            main_func=args.main_func,
             main_args=_parse_main_args(args.main_args),
             add_include_dirs=args.include_dirs,
             add_macros=[Macro(*m) for m in args.macros]

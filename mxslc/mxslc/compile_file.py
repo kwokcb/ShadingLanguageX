@@ -12,7 +12,7 @@ from .post_process import post_process
 def compile_file(mxsl_path: str | Path,
                  mtlx_path: str | Path = None,
                  *,
-                 main_function: str = None,
+                 main_func: str = None,
                  main_args: Sequence[mtlx.Value] = None,
                  add_include_dirs: Sequence[Path] = None,
                  add_macros: Sequence[str | Macro] = None) -> None:
@@ -35,7 +35,7 @@ def compile_file(mxsl_path: str | Path,
             define_macro(macro)
 
         compile_(mxsl_filepath, include_dirs, is_main=True)
-        _call_main(mxsl_filepath, main_function, main_args)
+        _call_main(mxsl_filepath, main_func, main_args)
         post_process()
 
         with open(mtlx_filepath, "w") as file:
