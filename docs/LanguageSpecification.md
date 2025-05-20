@@ -796,4 +796,4 @@ options:
 
 ## Python API
 
-TODO
+See [here](https://github.com/jakethorn/ShadingLanguageX/blob/main/docs/PythonAPI.md) for the mxslc Python API documentation.
