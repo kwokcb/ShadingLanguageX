@@ -4,7 +4,7 @@
 
 
 # ShadingLanguageX
-__ShadingLanguageX__ is a high level shading language that can be used to create complex MaterialX materials.  
+__ShadingLanguageX__ is a high level programming language that can be used to create complex MaterialX shaders.  
   
 ![](examples/screenshots/readme_example.png)
 
