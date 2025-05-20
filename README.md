@@ -84,7 +84,7 @@ Output: hello_world.mtlx
 ```
 
 ## Language Specification
-For information about __ShadingLanguageX__ syntax and additional compiler options, see the __ShadingLanguageX__ [language specification](https://github.com/jakethorn/ShadingLanguageX/blob/main/docs/LanguageSpecification.md). More examples can be found [here](https://github.com/jakethorn/ShadingLanguageX/tree/main/examples).
+For information regarding __ShadingLanguageX__ syntax and mxslc compiler options, see the __ShadingLanguageX__ [language specification](https://github.com/jakethorn/ShadingLanguageX/blob/main/docs/LanguageSpecification.md). Additionally, more examples can be found [here](https://github.com/jakethorn/ShadingLanguageX/tree/main/examples).
 
 ## Interactive Compiler (Experimental)
 The python installation also comes with an interactive compiler which allows the user to call __ShadingLanguageX__ functions and access variables from python. This is useful if more complex logic is needed when compiling the shader, such as checking for missing textures files, or updating values or logic based on a configuration file.
