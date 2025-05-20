@@ -18,19 +18,19 @@ For example, the `+` operator (e.g., `float x = 1.0 + 1.0;`) intuitively compile
 
 # ShaderLanguageX Use Cases
 
-## Manage Complexity
+#### Manage Complexity
 
 TODO
 
-## Reuse Functionality
+#### Reuse Functionality
 
 TODO
 
-## Iterate Quickly
+#### Iterate Quickly
 
 TODO
 
-## Code Readability
+#### Code Readability
 
 TODO
 
