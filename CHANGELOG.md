@@ -88,7 +88,7 @@ color3 image(filename file, vec2 texcoord = null)
 
 color3 c = image("butterfly1.png");
 ```
-* __Named Arguments__
+* __Named Arguments__  
 When calling a function, arguments can be named to target specific parameters.
 ```
 color3 image(filename file, color3 default = null, vec2 texcoord = null)
