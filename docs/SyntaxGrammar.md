@@ -4,7 +4,7 @@ program     → statement* EOF ;
 statement   → declaration | assignment | for_loop ;  
 declaration → var_decl | func_decl;  
 var_decl    → TYPE IDENTIFIER "=" expression ";" ;  
-func_decl   → TYPE IDENTIFIER ( "<" TYPE ( "," TYPE)* ">" )? "(" ( parameter ( "," parameter )* )? ")" "{" statement* return "}" ;  
+func_decl   → TYPE IDENTIFIER ( "<" TYPE ( "," TYPE )* ">" )? "(" ( parameter ( "," parameter )* )? ")" "{" statement* return "}" ;  
   parameter → TYPE IDENTIFIER ( "=" expression )? ;  
   return    → "return" expression ";" ;  
 assignment  → var_assign | cmp_assign ;  
