@@ -1,6 +1,103 @@
-# Version 0.4-beta (in development)
+# Version 0.4-beta
 ## Added
-Nothing yet
+* __Function Overloading__  
+Functions can now be overloaded, allowing them to have the same names as long as their signature is unique. In __ShadingLanguageX__, a functions return type is a part of its signature.
+```
+float length(vec2 v)
+{
+    return sqrt(v.x * v.x + v.y * v.y);
+}
+
+float length(vec3 v)
+{
+    return sqrt(v.x * v.x + v.y * v.y + v.z * v.z);
+}
+
+vec2 uv2 = geompropvalue("uv2");
+vec3 n = geompropvalue("Nworld");
+
+float a = length(vv2);
+float b = length(n);
+```
+```
+float random()
+{
+    return randomfloat();
+}
+
+vec2 random()
+{
+    return vec2(randomfloat(), randomfloat());
+}
+
+float f = rand();
+vec2 v2 = rand();
+```
+* __Function Templates__  
+Templates allow functions with different data types but the same logic to be implemented in a single function.
+```
+T frac<float, vec2, vec3, vec4, color3, color4>(T value)
+{
+    return value % 1.0;
+}
+
+float a = 0.7;
+vec2 v2 = vec2(1.5, 8.1);
+color3 c3 = color3(3.4, 0.1, 9.9);
+
+a = frac(a);
+v2 = frac(v2);
+c3 = frac(c3);
+```
+In the previous example, the template type `T` was inferred from the functions usage, but it can be specified if the usage is ambiguous or for code clarity.
+```
+a = frac<float>(a);
+v2 = frac<vec2>(v2);
+c3 = frac<color3>(c3);
+```
+The template type `T` can be used wherever a standard data type could have been used inside the function.
+```
+T image_mult<vec3, color3>(filename img_path, T mult = T(1.0))
+{
+    T img = image<T>(img_path);
+    return img * mult;
+}
+
+color3 brick = image_mult("brick.png", color3(0.8, 0.1, 0.1));
+vec3 normal = image_mult("brick_normals.png");
+```
+* __Default Arguments__  
+Function parameters can now have default arguments.
+```
+float incr(float value, float amount=1.0)
+{
+    return value + amount;
+}
+
+float a = 1.0;
+a = incr(a);
+a = incr(a, 2.0);
+```
+* __Null Value__  
+Any variable can now be assigned the `null` value. When that variable is compiled and its value assigned to the input of a MaterialX node, the input will not be set. This variable can be used anywhere an expression can be evaluated, but is specifically useful to provide default arguments to functions that do not create inputs in the underlying MaterialX nodes, letting MaterialX define the default value instead of the developer.
+```
+color3 image(filename file, vec2 texcoord = null)
+{
+    return {"image", color3: file=file, texcoord=texcoord);
+}
+
+color3 c = image("butterfly1.png");
+```
+* __Named Arguments__
+When calling a function, arguments can be named to target specific parameters.
+```
+color3 image(filename file, color3 default = null, vec2 texcoord = null)
+{
+    return {"image", color3: file=file, default=default, texcoord=texcoord);
+}
+
+color3 c = image("butterfly1.png", texcoord=geompropvalue("uv2"));
+```
 # Version 0.3-beta
 ## Added
 * __Expression Statements__  
