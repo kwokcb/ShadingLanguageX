@@ -1,9 +1,8 @@
 from .Argument import Argument
 from .CompileError import CompileError
 from .Expressions import *
-from .Keyword import DATA_TYPES, Keyword, INTEGER
+from .Keyword import Keyword
 from .Parameter import Parameter
-from .StandardLibrary import StandardLibrary
 from .Statements import *
 from .Token import Token
 from .TokenReader import TokenReader
@@ -29,13 +28,13 @@ class Parser(TokenReader):
 
     def __statement(self) -> Statement:
         token = self._peek()
-        if token in DATA_TYPES:
+        if token in Keyword.DATA_TYPES():
             return self.__declaration()
         if token == Keyword.VOID:
             return self.__void_function_declaration()
         if token == IDENTIFIER:
-            if self._peek_next() == "(":
-                expr = self.__primary() # function or standard library call
+            if self._peek_next() in ["(", "<"]:
+                expr = self.__primary() # function
                 self._match(";")
                 return ExpressionStatement(expr)
             else:
@@ -45,14 +44,14 @@ class Parser(TokenReader):
         raise CompileError(f"Expected return statement, data type keyword, identifier or 'for', but found '{token.lexeme}'.", token)
 
     def __declaration(self) -> Statement:
-        data_type = self._match(*DATA_TYPES)
+        data_type = self._match(Keyword.DATA_TYPES())
         identifier = self._match(IDENTIFIER)
         token = self._peek()
         if token == "=":
             return self.__variable_declaration(data_type, identifier)
-        if token == "(":
+        if token in ["(", "<"]:
             return self.__function_declaration(data_type, identifier)
-        raise CompileError(f"Expected '=' or '(', but found '{token.lexeme}'.", token)
+        raise CompileError(f"Unexpected token: '{token.lexeme}'.", token)
 
     def __variable_declaration(self, data_type: Token, identifier: Token) -> VariableDeclaration:
         self._match("=")
@@ -60,7 +59,14 @@ class Parser(TokenReader):
         self._match(";")
         return VariableDeclaration(data_type, identifier, right)
 
-    def __function_declaration(self, data_type: Token, identifier: Token) -> FunctionDeclaration:
+    # TODO combine `__function_declaration` and `__void_function_declaration`
+    def __function_declaration(self, return_type: Token, identifier: Token) -> FunctionDeclaration:
+        template_types = []
+        if self._consume("<"):
+            template_types.append(self._match(Keyword.DATA_TYPES()))
+            while self._consume(","):
+                template_types.append(self._match(Keyword.DATA_TYPES()))
+            self._match(">")
         self._match("(")
         if self._consume(")"):
             params = []
@@ -77,11 +83,17 @@ class Parser(TokenReader):
         return_expr = self.__expression()
         self._match(";")
         self._match("}")
-        return FunctionDeclaration(data_type, identifier, params, statements, return_expr)
+        return FunctionDeclaration(return_type, identifier, template_types, params, statements, return_expr)
 
     def __void_function_declaration(self) -> FunctionDeclaration:
         self._match(Keyword.VOID)
         identifier = self._match(IDENTIFIER)
+        template_types = []
+        if self._consume("<"):
+            template_types.append(self._match(Keyword.DATA_TYPES()))
+            while self._consume(","):
+                template_types.append(self._match(Keyword.DATA_TYPES()))
+            self._match(">")
         self._match("(")
         if self._consume(")"):
             params = []
@@ -96,12 +108,16 @@ class Parser(TokenReader):
             statements.append(self.__statement())
         self._match("}")
         return_expr = LiteralExpression(Token(INT_LITERAL, "0"))
-        return FunctionDeclaration(Token(INTEGER), identifier, params, statements, return_expr)
+        return FunctionDeclaration(Token(Keyword.INTEGER), identifier, template_types, params, statements, return_expr)
 
     def __parameter(self) -> Parameter:
-        data_type = self._match(*DATA_TYPES)
+        data_type = self._match(Keyword.DATA_TYPES())
         identifier = self._match(IDENTIFIER)
-        return Parameter(identifier, data_type)
+        if self._consume("="):
+            default_value = self.__expression()
+        else:
+            default_value = None
+        return Parameter(identifier, data_type, default_value)
 
     def __assignment(self) -> Statement:
         identifier = self._match(IDENTIFIER)
@@ -128,7 +144,7 @@ class Parser(TokenReader):
     def __for_loop(self) -> ForLoop:
         self._match(Keyword.FOR)
         self._match("(")
-        data_type = self._match(*DATA_TYPES)
+        data_type = self._match(Keyword.DATA_TYPES())
         identifier = self._match(IDENTIFIER)
         self._match("=")
         literal1 = self._match(FLOAT_LITERAL, IDENTIFIER)
@@ -169,9 +185,9 @@ class Parser(TokenReader):
         right = None
 
         relational_operators = [">", ">=", "<", "<="]
-        if op1 := self._consume(*relational_operators):
+        if op1 := self._consume(relational_operators):
             middle = self.__term()
-        if op2 := self._consume(*relational_operators):
+        if op2 := self._consume(relational_operators):
             right = self.__term()
 
         if middle is None:
@@ -222,28 +238,24 @@ class Parser(TokenReader):
 
     def __primary(self) -> Expression:
         # literal
-        if literal := self._consume(Keyword.TRUE, Keyword.FALSE, INT_LITERAL, FLOAT_LITERAL, STRING_LITERAL, FILENAME_LITERAL):
+        if literal := self._consume(Keyword.TRUE, Keyword.FALSE, INT_LITERAL, FLOAT_LITERAL, STRING_LITERAL, FILENAME_LITERAL, Keyword.NULL):
             return LiteralExpression(literal)
         # grouping
         if self._consume("("):
             expr = self.__expression()
             self._match(")")
             return GroupingExpression(expr)
-        # stdlib call / function call / identifier
+        # function call / identifier
         if identifier := self._consume(IDENTIFIER):
-            if self._peek() == "(":
-                # stdlib call
-                if identifier.lexeme in StandardLibrary:
-                    return self.__standard_library_call(identifier)
-                # function call
-                else:
-                    return self.__function_call(identifier)
+            # function call
+            if (self._peek() == "(") or (self._peek() == "<" and self._peek_next() in Keyword.DATA_TYPES() and self._peek_next_next() == ">"):
+                return self.__function_call(identifier)
             # identifier
             else:
                 return IdentifierExpression(identifier)
         token = self._peek()
         # constructor call
-        if token in DATA_TYPES:
+        if token in Keyword.DATA_TYPES():
             return self.__constructor_call()
         # if
         if token == Keyword.IF:
@@ -285,56 +297,52 @@ class Parser(TokenReader):
         return SwitchExpression(keyword, which, values)
 
     def __constructor_call(self) -> Expression:
-        data_type = self._match(*DATA_TYPES)
+        data_type = self._match(Keyword.DATA_TYPES())
         self._match("(")
         if self._consume(")"):
             args = []
         else:
-            args = [self.__argument()]
-            while self._consume(","):
-                args.append(self.__argument())
+            args = self.__argument_list()
             self._match(")")
         return ConstructorCall(data_type, args)
 
-    def __standard_library_call(self, identifier: Token) -> Expression:
-        self._match("(")
-        if self._consume(")"):
-            args = []
-        else:
-            args = [self.__argument()]
-            while self._consume(","):
-                args.append(self.__argument())
-            self._match(")")
-        return StandardLibraryCall(identifier, args)
-
     def __function_call(self, identifier: Token) -> Expression:
+        template_type = None
+        if self._consume("<"):
+            template_type = self._match(Keyword.DATA_TYPES())
+            self._match(">")
         self._match("(")
         if self._consume(")"):
             args = []
         else:
-            args = [self.__argument()]
-            while self._consume(","):
-                args.append(self.__argument())
+            args = self.__argument_list()
             self._match(")")
-        return FunctionCall(identifier, args)
+        return FunctionCall(identifier, template_type, args)
 
     def __node_constructor(self) -> NodeConstructor:
         self._match("{")
         category = self._match(STRING_LITERAL)
         self._match(",")
-        data_type = self._match(*DATA_TYPES)
-        args = []
+        data_type = self._match(Keyword.DATA_TYPES())
         if self._consume(":"):
-            args.append(self.__argument())
-            while self._consume(","):
-                args.append(self.__argument())
+            args = self.__argument_list()
+        else:
+            args = []
         self._match("}")
         return NodeConstructor(category, data_type, args)
 
-    def __argument(self) -> Argument:
+    def __argument_list(self) -> list[Argument]:
+        args = [self.__argument(0)]
+        i = 1
+        while self._consume(","):
+            args.append(self.__argument(i))
+            i += 1
+        return args
+
+    def __argument(self, index: int) -> Argument:
         if self._peek() == IDENTIFIER and self._peek_next() == "=":
             name = self._match(IDENTIFIER)
             self._match("=")
         else:
             name = None
-        return Argument(self.__expression(), name)
+        return Argument(self.__expression(), index, name)

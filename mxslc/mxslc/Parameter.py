@@ -1,68 +1,85 @@
-from .Keyword import DataType
-from .Token import Token
+from __future__ import annotations
+from typing import Iterator
 
-type ParameterTuple = tuple[str, DataType | list[DataType]]
+from .Argument import Argument
+from .DataType import DataType
+from .Expressions import Expression
+from .Token import Token
 
 
 class Parameter:
     """
-    Represents a parameter to a function, constructor or standard library call.
-    Function and constructor calls will only ever have one data_type, but standard library calls can have multple.
+    Represents a parameter to a function or constructor call.
     """
-    def __init__(self, name: Token | str, data_types: Token | DataType | list[DataType]):
-        if isinstance(name, Token):
-            self.__name_token = name
-            self.__name = name.lexeme
-        else:
-            self.__name_token = None
-            self.__name = name
-
-        if isinstance(data_types, Token):
-            self.__data_type_token = data_types
-            self.__data_types = [DataType(data_types.type)]
-        else:
-            self.__data_type_token = None
-            self.__data_types = data_types if isinstance(data_types, list) else [data_types]
+    def __init__(self, identifier: Token, data_type: Token | DataType, default_value: Expression = None):
+        self.__identifier = identifier
+        self.__data_type = DataType(data_type)
+        self.__default_value = default_value
 
     @property
     def name(self) -> str:
-        return self.__name
+        return self.__identifier.lexeme
 
     @property
-    def data_types(self) -> list[DataType]:
-        return self.__data_types
+    def identifier(self) -> Token:
+        return self.__identifier
 
     @property
-    def name_token(self) -> Token:
-        return self.__name_token
+    def data_type(self) -> DataType:
+        return self.__data_type
 
     @property
-    def data_type_token(self) -> Token:
-        return self.__data_type_token
-
+    def default_value(self) -> Expression | None:
+        return self.__default_value
 
 
 class ParameterList:
     """
     A list of parameters that can be accessed by their position or name.
     """
-    def __init__(self, parameters: list[Parameter | ParameterTuple]):
-        self.__parameters = [p if isinstance(p, Parameter) else Parameter(*p) for p in parameters]
-
-    def __getitem__(self, index: int | str) -> Parameter:
-        if isinstance(index, int):
-            return self.__parameters[index]
+    def __init__(self, params: ParameterList | list[Parameter]):
+        if isinstance(params, ParameterList):
+            self.__params = params.__params
         else:
-            for param in self.__parameters:
+            self.__params = params
+
+    def instantiate_templated_parameters(self, template_type: DataType) -> ParameterList:
+        return ParameterList([
+            Parameter(p.identifier, p.data_type.instantiate(template_type), p.default_value)
+            for p
+            in self.__params
+        ])
+
+    def __getitem__(self, index: int | str | Argument) -> Parameter:
+        if isinstance(index, int) and index < len(self.__params):
+            return self.__params[index]
+        elif isinstance(index, str):
+            for param in self.__params:
                 if param.name == index:
                     return param
-        raise IndexError(f"No parameter found with the name '{index}'.")
+        elif isinstance(index, Argument):
+            if index.is_positional:
+                param = self[index.position]
+            else:
+                param = self[index.name]
+            if param.data_type == index.data_type:
+                return param
+        raise IndexError(f"No parameter found with the index '{index}'.")
 
     def __len__(self) -> int:
-        return len(self.__parameters)
+        return len(self.__params)
 
-    def __contains__(self, param_name: str) -> bool:
-        for param in self.__parameters:
-            if param.name == param_name:
-                return True
-        return False
+    def __contains__(self, index: int | str | Parameter) -> bool:
+        if isinstance(index, int):
+            return index < len(self.__params)
+        if isinstance(index, str):
+            for param in self.__params:
+                if param.name == index:
+                    return True
+            return False
+        if isinstance(index, Parameter):
+            return index in self.__params
+        raise TypeError
+
+    def __iter__(self) -> Iterator[Parameter]:
+        yield from self.__params

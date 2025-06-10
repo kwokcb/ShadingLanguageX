@@ -1,54 +1,55 @@
+from collections.abc import Collection
+
 from . import Statement
-from .. import mtlx, state
-from ..Argument import Argument
+from .. import state
 from ..CompileError import CompileError
-from ..Expressions import Expression
-from ..Keyword import DataType
-from ..Parameter import Parameter
-from ..StandardLibrary import StandardLibrary
+from ..DataType import DataType
+from ..Function import Function
+from ..Parameter import Parameter, ParameterList
 from ..Token import Token
 
-# TODO change params to a ParameterList instead of list[Parameter]
 
 class FunctionDeclaration(Statement):
-    def __init__(self, data_type: Token, identifier: Token, params: list[Parameter], body: list[Statement], return_expr: Expression):
-        self.file = identifier.file
-        self.line = identifier.line
+    def __init__(self,
+                 return_type: Token | DataType,
+                 identifier: Token,
+                 template_types: Collection[Token] | Collection[DataType],
+                 params: ParameterList | list[Parameter],
+                 body: list[Statement],
+                 return_expr: "Expression"):
+        self.__return_type = DataType(return_type)
+        self.__identifier = identifier
+        self.__template_types = {DataType(t) for t in template_types}
+        self.__params = ParameterList(params)
+        self.__body = body
+        self.__return_expr = return_expr
 
-        self.data_type = DataType(data_type.type)
-        self.identifier = identifier
-        self.name = identifier.lexeme
-        self.params = params
-        self.body = body
-        self.return_expr = return_expr
+        self.__funcs: list[Function] = []
+        if len(template_types) == 0:
+            func = Function(self.__return_type, identifier, self.__params, body, return_expr)
+            self.__funcs.append(func)
+        else:
+            # duplicate function definition for each template type
+            for template_type in self.__template_types:
+                concrete_return_type = self.__return_type.instantiate(template_type)
+                concrete_params = self.__params.instantiate_templated_parameters(template_type)
+                concrete_body = [s.instantiate_templated_types(template_type) for s in body]
+                concrete_return_expr = return_expr.instantiate_templated_types(template_type)
+                func = Function(concrete_return_type, identifier, concrete_params, concrete_body, concrete_return_expr)
+                self.__funcs.append(func)
+
+    def instantiate_templated_types(self, template_type: DataType) -> Statement:
+        if self.__template_types:
+            raise CompileError("Cannot declare nested templated functions.", self.__identifier)
+        return FunctionDeclaration(self.__return_type, self.__identifier, {template_type}, self.__params, self.__body, self.__return_expr)
 
     def execute(self) -> None:
-        if self.name in StandardLibrary:
-            raise CompileError(f"Function name '{self.name}' already exists in the standard library.", self.identifier)
-        state.add_function(self)
+        for func in self.__funcs:
+            _init_parameter_default_values(func)
+            state.add_function(func)
 
-    def invoke(self, args: list[Argument]) -> mtlx.Node:
-        if len(self.params) != len(args):
-            raise CompileError(f"Incorrect number of arguments for function '{self.name}'.", self.identifier)
 
-        # evaluate arguments before entering function scope because they might reference variable from the calling scope
-        arg_nodes = []
-        for param, arg in zip(self.params, args):
-            arg_node = arg.evaluate(param.data_types)
-            arg_nodes.append(arg_node)
-
-        # enter scope
-        state.enter_scope(self.name)
-
-        # now add arguments to state
-        for param, arg_node in zip(self.params, arg_nodes):
-            state.add_node(param.name_token, arg_node)
-
-        for statement in self.body:
-            statement.execute()
-
-        retval = self.return_expr.evaluate(self.data_type)
-
-        state.exit_scope()
-
-        return retval
+def _init_parameter_default_values(func: Function) -> None:
+    for param in func.parameters:
+        if param.default_value:
+            param.default_value.init(param.data_type)
