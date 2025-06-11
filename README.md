@@ -13,19 +13,21 @@ __ShadingLanguageX__ source files are compiled to MaterialX (.mtlx) files using 
 For example, the `+` operator (e.g., `float x = 1.0 + 1.0;`) intuitively compiles to the `add` node, and the same for all other mathematical operators. `if` expressions compile to either of the `ifgreater`, `ifgreatereq` or `ifequal` nodes depending on the condition. `switch` expressions compile to the `switch` node. The swizzle operator (e.g., `some_vector.xy`) compiles to `extract` and `combine` nodes. Most MaterialX nodes are represented by a standard library function that is built into the language, such as `color3 c = image("albedo.png");` which compiles to the `image` node. Additionally, declaring a variable (e.g., `vec3 up = vec3(0, 1, 0);`) compiles to a `constant` node (or a `combine` node depending on the inputs to the expression).  
 
 
-# ShaderLanguageX Use Cases
+# Why Use ShaderLanguageX? ---(Merge subsections into one paragraph)---
+
+Currently, MaterialX shaders can be made either using the MaterialX C++ or Python APIs, or using a node editor software. __ShadingLanguageX__ provides several benefits over these existing methods.
 
 #### Manage Complexity
 
-TODO
+Using existing methods, it can be difficult to develop and maintain complex MaterialX shaders with many nodes. __ShadingLanguageX__ provides a concise syntax and tools such as for loops and user-defined functions that make it easy to develop complex shaders.
 
 #### Reuse Functionality
 
-TODO
+__ShadingLanguageX__ supports the `#include` directive that make it easy to reuse code in more than one project. 
 
 #### Iterate Quickly
 
-TODO
+The MaterialX API can be quite verbose to use when writing shaders because it needs to provide control over every aspect of MaterialX. Developers can write their own wrappers around the API, but this takes time and knowledge about either C++ or Python. __ShadingLanguageX__ has a less functionality than the MaterialX API, but in return provides a language with a simple syntax, a much smaller syntax grammar to learn, and one that was developed specifically for building MaterialX shaders. There is no setup code to write, just the shaders and a call to the compiler.
 
 #### Code Readability
 
