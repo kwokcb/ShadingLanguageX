@@ -43,7 +43,7 @@ Alternatively, you can download the compiler executable from the most recent rel
 ```
 > ./mxslc.exe concrete.mxsl
 ```
-Both methods will output a `concrete.mtlx` file which can then be used as you would any other MaterialX file. Both methods also have the same input signature, a mandatory path to a __ShadingLanguageX__ source file and then several optional arguments, such as setting the output files directory and name.
+Both examples will output a `concrete.mtlx` file which can then be used as you would any other MaterialX file. Both methods also have the same input signature, a mandatory path to a __ShadingLanguageX__ source file and then several optional arguments, such as setting the output files directory and name.
 
 ## ShadingLanguageX - Hello World
 ```
