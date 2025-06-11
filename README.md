@@ -13,7 +13,7 @@ __ShadingLanguageX__ source files are compiled to MaterialX (.mtlx) files using 
 For example, the `+` operator (e.g., `float x = 1.0 + 1.0;`) intuitively compiles to the `add` node, and the same for all other mathematical operators. `if` expressions compile to either of the `ifgreater`, `ifgreatereq` or `ifequal` nodes depending on the condition. `switch` expressions compile to the `switch` node. The swizzle operator (e.g., `some_vector.xy`) compiles to `extract` and `combine` nodes. Most MaterialX nodes are represented by a standard library function that is built into the language, such as `color3 c = image("albedo.png");` which compiles to the `image` node. Additionally, declaring a variable (e.g., `vec3 up = vec3(0, 1, 0);`) compiles to a `constant` node (or a `combine` node depending on the inputs to the expression).  
 
 
-# Why Use ShaderLanguageX? ---(Merge subsections into one paragraph)---
+# Why Use ShadingLanguageX? Merge subsections into one paragraph
 
 Currently, MaterialX shaders can be made either using the MaterialX C++ or Python APIs, or using a node editor software. __ShadingLanguageX__ provides several benefits over these existing methods.
 
