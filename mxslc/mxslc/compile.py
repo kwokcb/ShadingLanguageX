@@ -337,14 +337,9 @@ float time(float fps = null)
 
 // ----------------  texcoord  ----------------
 
-vec2 texcoord(int index = null)
+T texcoord<vec2, vec3>(int index = null)
 {
-    return {"texcoord", vec2: index=index};
-}
-
-vec3 texcoord(int index = null)
-{
-    return {"texcoord", vec3: index=index};
+    return {"texcoord", T: index=index};
 }
 
 // ----------------  viewdirection  ----------------
