@@ -9,9 +9,10 @@ from .Token import Token
 
 
 class Function:
-    def __init__(self, return_type: DataType, identifier: Token, params: ParameterList, body: list["Statement"], return_expr: Expression):
+    def __init__(self, return_type: DataType, identifier: Token, template_type: DataType | None, params: ParameterList, body: list["Statement"], return_expr: Expression):
         self.__return_type = return_type
         self.__name = identifier.lexeme
+        self.__template_type = template_type
         self.__params = params
         self.__body = body
         self.__return_expr = return_expr
@@ -38,18 +39,15 @@ class Function:
         if self.__name != name:
             return False
 
-        if template_type is not None:
-            if self.return_type.is_templated and self.return_type != template_type:
+        if template_type:
+            if template_type != self.__template_type:
                 return False
-            for param in self.__params:
-                if param.data_type.is_templated and param.data_type != template_type:
-                    return False
 
-        if return_types is not None:
+        if return_types:
             if self.__return_type not in return_types:
                 return False
 
-        if args is not None:
+        if args:
             try:
                 satisfied_params = [self.__params[a] for a in args]
             except IndexError:

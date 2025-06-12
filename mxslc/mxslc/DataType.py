@@ -11,13 +11,13 @@ class DataType:
     """
     Represents a data type (e.g., float, vector3, string, etc...).
     """
-    def __new__(cls, data_type: Token | DataType | str, is_templated=False):
+    def __new__(cls, data_type: Token | DataType | str):
         if data_type is None:
             return None
         else:
             return super().__new__(cls)
 
-    def __init__(self, data_type: Token | DataType | str, is_templated=False):
+    def __init__(self, data_type: Token | DataType | str):
         if isinstance(data_type, Token):
             self.__data_type = data_type.type
         elif isinstance(data_type, DataType):
@@ -28,20 +28,9 @@ class DataType:
             raise TypeError
         assert self.__data_type in Keyword.DATA_TYPES()
 
-        if is_templated:
-            self.__is_templated = True
-        elif isinstance(data_type, DataType):
-            self.__is_templated = data_type.__is_templated
-        else:
-            self.__is_templated = False
-
-    @property
-    def is_templated(self):
-        return self.__data_type == Keyword.T or self.__is_templated
-
     def instantiate(self, template_type: DataType | None) -> DataType:
-        if self.is_templated and template_type:
-            return DataType(template_type, is_templated=True)
+        if self.__data_type == Keyword.T and template_type:
+            return DataType(template_type)
         else:
             return self
 
