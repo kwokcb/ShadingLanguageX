@@ -31,8 +31,8 @@
 ShadingLanguageX is a high level programming language that allows developers to write shaders that can be compiled into MaterialX (.mtlx) files.
 The primary use case is to provide a method of creating MaterialX shaders without using a node editor or the MaterialX C++ or Python APIs.
 Node editors are useful for creating simple material networks, but can become combersome for larger networks. 
-At the same time, the MaterialX API can be quite verbose, reducing code readability and making it difficult to quickly iterate when writing a shader.
-ShadingLanguageX is a simple, yet powerful language for writing complex MaterialX shaders.
+At the same time, the MaterialX API can be quite verbose, reducing code readability and making it difficult to quickly iterate when writing a shader, without writing your own custom wrapper around the API.
+ShadingLanguageX is a simple, yet powerful language for writing complex MaterialX shaders that overcomes these drawbacks.
 
 A core aim of ShadingLanguageX is to maximize portability. At the time of writing, many renderers and frameworks only support 
 a subset of the MaterialX specification. To ensure that ShaderLanguageX is compatible with as many platforms as possible, 
@@ -42,19 +42,21 @@ mature and as we continue to work on ShadingLanguageX more features will become 
 
 At the end of the day, ShadingLanguageX is based on the MaterialX specification and we've striven for equavilency as much
 as possible. As such, if anything is omitted from this document, you can assume that the behaviour is the same as what is
-described in the official MaterialX specification. For example, we don't specify in this document what is the return 
+described in the official MaterialX [specification](https://github.com/AcademySoftwareFoundation/MaterialX/blob/main/documents/Specification/MaterialX.Specification.md). For example, we don't specify in this document what is the return 
 type of a `vector3` multiplied by a `float`, as it is already described in the MaterialX Standard Node [document](https://github.com/AcademySoftwareFoundation/MaterialX/blob/main/documents/Specification/MaterialX.StandardNodes.md). 
 This is to keep this document as concise as possible as well as to reduce the chance of needing to update it in the future 
 due to changes to the official MaterialX documentation.
 
 # Shader Anatomy
 
-ShadingLanguageX shaders consist simply of a list of statements that are sequentially compiled to MaterialX nodes.
+ShadingLanguageX shaders consist simply of a list of statements that are sequentially compiled into MaterialX nodes. For example:
 ```
 vec2 uv = texcoord();
 surfaceshader surface = standard_surface();
 surface.base_color = color3(uv, 0.0);
 ```
+`> ./mxslc.exe my_shader.mxsl`  
+  
 compiles to:
 ```
 <texcoord name="uv" type="vector2" />
@@ -81,10 +83,8 @@ compiles to:
 
 However, ShadingLanguageX shaders can also be executed with a designated entry function like in C. If the shader contains
 a function called `main`, this function will be the entry into the shader. Otherwise, an entry function name can be passed
-to the compiler as an additional argument (see mxslc section). If the entry function accepts any arguments, these can also
-be passed to the compiler.
-
-`> ./mxslc.exe my_shader.mxsl -o gold.mtlx -m my_function -a 1.0 0.72 0.315 1.0`
+to the compiler as an additional argument (see mxslc section below for more information). If the entry function accepts any arguments, these can also
+be passed to the compiler. For example:
 ```
 void my_function(float r, float g, float b, float metalness)
 {
@@ -93,13 +93,13 @@ void my_function(float r, float g, float b, float metalness)
     surface.metalness = metalness;
 }
 ```
-
+`> ./mxslc.exe my_shader.mxsl -o gold.mtlx -m my_function -a 1.0 0.72 0.315 1.0`
 
 When executing a shader in this manner, all global variables and functions will be defined before the entry function is called.
 
 # Data Types
 
-Supported data types match the ones found in the MaterialX [specification](https://github.com/AcademySoftwareFoundation/MaterialX/blob/main/documents/Specification/MaterialX.Specification.md#materialx-data-types), with the exception of arrays, matrices, volumeshader and lightshader.  
+Supported data types match the ones found in the MaterialX specification, with the exception of arrays, matrices, volumeshader and lightshader.  
   
 ## Supported Data Types
 
@@ -121,7 +121,7 @@ Supported data types match the ones found in the MaterialX [specification](https
 ## Type Aliases
 
 ShadingLanguageX provides the following type aliases. They are functionally equivalent to their underlying type.
-In this document I will typically use the aliased version for the sake of brevity.
+In this document we will typically use the aliased version for the sake of brevity.
 
 `boolean` ➔ `bool`  
 `integer` ➔ `int`  
@@ -147,7 +147,6 @@ in its own section. The following table gives a quick overview of all the expres
 | If Expression               | `if (a < b) { x } else { y }`        |
 | Switch Expression           | `switch (a) { x, y, z }`             |
 | Function Call               | `my_function(a, b)`                  |
-| Standard Library Call       | `image("albedo.png", texcoord=uv)`   |
 | Constructor Call            | `vec3()`                             |
 | Node Constructor            | `{"mix", color3: bg=a, fg=b, mix=c}` |
 
@@ -170,8 +169,8 @@ the statements supported by ShadingLanguageX.
 # Identifiers
 
 Identifiers are the names given to user-defined variables and functions so they can be accessed later in the program.
-Identifiers can contain letters, numbers and the underscore character, but the first character cannot be a number.
-They cannot be the same as a ShadingLanguageX reserved keyword (see below) or a MaterialX Standard Node.
+ShadingLanguageX follows the paradigm implemented in most programming languages: identifiers can contain letters, numbers and the underscore character, with the exception that the first character cannot be a number.
+They also cannot be the same as a ShadingLanguageX reserved keyword (see below).
 
 ### Example
 
@@ -187,7 +186,7 @@ float pi2 = 3.14 * 2.0;
 
 The following identifiers have a special meaning in ShadingLanguageX and cannot be used for user-defined variables or functions.
 
-`if` `else` `switch` `for` `return` `true` `false` `and` `or` `not` `void`
+`if` `else` `switch` `for` `return` `true` `false` `and` `or` `not` `void` `null` `T`
 
 All data types and alias types are also reserved keywords.
 
@@ -237,13 +236,13 @@ Comments in ShandingLanguageX take the sole form of: `// this is a comment`.
 | `a and b` | `and`               |
 | `a \| b`  | `or`                |
 | `a or b`  | `or`                |
-| `-a`      | `subtract`          |
-| `+a`      | -                   |
 | `!a`      | `not`               |
 | `not a`   | `not`               |
+| `-a`      | `subtract`          |
+| `+a`      |                     |
 | `a[b]`    | `extract`           |
 | `a.b`     | `extract`+`combine` |
-| `(a)`     | -                   |
+| `(a)`     |                     |
 
 ### Notes
 
@@ -304,7 +303,6 @@ As shown in the table above, precendence can be controlled using the Grouping Op
 ### Notes
 
 * The `initial-value` is not optional as in most other languages.
-* Variables cannot be re-declared. Declaring a variable that has already been declared in the current scope will result in a compile error. 
 
 ### Example
 
@@ -324,10 +322,10 @@ As shown in the table above, precendence can be controlled using the Grouping Op
 
 ### Example
 
-`color4 albedo = color4();`  
-`albedo = if (cond1) { image("butterfly1.png") };`  
-`albedo = if (cond2) { image("butterfly2.png") };`  
-`albedo = if (cond3) { image("butterfly3.png") };`
+```
+color3 albedo = image("albedo.png");
+albedo = 1.0 - albedo;
+```
 
 ## Compound Assignment
 
@@ -380,7 +378,7 @@ ShadingLanguageX does not support implicit conversions. Explicit conversions can
 
 `float shadow = float(x > y);`  
 `color3 white = color3(1.0);`  
-`color3 i_debug = color3(viewdirection());`
+`color3 v_debug = color3(viewdirection());`
 
 ## Two Or More Arguments
 
@@ -395,8 +393,8 @@ components have been filled and then discard the rest. If not enough components 
 
 # If Expressions
 
-Unlike most languages, ShaderLanguageX does not support if statements, but instead uses if expressions. The reason for this is because if expressions
-are better suited for compiling to MaterialX nodes. You can think of if expressions as similar to the C ternary operator.
+Unlike most languages, ShaderLanguageX does not support if statements, but instead uses if expressions. The reason for this is because conditional nodes (`ifequal`, `ifgreater` and `ifgreatereq`) in MaterialX act more like
+ternary operators (`cond ? then : else`) than true if statements that control the logic of the program. This makes if expressions better suited for compiling to MaterialX nodes than if statements.
 
 `if (condition) { value_if_true } else { value_if_false }`  
 `condition` can be any expression that evaluates to a bool type.  
@@ -437,7 +435,7 @@ See the `switch` node in the MaterialX Standard Node document for more informati
 ### Example
 
 ```
-color4 albedo = switch (wall_id)
+color3 albedo = switch (wall_id)
 {
     image("left_wall.png", texcoord=uv),
     image("right_wall.png", texcoord=uv),
