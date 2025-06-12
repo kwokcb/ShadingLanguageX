@@ -19,12 +19,13 @@
 15. [Switch Expressions](#switch-expressions)
 16. [For Loops](#for-loops)
 17. [User Functions](#user-functions)
-18. [Standard Library Calls](#standard-library-calls)
-19. [Node Constructors](#node-constructors)
-20. [Shader Types](#shader-types)
-21. [Scope](#scope) 
-22. [Preprocessor Directives](#preprocessor-directives)
-23. [mxslc](#mxslc)
+18. [Node Constructors](#node-constructors)
+19. [Null Expressions](#null-expression)
+20. [Standard Library](#standard-library)
+21. [Shader Types](#shader-types)
+22. [Scope](#scope) 
+23. [Preprocessor Directives](#preprocessor-directives)
+24. [mxslc](#mxslc)
 
 # Introduction
 
@@ -481,8 +482,6 @@ standard_surface(base_color=c);
 
 # User Functions
 
-## Function Declaration
-
 Users can declare there own functions in ShadingLanguageX using the following syntax:
 ```
 type name(param1_type param1_name, param2_type param2_name...)
@@ -495,11 +494,9 @@ type name(param1_type param1_name, param2_type param2_name...)
 In this case, the return statement should also be omitted.  
 `name` can be any valid identifier.  
 `paramN_type` can be any supported data type and `paramN_name` can be any valid identifier. Functions can declare any number of parameters.  
-There is no concept of pointers or out parameters in ShadingLanguageX. Arguments are purely used to pass data into the function.
+There is no concept of pointers or out parameters in ShadingLanguageX. Arguments are purely used to pass data into the function and the only way to get data out of a function is using the return value.
 
-## Function Calls
-
-The other half of user functions is then calling them.
+## Calling Functions
 
 `name(arg1, arg2...)`  
 `name` is the name of function to be invoked.  
@@ -527,55 +524,118 @@ vec3 n = image("normals.png");
 main(color3(3.0, 7.0, 5.0), 0.8, n);
 ```
 
+## Overloading Functions
+
+Functions in ShadingLanguageX can be overloaded. This means that mutliple functions can have the same name, as long as their function signature is unique. When a function is called, the compiler will determine which of the functions to invoke based on the data types of the arguments passed to the function. For example:
+```
+float do_something(float f)
+{
+    return f * 2.0;
+}
+
+color3 do_something(color3 c)
+{
+    return c * 2.0;
+}
+
+color3 c = randomcolor();
+c = do_something(c);
+```
+In this case, the call to `do_something()` will invoke the second function because it's being passed an argument of type `color3`.
+
+It's important to note that in ShadingLanguageX, unlike other C-based languages, the return type of a function is included in its signature. For example:
+```
+vec2 texcoord()
+{
+    return position().xy;
+}
+
+vec3 texcoord()
+{
+    return position();
+}
+
+vec2 uv = texcoord();
+```
+In this case, the call to `texcoord()` will invoke the first function because it's return value is being assigned to a variable of type `vec2`.
+
+## Default Parameter Values
+
+Function parameters can be declared with a default value. In this case, the user is not required to provide a value for that parameter when calling the function.
+```
+float azimuth(string space="world", vec3 origin=vec3(1.0, 0.0, 0.0))
+{
+    return dotproduct(normal(space), origin);
+}
+
+float theta = azimuth();
+```
+
+## Named Arguments
+
+Function arguments can be named to target specific parameters.
+```
+float theta = azimuth(origin=vec3(0.0, 0.0, 1.0);
+color3 albedo = image("albedo.png", texcoord=geompropvalue("uv4"));
+```
+
+## Templated Functions
+
+It's common for functions to use the same logic on different data types.
+```
+float one_minus(float v)
+{
+    return 1.0 - v;
+}
+
+vec2 one_minus(vec2 v)
+{
+    return 1.0 - v;
+}
+```
+
+This type of code is time consuming to both write and read. As such, ShadingLanguageX offers templated functions to streamline these types of functions.
+```
+T one_minus<float, vec2>(T v)
+{
+    return 1.0 - v;
+}
+```
+
+This code is equivalent to the one above, but can also easily be extended to handle other data types as well.
+```
+T one_minus<float, vec2, vec3, vec4, color3, color4>(T v)
+{
+    return 1.0 - v;
+}
+```
+
+In this case, the reserved keyword data type `T` is a placeholder for the data types specified in the template. `T` can be used anywhere in the function signature and inside the body of the function wherever a standard
+data type could be used. For example:
+```
+T image_mult<vec3, color3>(filename img_path, T mult = T(1.0))
+{
+    T img = image<T>(img_path);
+    return img * mult;
+}
+```
+
+When calling a templated function, the template type can be inferred from the usage of the function, exactly as it works in function overloading. Additionally, the user can also explicitly specify the data type of the function template to use. For example:
+```
+T one_minus<float, vec2, vec3, vec4, color3, color4>(T v)
+{
+    return 1.0 - v;
+}
+
+vec2 uv = texcoord();
+vec2 inv_uv = one_minus<vec2>(uv);
+```
+
 ### Notes
 
-* Currently, ShadingLanguageX does not support function overloading, but it is in the list of proposals for language features.  
-* All parameters must be fulfilled when calling the function, i.e., if a function declares two parameters, then two arguments of the correct type must be given when calling that function. It is not possible to provide default values to parameters like Python and other languages.
+* Functions can be declared inside other functions.
 * Functions must be declared prior to being called.  
-* Functions can be declared inside other functions, but will only be available to be called from within the enclosing function
-and only after the enclosed function has been declared.
 * Recursion is not possible in ShadingLanguageX. 
-
-# Standard Library Calls
-
-Standard library calls have the same synax as function calls, but with two extra features.
-
-The first is that not all parameters in a standard library call need to be filled. Most MaterialX node inputs have a default
-value that is used if the input is not set. This works the same way in ShadingLanguageX. For example, `randomfloat` has four
-inputs: `in`, `min`, `max` and `seed`, but they all have default values, so we could simply call `randomfloat()` without 
-any arguments, or only provide the arguments that we need to, `randomfloat(uv.x, -1.0, 1.0)`.
-
-To compliment this, standard library calls also support named arguments. This allows users to pass arguments out of order,
-leaving earlier parameters to their default values. For example, `image` has the following signature:
-`image(file, layer, default, texcoord, uaddressmode, vaddressmode, filtertype)`. All parameters, except file, have default values as described
-in the MaterialX Standard Node document. To pass an argument to `texcoord` without also having to set `layer` and `default`
-we can use the following syntax: `image("butterfly1.png", texcoord=uv)`.
-
-## Return Type
-
-Some standard library functions can have multiple different return types. For example, `geompropvalue` can have any return type depending
-on the data it needs to access. `image` also supports multiple return types depending on what and how data should be accessed
-from the texture. In order to specify what type the function should return, you can assign them to a variable of the appropriate type.
-For example:  
-
-`vec3 data = image("data_image.png");`
-
-compiles to:
-```
-<image name="data" type="vector3">
-  <input name="file" type="filename" value="data_image.png" />
-</image>
-```
-
-### Notes
-
-* All standard library functions have the same signature (name, type, inputs) as their corresponding MaterialX node. ShadingLanguageX
-additionally supports:
-  * `min` and `max` can take any number of values.
-  * `image` has an overloaded variant, which just takes a `file` and `texcoord`.
-* Named arguments can be in any order, but must come after all positional arguments, for example: `image(texcoord=uv, "butterfly1.png")`
-is invalid syntax because there is a named argument before a positional argument.
-* Standard library and user functions can be called without assigning their return value.
 
 # Node Constructors
 
@@ -625,6 +685,28 @@ float bias = {"hmtlxbias", float: in=0.0, bias=0.5};
 
 Unlike the rest of ShadingLanguageX, node constructors do not perform any type checking. In fact, the data type of the inputs
 is determined by the values that are passed to them.
+
+# Null Expression
+
+MaterialX defines default values for all node inputs in the standard library. To use these defaults instead of having to provide your own, you can use the `null` keyword.
+```
+string layer = if (use_custom_layer) { geompropvalue("custom_layer") } else { null };
+color3 c = image("image.png", layer=layer);
+```
+
+Null expressions are also useful as default parameter values where it makes sense to use the default MaterialX behaviour.
+```
+float randomfloat<float, int>(T in=null, float min=null, float max=null, int seed=null)
+{
+    return {"randomfloat", float: in=in, min=min, max=max, seed=seed);
+}
+```
+
+# Standard Library 
+
+ShadingLanguageX provides the MaterialX standard nodes as a library of functions. They are included automatically by the compiler and don't need to be manually included with the `#include` directive.
+Functions have the same signature (name, input types and output type) as is specified in the MaterialX standard node document. Most of them are templated where appropriate and use the `null` expression
+to fall back to the default MaterialX behaviour when a parameter is not set. To see the implementation of the ShadingLanguageX standard library, see [stdlib_defs.mxsl](https://github.com/jakethorn/ShadingLanguageX/blob/main/mxslc/mxslc/stdlib/stdlib_defs.mxsl).
 
 # Shader Types
 
