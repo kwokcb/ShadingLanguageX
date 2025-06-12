@@ -16,6 +16,8 @@ class FunctionCall(Expression):
         self.__args = args
         self.__func = None
 
+        self.__assert_valid_argument_order()
+
     def instantiate_templated_types(self, template_type: DataType) -> Expression:
         if self.__template_type:
             data_type = self.__template_type.instantiate(template_type)
@@ -42,3 +44,11 @@ class FunctionCall(Expression):
 
     def _evaluate(self) -> mx_utils.Node:
         return self.__func.invoke(self.__args)
+
+    def __assert_valid_argument_order(self):
+        found_named = False
+        for arg in self.__args:
+            if arg.is_named:
+                found_named = True
+            if found_named and arg.is_positional:
+                raise CompileError("Named arguments must come after positional arguments.", self.__identifier)
