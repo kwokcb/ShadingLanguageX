@@ -41,8 +41,8 @@ class Keyword(StrEnum):
     VEC4 = auto()
 
     @staticmethod
-    def DATA_TYPES() -> list[Keyword]:
-        return [
+    def DATA_TYPES() -> set[Keyword]:
+        return {
             Keyword.BOOLEAN,
             Keyword.INTEGER,
             Keyword.FLOAT,
@@ -57,4 +57,4 @@ class Keyword(StrEnum):
             Keyword.DISPLACEMENTSHADER,
             Keyword.MATERIAL,
             Keyword.T
-        ]
+        }

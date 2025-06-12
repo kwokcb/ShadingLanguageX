@@ -1,5 +1,5 @@
+from __future__ import annotations
 from pathlib import Path
-from typing import Any
 
 from .Keyword import Keyword
 from .token_types import FLOAT_LITERAL, INT_LITERAL, STRING_LITERAL, FILENAME_LITERAL, IDENTIFIER
@@ -59,7 +59,7 @@ class Token:
     def line(self) -> int:
         return self.__line
 
-    def __eq__(self, other: Any) -> bool:
+    def __eq__(self, other: str | Token) -> bool:
         if isinstance(other, str):
             return self.type == other
         if isinstance(other, Token):
@@ -68,3 +68,6 @@ class Token:
 
     def __str__(self) -> str:
         return self.lexeme
+
+    def __hash__(self) -> int:
+        return hash(self.type)

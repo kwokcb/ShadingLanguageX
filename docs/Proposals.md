@@ -18,8 +18,6 @@
 # TODO #if defined(X)
 # TODO -l --log argument that outputs a logfile with the error and stacktrace
 # TODO colorspace in image nodes
-# TODO add remaining inputs to standard_input function
-# TODO setting addressmode sets vaddressmode and uaddressmode 
 # TODO use pathlike instead of specific Path/str types
 # TODO -n --node-graphs argument that specifies functions and loops should use nodegraphs
 # TODO allow loop iteration variables to int/vecs/colors as well as floats

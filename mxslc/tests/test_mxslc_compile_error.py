@@ -21,6 +21,7 @@ from mxslc.CompileError import CompileError
     ("bad_data_type_3", None, []),
     ("bad_template_1", None, []),
     ("bad_template_2", None, []),
+    ("bad_template_3", None, []),
     ("bad_arguments_1", None, []),
 ])
 def test_mxslc_compile_error(filename: str, main_function: str | None, main_args: list) -> None:

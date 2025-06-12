@@ -1,4 +1,5 @@
 from abc import ABC
+from collections.abc import Collection
 
 from .CompileError import CompileError
 from .Token import Token
@@ -33,7 +34,7 @@ class TokenReader(ABC):
         """
         return self.__peek(2)
 
-    def _consume(self, *token_types: str | list[str]) -> Token | None:
+    def _consume(self, *token_types: str | Collection[str]) -> Token | None:
         """
         Consume current token if it matches one of the token types.
         """
@@ -44,7 +45,7 @@ class TokenReader(ABC):
             return token
         return None
 
-    def _match(self, *token_types: str | list[str]) -> Token:
+    def _match(self, *token_types: str | Collection[str]) -> Token:
         """
         Same as consume, but raise a compile error if no match was found.
         """
@@ -52,7 +53,7 @@ class TokenReader(ABC):
         if token := self._consume(token_types):
             return token
         token = self._peek()
-        raise CompileError(f"Expected {token_types}, but found '{token.lexeme}'.", token)
+        raise CompileError(f"Expected {[str(t) for t in token_types]}, but found '{token.lexeme}'.", token)
 
     def __peek(self, future: int) -> Token:
         if self.__index + future >= len(self.__tokens):
@@ -60,11 +61,11 @@ class TokenReader(ABC):
         return self.__tokens[self.__index + future]
 
 
-def _flatten(token_types: tuple[str | list[str], ...]) -> list[str]:
+def _flatten(token_types: tuple[str | Collection[str], ...]) -> list[str]:
     result = []
     for t in token_types:
         if isinstance(t, str):
             result.append(t)
-        elif isinstance(t, list):
+        elif isinstance(t, Collection):
             result.extend(t)
     return result

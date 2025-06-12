@@ -63,9 +63,9 @@ class Parser(TokenReader):
     def __function_declaration(self, return_type: Token, identifier: Token) -> FunctionDeclaration:
         template_types = []
         if self._consume("<"):
-            template_types.append(self._match(Keyword.DATA_TYPES()))
+            template_types.append(self._match(Keyword.DATA_TYPES() - {Keyword.T}))
             while self._consume(","):
-                template_types.append(self._match(Keyword.DATA_TYPES()))
+                template_types.append(self._match(Keyword.DATA_TYPES() - {Keyword.T}))
             self._match(">")
         self._match("(")
         if self._consume(")"):
@@ -90,9 +90,9 @@ class Parser(TokenReader):
         identifier = self._match(IDENTIFIER)
         template_types = []
         if self._consume("<"):
-            template_types.append(self._match(Keyword.DATA_TYPES()))
+            template_types.append(self._match(Keyword.DATA_TYPES() - {Keyword.T}))
             while self._consume(","):
-                template_types.append(self._match(Keyword.DATA_TYPES()))
+                template_types.append(self._match(Keyword.DATA_TYPES() - {Keyword.T}))
             self._match(">")
         self._match("(")
         if self._consume(")"):
@@ -309,7 +309,7 @@ class Parser(TokenReader):
     def __function_call(self, identifier: Token) -> Expression:
         template_type = None
         if self._consume("<"):
-            template_type = self._match(Keyword.DATA_TYPES())
+            template_type = self._match(Keyword.DATA_TYPES() - {Keyword.T})
             self._match(">")
         self._match("(")
         if self._consume(")"):
