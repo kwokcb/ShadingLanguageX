@@ -1,7 +1,7 @@
 
 <h1 align="center">ShadingLanguageX</h1>
 
-__ShadingLanguageX__ is a high level programming language that can be used to create complex MaterialX shaders.  
+__ShadingLanguageX__ is a high level programming language that can be used to create complex [MaterialX](https://materialx.org/) shaders.  
   
 ![](examples/screenshots/readme_example.png)
 
