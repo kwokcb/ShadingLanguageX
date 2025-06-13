@@ -99,22 +99,24 @@ compiles to:
   </surfacematerial>
 </materialx>
 ```
-![]()
+![](https://github.com/jakethorn/ShadingLanguageX/blob/main/examples/screenshots/toon.png)
 
 However, ShadingLanguageX shaders can also be executed with a designated entry function like in C. If the shader contains
 a function called `main`, this function will be the entry into the shader. Otherwise, an entry function name can be passed
 to the compiler as an additional argument (see mxslc section below for more information). If the entry function accepts any arguments, these can also
 be passed to the compiler. For example:
 ```
-void my_function(float r, float g, float b, float metalness)
+void my_function(float r, float g, float b, float roughness, float metalness)
 {
     surfaceshader surface = standard_surface();
     surface.base_color = color3(r, g, b);
+    surface.specular_roughness = roughness;
     surface.metalness = metalness;
 }
 ```
-`> ./mxslc.exe my_shader.mxsl -o gold.mtlx -m my_function -a 1.0 0.72 0.315 1.0`
-![]()
+`> ./mxslc.exe my_shader.mxsl -m my_function -a 1.0 0.72 0.315 0.02 1.0`  
+  
+![](https://github.com/jakethorn/ShadingLanguageX/blob/main/examples/screenshots/gold.png)
 
 When executing a shader in this manner, all global variables and functions will be defined before the entry function is called.
 
