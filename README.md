@@ -22,13 +22,13 @@ Currently, MaterialX shaders can be made either using the MaterialX C++ or Pytho
 
 
 # Showcases
-Procedural Rain                    |  Interior Mapping
-:---------------------------:|:---------------------------:
-![](examples/screenshots/rain.png)   |  ![](examples/screenshots/interiormapping.png)
-__Shader Art (by Kishimisu)__    |  __Interior Mapping With Shadows (by VRBN)__
-![](examples/screenshots/shaderart.png)  |  ![](examples/screenshots/lit_interiors.png)
-__Displacement Mountain__    |    __Other Examples__
-![](examples/screenshots/mountain.png)   |  ![](examples/screenshots/combined.png)
+Procedural Rain                    |  Interior Mapping | Shader Art (by Kishimisu)
+:---------------------------:|:---------------------------:|:---------------------------:
+![](examples/screenshots/rain.png)   |  ![](examples/screenshots/interiormapping.png) |  ![](examples/screenshots/shaderart.png)
+__Displacement Mountain__   |  __Interior Mapping With Shadows (by VRBN Studios)__ | __Toon__
+![](examples/screenshots/mountain.png)  |  ![](examples/screenshots/lit_interiors.png) | ![](examples/screenshots/toon.png)
+__Disintegration__   |  __Colored Squares__ | __Gold__
+![](examples/screenshots/disintergrate.png)  |  ![](examples/screenshots/squares.png) | ![](examples/screenshots/gold.png)
 
 
 # Getting Started
