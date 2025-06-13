@@ -25,7 +25,7 @@ Currently, MaterialX shaders can be made either using the MaterialX C++ or Pytho
 Procedural Rain                    |  Interior Mapping
 :---------------------------:|:---------------------------:
 ![](examples/screenshots/rain.png)   |  ![](examples/screenshots/interiormapping.png)
-__Shader Art (by Kishimisu)__    |  __Interior Mapping with shadows (by VRBN)__
+__Shader Art (by Kishimisu)__    |  __Interior Mapping With Shadows (by VRBN)__
 ![](examples/screenshots/shaderart.png)  |  ![](examples/screenshots/lit_interiors.png)
 __Displacement Mountain__    |    __Other Examples__
 ![](examples/screenshots/mountain.png)   |  ![](examples/screenshots/combined.png)
