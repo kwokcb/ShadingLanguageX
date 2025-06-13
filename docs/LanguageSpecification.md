@@ -52,35 +52,54 @@ due to changes to the official MaterialX documentation.
 
 ShadingLanguageX shaders consist simply of a list of statements that are sequentially compiled into MaterialX nodes. For example:
 ```
-vec2 uv = texcoord();
+vec3 v = viewdirection();
+vec3 n = normal();
+float theta = -dotproduct(v, n);
+float outline = smoothstep(theta, 0.2, 0.25);
+color3 c = color3(position() * outline);
 surfaceshader surface = standard_surface();
-surface.base_color = color3(uv, 0.0);
+surface.base_color = c;
+surface.specular_roughness = 1.0;
 ```
 `> ./mxslc.exe my_shader.mxsl`  
   
 compiles to:
 ```
-<texcoord name="uv" type="vector2" />
-<standard_surface name="surface" type="surfaceshader">
-  <input name="base_color" type="color3" nodename="node5" />
-</standard_surface>
-<extract name="node2" type="float">
-  <input name="in" type="vector2" nodename="uv" />
-  <input name="index" type="integer" value="0" />
-</extract>
-<extract name="node3" type="float">
-  <input name="in" type="vector2" nodename="uv" />
-  <input name="index" type="integer" value="1" />
-</extract>
-<combine3 name="node5" type="color3">
-  <input name="in1" type="float" nodename="node2" />
-  <input name="in2" type="float" nodename="node3" />
-  <input name="in3" type="float" value="0" />
-</combine3>
-<surfacematerial name="mxsl_material" type="material">
-  <input name="surfaceshader" type="surfaceshader" nodename="surface" />
-</surfacematerial>
+<?xml version="1.0"?>
+<materialx version="1.39">
+  <viewdirection name="main__v" type="vector3" />
+  <normal name="main__n" type="vector3" />
+  <dotproduct name="node1" type="float">
+    <input name="in1" type="vector3" nodename="main__v" />
+    <input name="in2" type="vector3" nodename="main__n" />
+  </dotproduct>
+  <subtract name="main__theta" type="float">
+    <input name="in1" type="float" value="0" />
+    <input name="in2" type="float" nodename="node1" />
+  </subtract>
+  <smoothstep name="main__outline" type="float">
+    <input name="in" type="float" nodename="main__theta" />
+    <input name="low" type="float" value="0.2" />
+    <input name="high" type="float" value="0.25" />
+  </smoothstep>
+  <position name="node6" type="vector3" />
+  <multiply name="node12" type="vector3">
+    <input name="in1" type="vector3" nodename="node6" />
+    <input name="in2" type="float" nodename="main__outline" />
+  </multiply>
+  <convert name="main__c" type="color3">
+    <input name="in" type="vector3" nodename="node12" />
+  </convert>
+  <standard_surface name="main__surface" type="surfaceshader">
+    <input name="base_color" type="color3" nodename="main__c" />
+    <input name="specular_roughness" type="float" value="1" />
+  </standard_surface>
+  <surfacematerial name="mxsl_material" type="material">
+    <input name="surfaceshader" type="surfaceshader" nodename="main__surface" />
+  </surfacematerial>
+</materialx>
 ```
+![]()
 
 However, ShadingLanguageX shaders can also be executed with a designated entry function like in C. If the shader contains
 a function called `main`, this function will be the entry into the shader. Otherwise, an entry function name can be passed
@@ -95,6 +114,7 @@ void my_function(float r, float g, float b, float metalness)
 }
 ```
 `> ./mxslc.exe my_shader.mxsl -o gold.mtlx -m my_function -a 1.0 0.72 0.315 1.0`
+![]()
 
 When executing a shader in this manner, all global variables and functions will be defined before the entry function is called.
 
