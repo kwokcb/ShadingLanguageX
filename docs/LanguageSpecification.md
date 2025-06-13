@@ -919,7 +919,27 @@ options:
 
 ### Example
 
-TODO
+```
+void color_shader(float r, float g, float b)
+{
+    standard_surface(base_color=color3(r, g, b));
+}
+```
+`> ./mxslc.exe example.mxsl -o cyan.mtlx -m color_shader -a 0.0 1.0, 1.0`  
+
+![]()
+  
+```
+void main()
+{
+    color3 c = image("albedo.png");
+#ifdef SRGB
+    c ^= GAMMA;
+#endif
+    standard_surface(base_color=c);
+}
+```
+`> ./mxslc.exe example.mxsl -d SRGB -d GAMMA 2.2`
 
 ## Python API
 
