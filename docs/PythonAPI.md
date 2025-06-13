@@ -96,7 +96,7 @@ Returns the current xml string of the MaterialX document.
 
 ### `get_shader_interface()`
 
-Returns the shader interface. This is what lets you interact with the shader. See [`ShaderInterface`]() section below for more information.
+Returns the shader interface. This is what lets you interact with the shader. See [`ShaderInterface`](https://github.com/jakethorn/ShadingLanguageX/blob/main/docs/PythonAPI.md#shaderinterface) section below for more information.
 
 ### `include`
 
