@@ -103,7 +103,7 @@ compiles to:
 
 However, ShadingLanguageX shaders can also be executed with a designated entry function like in C. If the shader contains
 a function called `main`, this function will be the entry into the shader. Otherwise, an entry function name can be passed
-to the compiler as an additional argument (see mxslc section below for more information). If the entry function accepts any arguments, these can also
+to the compiler as an additional argument (see [mxslc](https://github.com/jakethorn/ShadingLanguageX/blob/main/docs/LanguageSpecification.md#mxslc) section below for more information). If the entry function accepts any arguments, these can also
 be passed to the compiler. For example:
 ```
 void my_function(float r, float g, float b, float roughness, float metalness)
