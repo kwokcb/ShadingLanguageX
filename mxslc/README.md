@@ -1,1 +1,1 @@
-# ShadingLanguageX Compiler (mxslc)
+# ShadingLanguageX open-source compiler
