@@ -71,7 +71,7 @@ or executable:
 ```
 > ./mxslc.exe squares.mxsl -a 10.0
 ```
-[image here]()
+![](https://github.com/jakethorn/ShadingLanguageX/blob/main/examples/screenshots/squares.png)
 
 ## Interactive Compiler (Experimental)
 The python installation also comes with an interactive compiler which allows the user to call __ShadingLanguageX__ functions and access variables from python. This is useful if more complex logic is needed when compiling the shader, such as checking for missing textures files, or updating values or logic based on a configuration file.
