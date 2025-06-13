@@ -30,7 +30,7 @@
 # Introduction
 
 ShadingLanguageX is a high level programming language that allows developers to write shaders that can be compiled into MaterialX (.mtlx) files.
-The primary use case is to provide a method of creating MaterialX shaders without using a node editor or the MaterialX C++ or Python APIs.
+The primary use case is to provide a method of creating MaterialX shaders that overcomes some of the weaknesses of using a node editor or the MaterialX C++ or Python API.
 Node editors are very useful for getting quick feedback during shader development or when creating simple shader networks, but are difficult to use and update the larger the network becomes. 
 At the same time, the MaterialX API can be quite verbose, reducing code readability and making it difficult to quickly iterate when writing a shader, without writing your own custom wrapper around the API first.
 ShadingLanguageX is a simple, yet powerful language for writing complex MaterialX shaders that aims to overcome these drawbacks.
