@@ -814,7 +814,21 @@ compiles to:
 
 # Scope
 
-TODO
+ShadingLanguageX follows the same scoping rules as most C-based languages. Scopes are denoted by a pair of curly braces `{` `}` like in function declarations or for loops. 
+Variables are only accessible inside their own scope as well as any sub-scopes. 
+```
+float a = 0.0;
+void do_something()
+{
+    float b = 1.0;
+    for (int i = 0:9)
+    {
+        float c = 2.0;
+        a += b / c;
+    }
+}
+```
+In the previous example, `a` is part of the global scope and is accessible everywhere, `b` is accessible inside the `do_something` function and the for loop, but it would be a compile error to try to access it outside of the function, and `c` is accessible only within the for loop.
 
 # Preprocessor Directives
 
