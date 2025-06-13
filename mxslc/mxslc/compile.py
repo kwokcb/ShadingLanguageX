@@ -404,6 +404,66 @@ float randomfloat(int in, float min = null, float max = null, int seed = null)
     return {"randomfloat", float: in=in, min=min, max=max, seed=seed};
 }
 
+// ----------------  randomcolor  ----------------
+
+color3 randomcolor(
+    float in = null, 
+    float huelow = null, 
+    float huehigh = null, 
+    float saturationlow = null, 
+    float saturationhigh = null,
+    float brightnesslow = null,
+    float brightnesshigh = null,
+    int seed = null
+)
+{
+    return {"randomcolor", color3: 
+        in=in,
+        huelow=huelow,
+        huehigh=huehigh,
+        saturationlow=saturationlow,
+        saturationhigh=saturationhigh,
+        brightnesslow=brightnesslow,
+        brightnesshigh=brightnesshigh,
+        seed=seed
+    };
+}
+
+color3 randomcolor(
+    int in, 
+    float huelow = null, 
+    float huehigh = null, 
+    float saturationlow = null, 
+    float saturationhigh = null,
+    float brightnesslow = null,
+    float brightnesshigh = null,
+    int seed = null
+)
+{
+    return {"randomcolor", color3: 
+        in=in,
+        huelow=huelow,
+        huehigh=huehigh,
+        saturationlow=saturationlow,
+        saturationhigh=saturationhigh,
+        brightnesslow=brightnesslow,
+        brightnesshigh=brightnesshigh,
+        seed=seed
+    };
+}
+
+// ----------------  smoothstep  ----------------
+
+T smoothstep<float, vec2, vec3, vec4, color3, color4>(T in, T low = null, T high = null)
+{
+    return {"smoothstep", T: in=in, low=low, high=high};
+}
+
+T smoothstep<vec2, vec3, vec4, color3, color4>(T in, float low = null, float high = null)
+{
+    return {"smoothstep", T: in=in, low=low, high=high};
+}
+
 // ----------------  image  ----------------
 
 T image<float, vec2, vec3, vec4, color3, color4>
