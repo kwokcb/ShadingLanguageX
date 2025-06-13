@@ -69,7 +69,7 @@ void main(float tiling)
 Compile using python:
 ```python
 import mxslc
-mxslc.compile_file("squares.mxsl", main_args[10.0]);
+mxslc.compile_file("squares.mxsl", main_args=[10.0]);
 ```
 or executable:
 ```
