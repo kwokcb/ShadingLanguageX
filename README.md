@@ -1,3 +1,6 @@
+[![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://github.com/jakethorn/ShadingLanguageX/blob/main/LICENSE)
+[![Version](https://img.shields.io/github/v/release/jakethorn/ShadingLanguageX)](https://github.com/jakethorn/ShadingLanguageX/releases/latest)
+[![Automated Tests](https://github.com/jakethorn/ShadingLanguageX/actions/workflows/automated-tests.yml/badge.svg)](https://github.com/jakethorn/ShadingLanguageX/actions/workflows/automated-tests.yml)
 
 <h1 align="center">ShadingLanguageX</h1>
 
