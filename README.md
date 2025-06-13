@@ -45,8 +45,10 @@ Alternatively, you can download the compiler executable from the most recent rel
 ```
 Both examples will output a `my_shader.mtlx` file which can then be used as you would any other MaterialX file. Both methods have the same input signature, a mandatory path to a __ShadingLanguageX__ source file and then several optional arguments, such as setting the output files directory and name.
 
+See below for information about the [interactive compiler]().
+
 ## Language Specification
-For information regarding __ShadingLanguageX__ syntax and mxslc compiler options, see the __ShadingLanguageX__ language specification [document](https://github.com/jakethorn/ShadingLanguageX/blob/main/docs/LanguageSpecification.md). Examples of __ShadingLanguageX__ shaders can be found [here](https://github.com/jakethorn/ShadingLanguageX/tree/main/examples).
+For information regarding __ShadingLanguageX__ syntax and mxslc compiler options, see the __ShadingLanguageX__ language specification [document](https://github.com/jakethorn/ShadingLanguageX/blob/main/docs/LanguageSpecification.md). Examples of __ShadingLanguageX__ shaders in addition to the one below can be found in the examples [directory](https://github.com/jakethorn/ShadingLanguageX/tree/main/examples).
 
 ## Example
 ```
