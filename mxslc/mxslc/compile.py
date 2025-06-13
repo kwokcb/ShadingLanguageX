@@ -372,24 +372,68 @@ vec3 position(string space = null)
 
 // ----------------  noise2d  ----------------
 
-T noise2d<float, vec2, vec3, vec4>(T amplitude = null, float pivot = null, vector2 texcoord = null)
+T noise2d<float, vec2, vec3, vec4>(T amplitude = null, float pivot = null, vec2 texcoord = null)
 {
     return {"noise2d", T: amplitude=amplitude, pivot=pivot, texcoord=texcoord};
 }
 
-color3 noise2d(vec3 amplitude = null, float pivot = null, vector2 texcoord = null)
+color3 noise2d(vec3 amplitude = null, float pivot = null, vec2 texcoord = null)
 {
     return {"noise2d", color3: amplitude=amplitude, pivot=pivot, texcoord=texcoord};
 }
 
-color4 noise2d(vec4 amplitude = null, float pivot = null, vector2 texcoord = null)
+color4 noise2d(vec4 amplitude = null, float pivot = null, vec2 texcoord = null)
 {
     return {"noise2d", color4: amplitude=amplitude, pivot=pivot, texcoord=texcoord};
 }
 
-T noise2d<vec2, vec3, vec4, color3, color4>(float amplitude = null, float pivot = null, vector2 texcoord = null)
+T noise2d<vec2, vec3, vec4, color3, color4>(float amplitude = null, float pivot = null, vec2 texcoord = null)
 {
     return {"noise2d", T: amplitude=amplitude, pivot=pivot, texcoord=texcoord};
+}
+
+// ----------------  noise3d  ----------------
+
+T noise3d<float, vec2, vec3, vec4>(T amplitude = null, float pivot = null, vec3 position = null)
+{
+    return {"noise3d", T: amplitude=amplitude, pivot=pivot, position=position};
+}
+
+color3 noise3d(vec3 amplitude = null, float pivot = null, vec3 position = null)
+{
+    return {"noise3d", color3: amplitude=amplitude, pivot=pivot, position=position};
+}
+
+color4 noise3d(vec4 amplitude = null, float pivot = null, vec3 position = null)
+{
+    return {"noise3d", color4: amplitude=amplitude, pivot=pivot, position=position};
+}
+
+T noise3d<vec2, vec3, vec4, color3, color4>(float amplitude = null, float pivot = null, vec3 position = null)
+{
+    return {"noise3d", T: amplitude=amplitude, pivot=pivot, position=position};
+}
+
+// ----------------  fractal3d  ----------------
+
+T fractal3d<float, vec2, vec3, vec4>(T amplitude = null, int octaves = null, float lacunarity = null, float diminish = null, vec3 position = null)
+{
+    return {"fractal3d", T: amplitude=amplitude, octaves=octaves, lacunarity=lacunarity, diminish=diminish, position=position};
+}
+
+color3 fractal3d(vec3 amplitude = null, int octaves = null, float lacunarity = null, float diminish = null, vec3 position = null)
+{
+    return {"fractal3d", color3: amplitude=amplitude, octaves=octaves, lacunarity=lacunarity, diminish=diminish, position=position};
+}
+
+color4 fractal3d(vec4 amplitude = null, int octaves = null, float lacunarity = null, float diminish = null, vec3 position = null)
+{
+    return {"fractal3d", color4: amplitude=amplitude, octaves=octaves, lacunarity=lacunarity, diminish=diminish, position=position};
+}
+
+T fractal3d<vec2, vec3, vec4, color3, color4>(float amplitude = null, int octaves = null, float lacunarity = null, float diminish = null, vec3 position = null)
+{
+    return {"fractal3d", T: amplitude=amplitude, octaves=octaves, lacunarity=lacunarity, diminish=diminish, position=position};
 }
 
 // ----------------  randomfloat  ----------------
@@ -407,17 +451,17 @@ float randomfloat(int in, float min = null, float max = null, int seed = null)
 // ----------------  randomcolor  ----------------
 
 color3 randomcolor(
-    float in = null, 
-    float huelow = null, 
-    float huehigh = null, 
-    float saturationlow = null, 
+    float in = null,
+    float huelow = null,
+    float huehigh = null,
+    float saturationlow = null,
     float saturationhigh = null,
     float brightnesslow = null,
     float brightnesshigh = null,
     int seed = null
 )
 {
-    return {"randomcolor", color3: 
+    return {"randomcolor", color3:
         in=in,
         huelow=huelow,
         huehigh=huehigh,
@@ -430,17 +474,17 @@ color3 randomcolor(
 }
 
 color3 randomcolor(
-    int in, 
-    float huelow = null, 
-    float huehigh = null, 
-    float saturationlow = null, 
+    int in,
+    float huelow = null,
+    float huehigh = null,
+    float saturationlow = null,
     float saturationhigh = null,
     float brightnesslow = null,
     float brightnesshigh = null,
     int seed = null
 )
 {
-    return {"randomcolor", color3: 
+    return {"randomcolor", color3:
         in=in,
         huelow=huelow,
         huehigh=huehigh,
@@ -466,10 +510,135 @@ T smoothstep<vec2, vec3, vec4, color3, color4>(T in, float low = null, float hig
 
 // ----------------  image  ----------------
 
-T image<float, vec2, vec3, vec4, color3, color4>
-(filename file, string layer = null, T default = null, vec2 texcoord = null, string uaddressmode = null, string vaddressmode = null, string filtertype = null)
+T image<float, vec2, vec3, vec4, color3, color4>(
+    filename file,
+    string layer = null,
+    T default = null,
+    vec2 texcoord = null,
+    string uaddressmode = null,
+    string vaddressmode = null,
+    string filtertype = null
+)
 {
-    return {"image", T: file=file, layer=layer, default=default, texcoord=texcoord, uaddressmode=uaddressmode, vaddressmode=vaddressmode, filtertype=filtertype};
+    return {"image", T:
+        file=file,
+        layer=layer,
+        default=default,
+        texcoord=texcoord,
+        uaddressmode=uaddressmode,
+        vaddressmode=vaddressmode,
+        filtertype=filtertype
+    };
+}
+
+// ----------------  tiledimage  ----------------
+
+T tiledimage<float, vec2, vec3, vec4, color3, color4>(
+    filename file,
+    T default = null,
+    vec2 texcoord = null,
+    vec2 uvtiling = null,
+    vec2 uvoffset = null,
+    vec2 realworldimagesize = null,
+    vec2 realworldtilesize = null,
+    string filtertype = null
+)
+{
+    return {"tiledimage", T:
+        file=file,
+        default=default,
+        texcoord=texcoord,
+        uvtiling=uvtiling,
+        uvoffset=uvoffset,
+        realworldimagesize=realworldimagesize,
+        realworldtilesize=realworldtilesize,
+        filtertype=filtertype
+    };
+}
+
+// ----------------  latlongimage  ----------------
+
+T latlongimage<float, vec2, vec3, vec4, color3, color4>(
+    filename file,
+    T default = null,
+    vec3 viewdir = null,
+    float rotation = null
+)
+{
+    return {"latlongimage", T:
+        file=file,
+        default=default,
+        viewdir=viewdir,
+        rotation=rotation
+    };
+}
+
+// ----------------  triplanarprojection  ----------------
+
+T triplanarprojection<float, vec2, vec3, vec4, color3, color4>(
+    filename filex,
+    filename filey,
+    filename filez,
+    string layerx = null,
+    string layery = null,
+    string layerz = null,
+    T default = null,
+    vec3 position = null,
+    vec3 normal = null,
+    int upaxis = null,
+    float blend = null,
+    string filtertype = null
+)
+{
+    return {"triplanarprojection", T:
+        filex=filex,
+        filey=filey,
+        filez=filez,
+        layerx=layerx,
+        layery=layery,
+        layerz=layerz,
+        default=default,
+        position=position,
+        normal=normal,
+        upaxis=upaxis,
+        blend=blend,
+        filtertype=filtertype
+    };
+}
+
+// ----------------  ramplr  ----------------
+
+T ramplr<float, vec2, vec3, vec4, color3, color4>(T valuel = null, T valuer = null, vec2 texcoord = null)
+{
+    return {"ramplr", T: valuel=valuel, valuer=valuer, texcoord=texcoord};
+}
+
+// ----------------  ramptb  ----------------
+
+T ramptb<float, vec2, vec3, vec4, color3, color4>(T valuet = null, T valueb = null, vec2 texcoord = null)
+{
+    return {"ramptb", T: valuet=valuet, valueb=valueb, texcoord=texcoord};
+}
+
+// ----------------  ramp4  ----------------
+
+T ramp4<float, vec2, vec3, vec4, color3, color4>(T valuetl = null, T valuetr = null, T valuebl = null, T valuebr = null, vec2 texcoord = null)
+{
+    return {"ramp4", T: valuetl=valuetl, valuetr=valuetr, valuebl=valuebl, valuebr=valuebr, texcoord=texcoord};
+}
+
+// ----------------  splitlr  ----------------
+
+T splitlr<float, vec2, vec3, vec4, color3, color4>(T valuel = null, T valuer = null, float center = null, vec2 texcoord = null)
+{
+    return {"splitlr", T: valuel=valuel, valuer=valuer, center=center, texcoord=texcoord};
+}
+
+// ----------------  splittb  ----------------
+
+T splittb<float, vec2, vec3, vec4, color3, color4>(T valuet = null, T valueb = null, float center = null, vec2 texcoord = null)
+{
+    return {"splittb", T: valuel=valuet, valuer=valueb, center=center, texcoord=texcoord};
 }
 
 #endif // STDLIB_DEFS
