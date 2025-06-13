@@ -38,7 +38,7 @@ __Disintegration__   |  __Colored Squares__ | __Gold__
 # Getting Started
 
 ## Installation
-__ShadingLanguageX__ source files are compiled to MaterialX (.mtlx) files using its open source compiler (mxslc). The compiler is written in python and can be cloned or downloaded as a package and called from your own python project. It has been tested with Python 3.12 and 3.13. 
+__ShadingLanguageX__ source files are compiled to MaterialX (.mtlx) files using its open source compiler (mxslc). The compiler is written in python and can be downloaded from this repo or PyPI using `pip install mxslc`. It has been tested with Python 3.12 and 3.13. 
 ```python
 import mxslc
 mxslc.compile_file("my_shader.mxsl")
