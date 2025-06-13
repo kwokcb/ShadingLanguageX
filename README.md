@@ -13,25 +13,13 @@ __ShadingLanguageX__ source files are compiled to MaterialX (.mtlx) files using 
 For example, the `+` operator (e.g., `float x = 1.0 + 1.0;`) intuitively compiles to the `add` node, and the same for all other mathematical operators. `if` expressions compile to either of the `ifgreater`, `ifgreatereq` or `ifequal` nodes depending on the condition. `switch` expressions compile to the `switch` node. The swizzle operator (e.g., `some_vector.xy`) compiles to `extract` and `combine` nodes. Most MaterialX nodes are represented by a standard library function that is built into the language, such as `color3 c = image("albedo.png");` which compiles to the `image` node. Additionally, declaring a variable (e.g., `vec3 up = vec3(0, 1, 0);`) compiles to a `constant` node (or a `combine` node depending on the inputs to the expression).  
 
 
-# Why Use ShadingLanguageX? Merge subsections into one paragraph
+# Why Use ShadingLanguageX?
 
-Currently, MaterialX shaders can be made either using the MaterialX C++ or Python APIs, or using a node editor software. __ShadingLanguageX__ provides several benefits over these existing methods.
+Currently, MaterialX shaders can be made either using the MaterialX C++ or Python APIs, or using a node editor software. __ShadingLanguageX__ offers an additional way to create MaterialX shaders that provides several benefits over the existing methods.
+* __Start and Iterate Quickly__ The MaterialX API can be quite verbose to use when writing shaders because it needs to provide control over every aspect of MaterialX. Developers can write their own wrappers around the API, but this takes time and knowledge about MaterialX and either C++ or Python. __ShadingLanguageX__ provides less functionality than the MaterialX API, but in return provides a language with a simple syntax, that was developed specifically for building MaterialX shaders. This allows developers to get started and iterate on ideas quickly. There is no setup code to write, just the shaders and a call to the compiler.
+* __Manage Compexity and Reuse Code__ Similarly, node editors can become difficult to use when developing shaders with a large number of nodes and often have limited function reusability features between shaders. __ShadingLanguageX__ provides for loops, user-defined functions and `#include` directives that make it easier to create shaders with thousands of nodes and reuse code between projects.
+* __Shader Readability__ Another benefit of __ShadingLanguageX__ is that it is very readable. As mentioned previously, the MaterialX API can be quite verbose, obscuring the logic of the shader and staring at a network of nodes is not much easier.  __ShadingLanguageX__ has a concise syntax targetted specifically for MaterialX shaders which results in code with logic that is more easily understandable.
 
-#### Manage Complexity
-
-Using existing methods, it can be difficult to develop and maintain complex MaterialX shaders with many nodes. __ShadingLanguageX__ provides a concise syntax and tools such as for loops and user-defined functions that make it easy to develop complex shaders.
-
-#### Reuse Functionality
-
-__ShadingLanguageX__ supports the `#include` directive that make it easy to reuse code in more than one project. 
-
-#### Iterate Quickly
-
-The MaterialX API can be quite verbose to use when writing shaders because it needs to provide control over every aspect of MaterialX. Developers can write their own wrappers around the API, but this takes time and knowledge about either C++ or Python. __ShadingLanguageX__ has a less functionality than the MaterialX API, but in return provides a language with a simple syntax, a much smaller syntax grammar to learn, and one that was developed specifically for building MaterialX shaders. There is no setup code to write, just the shaders and a call to the compiler.
-
-#### Code Readability
-
-TODO
 
 # Getting Started
 
@@ -83,7 +71,7 @@ Output: hello_world.mtlx
 ```
 
 ## Language Specification
-For information regarding __ShadingLanguageX__ syntax and mxslc compiler options, see the __ShadingLanguageX__ [language specification](https://github.com/jakethorn/ShadingLanguageX/blob/main/docs/LanguageSpecification.md). Additionally, more examples can be found [here](https://github.com/jakethorn/ShadingLanguageX/tree/main/examples).
+For information regarding __ShadingLanguageX__ syntax and mxslc compiler options, see the __ShadingLanguageX__ language specification [document](https://github.com/jakethorn/ShadingLanguageX/blob/main/docs/LanguageSpecification.md). Additionally, more examples can be found [here](https://github.com/jakethorn/ShadingLanguageX/tree/main/examples).
 
 ## Interactive Compiler (Experimental)
 The python installation also comes with an interactive compiler which allows the user to call __ShadingLanguageX__ functions and access variables from python. This is useful if more complex logic is needed when compiling the shader, such as checking for missing textures files, or updating values or logic based on a configuration file.
