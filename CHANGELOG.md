@@ -1,3 +1,7 @@
+# Version 0.4.1-beta
+## Added
+Finished implementing standard library functions to match the MaterialX Standard Nodes.
+
 # Version 0.4-beta
 ## Added
 * __Function Overloading__  
