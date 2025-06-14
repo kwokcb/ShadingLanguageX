@@ -122,6 +122,25 @@ surfaceshader standard_surface(
     };
 }
 
+// ----------------  surface_unlit  ----------------
+
+surfaceshader surface_unlit(
+    float emission = null,
+    color3 emission_color = null,
+    float transmission = null,
+    color3 transmission_color = null,
+    float opacity = null
+)
+{
+    return {"surface_unlit", surfaceshader:
+        emission=emission,
+        emission_color=emission_color,
+        transmission=transmission,
+        transmission_color=transmission_color,
+        opacity=opacity
+    };
+}
+
 // ----------------  mix  ----------------
 
 T mix<float, vec2, vec3, vec4, color3, color4>(T fg, T bg, T mix)
@@ -129,9 +148,44 @@ T mix<float, vec2, vec3, vec4, color3, color4>(T fg, T bg, T mix)
     return {"mix", T: fg=fg, bg=bg, mix=mix};
 }
 
-T mix<vec2, vec3, vec4, color3, color4>(T fg, T bg, float mix)
+T mix<vec2, vec3, vec4, color3, color4, surfaceshader, displacementshader>(T fg, T bg, float mix)
 {
     return {"mix", T: fg=fg, bg=bg, mix=mix};
+}
+
+// ----------------  place2d  ----------------
+
+vec2 place2d(vec2 texcoord = null, vec2 pivot = null, vec2 scale = null, float rotate = null, vec2 offset = null, int operationorder = null)
+{
+    return {"place2d", vec2: texcoord=texcoord, pivot=pivot, scale=scale, rotate=rotate, offset=offset, operationorder=operationorder};
+}
+
+// ----------------  refract  ----------------
+
+vec3 refract(vec3 in, vec3 normal, float ior = null)
+{
+    return {"refract", vec3: in=in, normal=normal, ior=ior};
+}
+
+// ----------------  reflect  ----------------
+
+vec3 reflect(vec3 in, vec3 normal)
+{
+    return {"reflect", vec3: in=in, normal=normal};
+}
+
+// ----------------  rotate2d  ----------------
+
+vec2 rotate2d(vec2 in, float amount)
+{
+    return {"rotate2d", vec2: in=in, amount=amount};
+}
+
+// ----------------  rotate3d  ----------------
+
+vec3 rotate3d(vec3 in, float amount, vec3 axis = null)
+{
+    return {"rotate3d", vec3: in=in, amount=amount, axis=axis};
 }
 
 // ----------------  normalmap  ----------------
@@ -144,6 +198,27 @@ vec3 normalmap(vec3 in, float scale = null, vec3 normal = null, vec3 tangent = n
 vec3 normalmap(vec3 in, vec2 scale, vec3 normal = null, vec3 tangent = null, vec3 bitangent = null)
 {
     return {"normalmap", vec3: in=in, scale=scale, normal=normal, tangent=tangent, bitangent=bitangent};
+}
+
+// ----------------  transformnormal  ----------------
+
+vec3 transformnormal(vec3 in, string fromspace, string tospace)
+{
+    return {"transformnormal", vec3: in=in, fromspace=fromspace, tospace=tospace};
+}
+
+// ----------------  transformvector  ----------------
+
+vec3 transformvector(vec3 in, string fromspace, string tospace)
+{
+    return {"transformvector", vec3: in=in, fromspace=fromspace, tospace=tospace};
+}
+
+// ----------------  transformpoint  ----------------
+
+vec3 transformpoint(vec3 in, string fromspace, string tospace)
+{
+    return {"transformpoint", vec3: in=in, fromspace=fromspace, tospace=tospace};
 }
 
 // ----------------  crossproduct  ----------------
@@ -245,6 +320,13 @@ T min<float, vec2, vec3, vec4, color3, color4>(T in1, T in2, T in3, T in4, T in5
     return min(in1, min(in2, min(in3, min(in4, in5))));
 }
 
+// ----------------  trianglewave  ----------------
+
+float trianglewave(float in)
+{
+    return {"trianglewave", float: in=in};
+}
+
 // ----------------  clamp  ----------------
 
 T clamp<float, vec2, vec3, vec4, color3, color4>(T in, T low = null, T high = null)
@@ -264,6 +346,48 @@ T exp<float, vec2, vec3, vec4>(T in)
     return {"exp", T: in=in};
 }
 
+// ----------------  ln  ----------------
+
+T ln<float, vec2, vec3, vec4>(T in)
+{
+    return {"ln", T: in=in};
+}
+
+// ----------------  sqrt  ----------------
+
+T sqrt<float, vec2, vec3, vec4>(T in)
+{
+    return {"sqrt", T: in=in};
+}
+
+// ----------------  atan2  ----------------
+
+T atan2<float, vec2, vec3, vec4>(T iny, T inx)
+{
+    return {"atan2", T: iny=iny, inx=inx};
+}
+
+// ----------------  acos  ----------------
+
+T acos<float, vec2, vec3, vec4>(T in)
+{
+    return {"acos", T: in=in};
+}
+
+// ----------------  asin  ----------------
+
+T asin<float, vec2, vec3, vec4>(T in)
+{
+    return {"asin", T: in=in};
+}
+
+// ----------------  tan  ----------------
+
+T tan<float, vec2, vec3, vec4>(T in)
+{
+    return {"tan", T: in=in};
+}
+
 // ----------------  cos  ----------------
 
 T cos<float, vec2, vec3, vec4>(T in)
@@ -276,6 +400,13 @@ T cos<float, vec2, vec3, vec4>(T in)
 T sin<float, vec2, vec3, vec4>(T in)
 {
     return {"sin", T: in=in};
+}
+
+// ----------------  safepower  ----------------
+
+T safepower<float, vec2, vec3, vec4, color3, color4>(T in1, T in2)
+{
+    return {"safepower", T: in1=in1, in2=in2};
 }
 
 // ----------------  round  ----------------
@@ -321,6 +452,13 @@ T absval<float, vec2, vec3, vec4, color3, color4>(T in)
     return {"absval", T: in=in};
 }
 
+// ----------------  sign  ----------------
+
+T sign<float, vec2, vec3, vec4, color3, color4>(T in)
+{
+    return {"sign", T: in=in};
+}
+
 // ----------------  fract  ----------------
 
 T fract<float, vec2, vec3, vec4, color3, color4>(T in)
@@ -335,6 +473,13 @@ float time(float fps = null)
     return {"time", float: fps=fps};
 }
 
+// ----------------  frame  ----------------
+
+float frame()
+{
+    return {"frame", float};
+}
+
 // ----------------  texcoord  ----------------
 
 T texcoord<vec2, vec3>(int index = null)
@@ -347,6 +492,13 @@ T texcoord<vec2, vec3>(int index = null)
 vec3 viewdirection(string space = null)
 {
     return {"viewdirection", vec3: space=space};
+}
+
+// ----------------  bitangent  ----------------
+
+vec3 bitangent(string space = null, int index = null)
+{
+    return {"bitangent", vec3: space=space, index=index};
 }
 
 // ----------------  tangent  ----------------
@@ -368,6 +520,34 @@ vec3 normal(string space = null)
 vec3 position(string space = null)
 {
     return {"position", vec3: space=space};
+}
+
+// ----------------  bump  ----------------
+
+vec3 bump(float height = null, float scale = null, vec3 normal = null, vec3 tangent = null)
+{
+    return {"bump", vec3: height=height, scale=scale, normal=normal, tangent=tangent};
+}
+
+// ----------------  geomcolor  ----------------
+
+T geomcolor<float, color3, color4>(int index = null)
+{
+    return {"geomcolor", T: index=index};
+}
+
+// ----------------  geompropvalue  ----------------
+
+T geompropvalue<bool, int, float, vec2, vec3, vec4, color3, color4>(string geomprop, T default)
+{
+    return {"geompropvalue", T: geomprop=geomprop, default=default};
+}
+
+// ----------------  geompropvalueuniform  ----------------
+
+T geompropvalueuniform<string, filename>(string geomprop, T default)
+{
+    return {"geompropvalueuniform", T: geomprop=geomprop, default=default};
 }
 
 // ----------------  noise2d  ----------------
@@ -436,6 +616,104 @@ T fractal3d<vec2, vec3, vec4, color3, color4>(float amplitude = null, int octave
     return {"fractal3d", T: amplitude=amplitude, octaves=octaves, lacunarity=lacunarity, diminish=diminish, position=position};
 }
 
+// ----------------  cellnoise2d  ----------------
+
+T cellnoise2d<float, vec3>(T period = null, vec2 texcoord = null)
+{
+    return {"cellnoise2d", T: period=period, texcoord=texcoord};
+}
+
+// ----------------  cellnoise3d  ----------------
+
+T cellnoise3d<float, vec3>(T period = null, vec3 position = null)
+{
+    return {"cellnoise3d", T: period=period, position=position};
+}
+
+// ----------------  worleynoise2d  ----------------
+
+T worleynoise2d<float, vec2, vec3>(float jitter = null, int style = null, vec2 texcoord = null)
+{
+    return {"worleynoise2d", T: jitter=jitter, style=style, texcoord=texcoord};
+}
+
+// ----------------  worleynoise3d  ----------------
+
+T worleynoise3d<float, vec2, vec3>(float jitter = null, int style = null, vec2 position = null)
+{
+    return {"worleynoise3d", T: jitter=jitter, style=style, position=position};
+}
+
+// ----------------  unifiednoise2d  ----------------
+
+float unifiednoise2d(
+    int type = null,
+    vec2 texcoord = null,
+    vec2 freq = null,
+    vec2 offset = null,
+    float jitter = null,
+    float outmin = null,
+    float outmax = null,
+    bool clampoutput = null,
+    int octaves = null,
+    float lacunarity = null,
+    float diminish = null,
+    int type = null,
+    int style = null
+)
+{
+    return {"unifiednoise2d", float:
+        type=type,
+        texcoord=texcoord,
+        freq=freq,
+        offset=offset,
+        jitter=jitter,
+        outmin=outmin,
+        outmax=outmax,
+        clampoutput=clampoutput,
+        octaves=octaves,
+        lacunarity=lacunarity,
+        diminish=diminish,
+        type=type,
+        style=style
+    };
+}
+
+// ----------------  unifiednoise3d  ----------------
+
+float unifiednoise3d(
+    int type = null,
+    vec3 position = null,
+    vec3 freq = null,
+    vec3 offset = null,
+    float jitter = null,
+    float outmin = null,
+    float outmax = null,
+    bool clampoutput = null,
+    int octaves = null,
+    float lacunarity = null,
+    float diminish = null,
+    int type = null,
+    int style = null
+)
+{
+    return {"unifiednoise3d", float:
+        type=type,
+        position=position,
+        freq=freq,
+        offset=offset,
+        jitter=jitter,
+        outmin=outmin,
+        outmax=outmax,
+        clampoutput=clampoutput,
+        octaves=octaves,
+        lacunarity=lacunarity,
+        diminish=diminish,
+        type=type,
+        style=style
+    };
+}
+
 // ----------------  randomfloat  ----------------
 
 float randomfloat(float in = null, float min = null, float max = null, int seed = null)
@@ -494,6 +772,76 @@ color3 randomcolor(
         brightnesshigh=brightnesshigh,
         seed=seed
     };
+}
+
+// ----------------  checkerboard  ----------------
+
+color3 checkerboard(color3 color1 = null, color3 color2 = null, vec2 uvtiling = null, vec2 uvoffset = null, vec2 texcoord = null)
+{
+    return {"checkerboard", color3: color1=color1, color2=color2, uvtiling=uvtiling, uvoffset=uvoffset, texcoord=texcoord};
+}
+
+// ----------------  line  ----------------
+
+float line(vec2 texcoord = null, vec2 center = null, float radius = null, vec2 point1 = null, vec2 point2 = null)
+{
+    return {"line", float: texcoord=texcoord, center=center, radius=radius, point1=point1, point2=point2};
+}
+
+// ----------------  circle  ----------------
+
+float circle(vec2 texcoord = null, vec2 center = null, float radius = null)
+{
+    return {"circle", float: texcoord=texcoord, center=center, radius=radius};
+}
+
+// ----------------  cloverleaf  ----------------
+
+float cloverleaf(vec2 texcoord = null, vec2 center = null, float radius = null)
+{
+    return {"cloverleaf", float: texcoord=texcoord, center=center, radius=radius};
+}
+
+// ----------------  hexagon  ----------------
+
+float hexagon(vec2 texcoord = null, vec2 center = null, float radius = null)
+{
+    return {"hexagon", float: texcoord=texcoord, center=center, radius=radius};
+}
+
+// ----------------  grid  ----------------
+
+color3 grid(vec2 texcoord = null, vec2 uvtiling = null, vec2 uvoffset = null, float thickness = null, bool staggered = null)
+{
+    return {"grid", color3: texcoord=texcoord, uvtiling=uvtiling, uvoffset=uvoffset, thickness=thickness, staggered=staggered};
+}
+
+// ----------------  crosshatch  ----------------
+
+color3 crosshatch(vec2 texcoord = null, vec2 uvtiling = null, vec2 uvoffset = null, float thickness = null, bool staggered = null)
+{
+    return {"crosshatch", color3: texcoord=texcoord, uvtiling=uvtiling, uvoffset=uvoffset, thickness=thickness, staggered=staggered};
+}
+
+// ----------------  tiledcircles  ----------------
+
+color3 tiledcircles(vec2 texcoord = null, vec2 uvtiling = null, vec2 uvoffset = null, float size = null, bool staggered = null)
+{
+    return {"tiledcircles", color3: texcoord=texcoord, uvtiling=uvtiling, uvoffset=uvoffset, size=size, staggered=staggered};
+}
+
+// ----------------  tiledcloverleafs  ----------------
+
+color3 tiledcloverleafs(vec2 texcoord = null, vec2 uvtiling = null, vec2 uvoffset = null, float size = null, bool staggered = null)
+{
+    return {"tiledcloverleafs", color3: texcoord=texcoord, uvtiling=uvtiling, uvoffset=uvoffset, size=size, staggered=staggered};
+}
+
+// ----------------  tiledhexagons  ----------------
+
+color3 tiledhexagons(vec2 texcoord = null, vec2 uvtiling = null, vec2 uvoffset = null, float size = null, bool staggered = null)
+{
+    return {"tiledhexagons", color3: texcoord=texcoord, uvtiling=uvtiling, uvoffset=uvoffset, size=size, staggered=staggered};
 }
 
 // ----------------  smoothstep  ----------------
@@ -639,6 +987,237 @@ T splitlr<float, vec2, vec3, vec4, color3, color4>(T valuel = null, T valuer = n
 T splittb<float, vec2, vec3, vec4, color3, color4>(T valuet = null, T valueb = null, float center = null, vec2 texcoord = null)
 {
     return {"splittb", T: valuel=valuet, valuer=valueb, center=center, texcoord=texcoord};
+}
+
+// ----------------  blur  ----------------
+
+T blur<float, vec2, vec3, vec4, color3, color4>(T in, float size, string filtertype = null)
+{
+    return {"blur", T: in=in, size=size, filtertype=filtertype};
+}
+
+// ----------------  heighttonormal  ----------------
+
+vec3 heighttonormal(float in, float scale = null, vec2 texcoord = null)
+{
+    return {"heighttonormal", vec3: in=in, scale=scale, texcoord=texcoord};
+}
+
+// ----------------  contrast  ----------------
+
+T contrast<float, vec2, vec3, vec4, color3, color4>(T in, T amount, T pivot = null)
+{
+    return {"contrast", T: in=in, amount=amount, pivot=pivot};
+}
+
+T contrast<vec2, vec3, vec4, color3, color4>(T in, float amount, float pivot = null)
+{
+    return {"contrast", T: in=in, amount=amount, pivot=pivot};
+}
+
+// ----------------  remap  ----------------
+
+T remap<float, vec2, vec3, vec4, color3, color4>(T in, T inlow = null, T inhigh = null, T outlow = null, T outhigh = null)
+{
+    return {"remap", T: in=in, inlow=inlow, inhigh=inhigh, outlow=outlow, outhigh=outhigh};
+}
+
+T remap<vec2, vec3, vec4, color3, color4>(T in, float inlow = null, float inhigh = null, float outlow = null, float outhigh = null)
+{
+    return {"remap", T: in=in, inlow=inlow, inhigh=inhigh, outlow=outlow, outhigh=outhigh};
+}
+
+// ----------------  range  ----------------
+
+T range<float, vec2, vec3, vec4, color3, color4>(T in, T inlow = null, T inhigh = null, T gamma = null, T outlow = null, T outhigh = null, bool doclamp = null)
+{
+    return {"range", T: in=in, inlow=inlow, inhigh=inhigh, gamma=gamma, outlow=outlow, outhigh=outhigh, doclamp=doclamp};
+}
+
+T range<vec2, vec3, vec4, color3, color4>(T in, float inlow = null, float inhigh = null, float gamma = null, float outlow = null, float outhigh = null, bool doclamp = null)
+{
+    return {"range", T: in=in, inlow=inlow, inhigh=inhigh, gamma=gamma, outlow=outlow, outhigh=outhigh, doclamp=doclamp};
+}
+
+// ----------------  luminance  ----------------
+
+T luminance<color3, color4>(T in, color3 lumacoeffs = null)
+{
+    return {"luminance", T: in=in, lumacoeffs=lumacoeffs};
+}
+
+// ----------------  rgbtohsv  ----------------
+
+T rgbtohsv<color3, color4>(T in)
+{
+    return {"rgbtohsv", T: in=in};
+}
+
+// ----------------  hsvtorgb  ----------------
+
+T hsvtorgb<color3, color4>(T in)
+{
+    return {"hsvtorgb", T: in=in};
+}
+
+// ----------------  hsvadjust  ----------------
+
+T hsvadjust<color3, color4>(T in, vec3 amount = null)
+{
+    return {"hsvadjust", T: in=in, amount=amount};
+}
+
+// ----------------  saturate  ----------------
+
+T saturate<color3, color4>(T in, float amount = null, color3 lumacoeffs = null)
+{
+    return {"saturate", T: in=in, amount=amount, lumacoeffs=lumacoeffs};
+}
+
+// ----------------  colorcorrect  ----------------
+
+T colorcorrect<color3, color4>(
+    T in,
+    float hue = null,
+    float saturation = null,
+    float gamma = null,
+    float lift = null,
+    float gain = null,
+    float contrast = null,
+    float contrastpivot = null,
+    float exposure = null
+)
+{
+    return {"colorcorrect", T:
+        in=in,
+        hue=hue,
+        saturation=saturation,
+        gamma=gamma,
+        lift=lift,
+        gain=gain,
+        contrast=contrast,
+        contrastpivot=contrastpivot,
+        exposure=exposure
+    };
+}
+
+// ----------------  premult  ----------------
+
+color4 premult(color4 in)
+{
+    return {"premult", color4: in=in};
+}
+
+// ----------------  unpremult  ----------------
+
+color4 unpremult(color4 in)
+{
+    return {"unpremult", color4: in=in};
+}
+
+// ----------------  plus  ----------------
+
+T plus<float, color3, color4>(T bg = null, T fg = null, float mix = null)
+{
+    return {"plus", T: bg=bg, fg=fg, mix=mix};
+}
+
+// ----------------  minus  ----------------
+
+T minus<float, color3, color4>(T bg = null, T fg = null, float mix = null)
+{
+    return {"minus", T: bg=bg, fg=fg, mix=mix};
+}
+
+// ----------------  difference  ----------------
+
+T difference<float, color3, color4>(T bg = null, T fg = null, float mix = null)
+{
+    return {"difference", T: bg=bg, fg=fg, mix=mix};
+}
+
+// ----------------  burn  ----------------
+
+T burn<float, color3, color4>(T bg = null, T fg = null, float mix = null)
+{
+    return {"burn", T: bg=bg, fg=fg, mix=mix};
+}
+
+// ----------------  dodge  ----------------
+
+T dodge<float, color3, color4>(T bg = null, T fg = null, float mix = null)
+{
+    return {"dodge", T: bg=bg, fg=fg, mix=mix};
+}
+
+// ----------------  screen  ----------------
+
+T screen<float, color3, color4>(T bg = null, T fg = null, float mix = null)
+{
+    return {"screen", T: bg=bg, fg=fg, mix=mix};
+}
+
+// ----------------  overlay  ----------------
+
+T overlay<float, color3, color4>(T bg = null, T fg = null, float mix = null)
+{
+    return {"overlay", T: bg=bg, fg=fg, mix=mix};
+}
+
+// ----------------  disjointover  ----------------
+
+color4 disjointover(color4 bg = null, color4 fg = null, float mix = null)
+{
+    return {"disjointover", color4: bg=bg, fg=fg, mix=mix};
+}
+
+// ----------------  in  ----------------
+
+color4 in(color4 bg = null, color4 fg = null, float mix = null)
+{
+    return {"in", color4: bg=bg, fg=fg, mix=mix};
+}
+
+// ----------------  mask  ----------------
+
+color4 mask(color4 bg = null, color4 fg = null, float mix = null)
+{
+    return {"mask", color4: bg=bg, fg=fg, mix=mix};
+}
+
+// ----------------  matte  ----------------
+
+color4 matte(color4 bg = null, color4 fg = null, float mix = null)
+{
+    return {"matte", color4: bg=bg, fg=fg, mix=mix};
+}
+
+// ----------------  out  ----------------
+
+color4 out(color4 bg = null, color4 fg = null, float mix = null)
+{
+    return {"out", color4: bg=bg, fg=fg, mix=mix};
+}
+
+// ----------------  over  ----------------
+
+color4 over(color4 bg = null, color4 fg = null, float mix = null)
+{
+    return {"over", color4: bg=bg, fg=fg, mix=mix};
+}
+
+// ----------------  inside  ----------------
+
+T inside<float, color3, color4>(T in = null, float mask = null)
+{
+    return {"inside", color4: in=in, mask=mask};
+}
+
+// ----------------  outside  ----------------
+
+T outside<float, color3, color4>(T in = null, float mask = null)
+{
+    return {"outside", color4: in=in, mask=mask};
 }
 
 #endif // STDLIB_DEFS
