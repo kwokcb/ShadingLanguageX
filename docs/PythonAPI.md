@@ -180,7 +180,7 @@ import MaterialX as mx
 import mxslc
 
 compiler = mxslc.InteractiveCompiler()
-compiler.include(Path("./my_shader.mxsl")
+compiler.include(Path("./my_shader.mxsl"))
 
 shader = compiler.get_shader_interface()
 texture_path = Path("../textures/my_texture.png")
