@@ -3,8 +3,8 @@ These examples were written while __ShadingLanguageX__ was being developed. It's
 
 |            Procedural Rain            |            Interior Mapping             |     Shader Art (by Kishimisu)     |
 |:-------------------------------------:|:---------------------------------------:|:---------------------------------:|
-|     ![](../screenshots/rain.png)      | ![](../screenshots/interiormapping.png) | ![](../screenshots/shaderart.png) |
+|        ![](screenshots/rain.png)      |    ![](screenshots/interiormapping.png) |    ![](screenshots/shaderart.png) |
 |         __Procedural Waves__          |        __Displacement Mountain__        |             __Toon__              |
-|     ![](../screenshots/waves.png)     |    ![](../screenshots/mountain.png)     |   ![](../screenshots/toon.png)    |
+|        ![](screenshots/waves.png)     |       ![](screenshots/mountain.png)     |      ![](screenshots/toon.png)    |
 |          __Disintegration__           |           __Colored Squares__           |             __Gold__              |
-| ![](../screenshots/disintergrate.png) |     ![](../screenshots/squares.png)     |   ![](../screenshots/gold.png)    |
+|    ![](screenshots/disintergrate.png) |        ![](screenshots/squares.png)     |      ![](screenshots/gold.png)    |
