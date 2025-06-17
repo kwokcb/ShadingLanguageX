@@ -1,4 +1,6 @@
+import os
 import subprocess
+import sys
 import time
 from threading import Thread
 
@@ -23,6 +25,9 @@ def compile_and_enable_references():
     for n in ref_nodes:
         n.parm("enable1").set(True)
 
+if not os.path.exists(MXSLC_PATH):
+    print(f"Invalid mxslc.exe path: {MXSLC_PATH}")
+    sys.exit()
 
 # get all reference nodes
 ref_nodes = [n for n in hou.node("/stage").allSubChildren() if "reference" in n.type().name()]
