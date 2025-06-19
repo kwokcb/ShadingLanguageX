@@ -47,3 +47,9 @@ class Argument:
 
     def evaluate(self) -> mx_utils.Node:
         return self.__expr.evaluate()
+
+    def __str__(self):
+        if self.name:
+            return f"{self.name}={self.expression}"
+        else:
+            return f"{self.expression}"
