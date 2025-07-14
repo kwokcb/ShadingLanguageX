@@ -1,10 +1,11 @@
 from .Argument import Argument
 from .CompileError import CompileError
 from .Expressions import *
+from .Expressions.LiteralExpression import NullExpression
 from .Keyword import Keyword
 from .Parameter import Parameter
 from .Statements import *
-from .Token import Token
+from .Token import Token, IdentifierToken
 from .TokenReader import TokenReader
 from .token_types import IDENTIFIER, FLOAT_LITERAL, INT_LITERAL, STRING_LITERAL, FILENAME_LITERAL
 
@@ -31,10 +32,12 @@ class Parser(TokenReader):
         if token in Keyword.DATA_TYPES():
             return self.__declaration()
         if token == Keyword.VOID:
-            return self.__void_function_declaration()
+            void = self._match(Keyword.VOID)
+            identifier = self._match(IDENTIFIER)
+            return self.__function_declaration(void, identifier)
         if token == IDENTIFIER:
             if self._peek_next() in ["(", "<"]:
-                expr = self.__primary() # function
+                expr = self.__primary()
                 self._match(";")
                 return ExpressionStatement(expr)
             else:
@@ -59,7 +62,6 @@ class Parser(TokenReader):
         self._match(";")
         return VariableDeclaration(data_type, identifier, right)
 
-    # TODO combine `__function_declaration` and `__void_function_declaration`
     def __function_declaration(self, return_type: Token, identifier: Token) -> FunctionDeclaration:
         template_types = []
         if self._consume("<"):
@@ -77,38 +79,19 @@ class Parser(TokenReader):
             self._match(")")
         self._match("{")
         statements = []
-        while self._peek() != Keyword.RETURN:
-            statements.append(self.__statement())
-        self._match(Keyword.RETURN)
-        return_expr = self.__expression()
-        self._match(";")
-        self._match("}")
-        return FunctionDeclaration(return_type, identifier, template_types, params, statements, return_expr)
-
-    def __void_function_declaration(self) -> FunctionDeclaration:
-        self._match(Keyword.VOID)
-        identifier = self._match(IDENTIFIER)
-        template_types = []
-        if self._consume("<"):
-            template_types.append(self._match(Keyword.DATA_TYPES() - {Keyword.T}))
-            while self._consume(","):
-                template_types.append(self._match(Keyword.DATA_TYPES() - {Keyword.T}))
-            self._match(">")
-        self._match("(")
-        if self._consume(")"):
-            params = []
+        if return_type in Keyword.DATA_TYPES():
+            while self._peek() != Keyword.RETURN:
+                statements.append(self.__statement())
+            self._match(Keyword.RETURN)
+            return_expr = self.__expression()
+            self._match(";")
+            self._match("}")
         else:
-            params = [self.__parameter()]
-            while self._consume(","):
-                params.append(self.__parameter())
-            self._match(")")
-        self._match("{")
-        statements = []
-        while self._peek() != "}":
-            statements.append(self.__statement())
-        self._match("}")
-        return_expr = LiteralExpression(Token(INT_LITERAL, "0"))
-        return FunctionDeclaration(Token(Keyword.INTEGER), identifier, template_types, params, statements, return_expr)
+            while self._peek() != "}":
+                statements.append(self.__statement())
+            self._match("}")
+            return_expr = NullExpression()
+        return FunctionDeclaration(return_type, identifier, template_types, params, statements, return_expr)
 
     def __parameter(self) -> Parameter:
         data_type = self._match(Keyword.DATA_TYPES())
@@ -147,20 +130,20 @@ class Parser(TokenReader):
         data_type = self._match(Keyword.DATA_TYPES())
         identifier = self._match(IDENTIFIER)
         self._match("=")
-        literal1 = self._match(FLOAT_LITERAL, IDENTIFIER)
+        start_value = self._match(FLOAT_LITERAL, IDENTIFIER)
         self._match(":")
-        literal2 = self._match(FLOAT_LITERAL, IDENTIFIER)
+        value2 = self._match(FLOAT_LITERAL, IDENTIFIER)
         if self._consume(":"):
-            literal3 = self._match(FLOAT_LITERAL, IDENTIFIER)
+            value3 = self._match(FLOAT_LITERAL, IDENTIFIER)
         else:
-            literal3 = None
+            value3 = None
         self._match(")")
         self._match("{")
         statements = []
         while self._peek() != "}":
             statements.append(self.__statement())
         self._match("}")
-        return ForLoop(data_type, identifier, literal1, literal2, literal3, statements)
+        return ForLoop(data_type, identifier, start_value, value2, value3, statements)
 
     def __expression(self) -> Expression:
         return self.__logic()
@@ -269,7 +252,7 @@ class Parser(TokenReader):
         raise CompileError(f"Unexpected token: '{token}'.", token)
 
     def __if_expression(self) -> Expression:
-        keyword = self._match(Keyword.IF)
+        self._match(Keyword.IF)
         self._match("(")
         clause = self.__expression()
         self._match(")")
@@ -282,10 +265,10 @@ class Parser(TokenReader):
             self._match("}")
         else:
             otherwise = None
-        return IfExpression(keyword, clause, then, otherwise)
+        return IfExpression(clause, then, otherwise)
 
     def __switch_expression(self) -> Expression:
-        keyword = self._match(Keyword.SWITCH)
+        self._match(Keyword.SWITCH)
         self._match("(")
         which = self.__expression()
         self._match(")")
@@ -294,7 +277,7 @@ class Parser(TokenReader):
         while self._consume(","):
             values.append(self.__expression())
         self._match("}")
-        return SwitchExpression(keyword, which, values)
+        return SwitchExpression(which, values)
 
     def __constructor_call(self) -> Expression:
         data_type = self._match(Keyword.DATA_TYPES())
@@ -342,6 +325,10 @@ class Parser(TokenReader):
     def __argument(self, index: int) -> Argument:
         if self._peek() == IDENTIFIER and self._peek_next() == "=":
             name = self._match(IDENTIFIER)
+            self._match("=")
+        elif self._peek() in Keyword.DATA_TYPES() and self._peek_next() == "=":
+            keyword = self._match(Keyword.DATA_TYPES())
+            name = IdentifierToken(keyword.lexeme)
             self._match("=")
         else:
             name = None

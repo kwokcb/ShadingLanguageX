@@ -4,6 +4,7 @@ from . import Statement
 from .. import state
 from ..CompileError import CompileError
 from ..DataType import DataType
+from ..Expressions import Expression
 from ..Function import Function
 from ..Parameter import Parameter, ParameterList
 from ..Token import Token
@@ -44,12 +45,6 @@ class FunctionDeclaration(Statement):
         return FunctionDeclaration(self.__return_type, self.__identifier, {template_type}, self.__params, self.__body, self.__return_expr)
 
     def execute(self) -> None:
-        for func in self.__funcs:
-            _init_parameter_default_values(func)
+        for func in sorted(self.__funcs):
+            func.initialise()
             state.add_function(func)
-
-
-def _init_parameter_default_values(func: Function) -> None:
-    for param in func.parameters:
-        if param.default_value:
-            param.default_value.init(param.data_type)

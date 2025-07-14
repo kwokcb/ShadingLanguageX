@@ -1,6 +1,7 @@
-from mxslc import mx_utils
-from mxslc.DataType import DataType, INTEGER, FLOAT, MULTI_ELEM_TYPES
-from mxslc.Expressions import Expression
+from .. import node_utils
+from ..DataType import DataType, INTEGER, FLOAT, MULTI_ELEM_TYPES
+from ..Expressions import Expression
+from ..mx_wrapper import Node
 
 
 class IndexingExpression(Expression):
@@ -22,10 +23,10 @@ class IndexingExpression(Expression):
     def _data_type(self) -> DataType:
         return FLOAT
 
-    def _evaluate(self) -> mx_utils.Node:
+    def _evaluate(self) -> Node:
         index = self.__indexer.evaluate()
         value = self.__expr.evaluate()
-        return mx_utils.extract(value, index)
+        return node_utils.extract(value, index)
 
     def __str__(self) -> str:
         return f"{self.__expr}[{self.__indexer}]"

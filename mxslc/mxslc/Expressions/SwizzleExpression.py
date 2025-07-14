@@ -1,10 +1,11 @@
 import re
 
 from . import Expression
-from .. import mx_utils
+from .. import node_utils
 from ..CompileError import CompileError
 from ..DataType import DataType, VECTOR2, VECTOR3, VECTOR4, COLOR4, COLOR3
 from ..Token import Token
+from ..mx_wrapper import Node
 from ..utils import type_of_swizzle, string
 
 
@@ -28,13 +29,13 @@ class SwizzleExpression(Expression):
     def _data_type(self) -> DataType:
         return type_of_swizzle(self.__swizzle)
 
-    def _evaluate(self) -> mx_utils.Node:
+    def _evaluate(self) -> Node:
         left_node = self.__left.evaluate()
         if len(self.__swizzle) == 1:
-            return mx_utils.extract(left_node, self.__swizzle)
+            return node_utils.extract(left_node, self.__swizzle)
         else:
-            channels = [mx_utils.extract(left_node, c) for c in self.__swizzle]
-            return mx_utils.combine(channels, self.data_type)
+            channels = [node_utils.extract(left_node, c) for c in self.__swizzle]
+            return node_utils.combine(channels, self.data_type)
 
     def __valid_left_types(self) -> set[DataType]:
         if "x" in self.__swizzle:

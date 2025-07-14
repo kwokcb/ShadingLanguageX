@@ -1,15 +1,15 @@
 from . import Expression
 from .expression_utils import init_linked_expressions
-from .. import mx_utils
+from .. import node_utils
 from ..CompileError import CompileError
 from ..DataType import DataType, BOOLEAN
-from ..Token import Token
+from ..mx_wrapper import Node
 
 
 # TODO implement if else
 class IfExpression(Expression):
-    def __init__(self, token: Token, clause: Expression, then: Expression, otherwise: Expression):
-        super().__init__(token)
+    def __init__(self, clause: Expression, then: Expression, otherwise: Expression):
+        super().__init__(clause.token)
         self.__clause = clause
         self.__then = then
         self.__otherwise = otherwise
@@ -26,7 +26,7 @@ class IfExpression(Expression):
         clause = self.__clause.instantiate_templated_types(template_type)
         then = self.__then.instantiate_templated_types(template_type)
         otherwise = self.__otherwise.instantiate_templated_types(template_type)
-        return IfExpression(self.token, clause, then, otherwise)
+        return IfExpression(clause, then, otherwise)
 
     def _init_subexpr(self, valid_types: set[DataType]) -> None:
         if self.__otherwise is None:
@@ -39,12 +39,12 @@ class IfExpression(Expression):
     def _data_type(self) -> DataType:
         return self.__then.data_type
 
-    def _evaluate(self) -> mx_utils.Node:
+    def _evaluate(self) -> Node:
         clause_node = self.__clause.evaluate()
         then_node = self.__then.evaluate()
         otherwise_node = self.__otherwise.evaluate()
 
-        node = mx_utils.create_node("ifequal", self.data_type)
+        node = node_utils.create("ifequal", self.data_type)
         node.set_input("value1", clause_node)
         node.set_input("value2", True)
         node.set_input("in1", then_node)

@@ -1,7 +1,8 @@
 from . import Expression
-from .. import state, mx_utils
+from .. import state, node_utils
 from ..DataType import DataType
 from ..Token import Token
+from ..mx_wrapper import Node
 
 
 class IdentifierExpression(Expression):
@@ -21,10 +22,9 @@ class IdentifierExpression(Expression):
         node = state.get_node(self.__identifier)
         return node.data_type
 
-    def _evaluate(self) -> mx_utils.Node:
+    def _evaluate(self) -> Node:
         old_node = state.get_node(self.__identifier)
-        new_node = mx_utils.create_node("dot", self.data_type)
-        new_node.set_input("in", old_node)
+        new_node = node_utils.dot(old_node)
         return new_node
 
     def __str__(self) -> str:

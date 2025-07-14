@@ -1,6 +1,6 @@
 from . import Expression
-from .. import mx_utils
 from ..DataType import DataType
+from ..mx_wrapper import Node
 
 
 class GroupingExpression(Expression):
@@ -24,7 +24,7 @@ class GroupingExpression(Expression):
     def _data_type(self) -> DataType:
         return self.__expr.data_type
 
-    def _evaluate(self) -> mx_utils.Node:
+    def _evaluate(self) -> Node:
         return self.__expr.evaluate()
 
     def __str__(self) -> str:

@@ -1,9 +1,10 @@
 from . import Expression
 from .expression_utils import format_args
-from .. import state, mx_utils, utils
+from .. import state, utils
 from ..CompileError import CompileError
 from ..DataType import DataType
 from ..Token import Token
+from ..mx_wrapper import Node
 
 
 class FunctionCall(Expression):
@@ -33,7 +34,7 @@ class FunctionCall(Expression):
             param_index = arg.position if arg.is_positional else arg.name
             valid_arg_types = state.get_function_parameter_types(valid_types, self.__identifier, self.__template_type, param_index)
             if len(valid_arg_types) == 0:
-                raise CompileError(f"Function signature '{utils.function_signature_string(valid_types, self.__identifier.lexeme, self.__template_type, None)}' does not exist.", self.__identifier)
+                raise CompileError(f"Function signature '{utils.format_function(valid_types, self.__identifier.lexeme, self.__template_type, None)}' does not exist.", self.__identifier)
             arg.init(valid_arg_types)
 
     def _init(self, valid_types: set[DataType]) -> None:
@@ -43,7 +44,7 @@ class FunctionCall(Expression):
     def _data_type(self) -> DataType:
         return self.__func.return_type
 
-    def _evaluate(self) -> mx_utils.Node:
+    def _evaluate(self) -> Node:
         return self.__func.invoke(self.__args)
 
     def __assert_valid_argument_order(self):
