@@ -289,6 +289,10 @@ class PortElement(TypedElement):
         return self.source.getValue()
 
     @property
+    def has_literal(self) -> bool:
+        return self.literal is not None
+
+    @property
     def literal_string(self) -> str:
         return self.source.getValueString()
 

@@ -5,36 +5,16 @@
     <input name="t" type="float" value="0" />
   </nodedef>
   <nodegraph name="NG_palette" nodedef="ND_palette">
-    <combine3 name="a" type="vector3">
-      <input name="in1" type="float" value="0.5" />
-      <input name="in2" type="float" value="0.5" />
-      <input name="in3" type="float" value="0.5" />
-    </combine3>
-    <combine3 name="b" type="vector3">
-      <input name="in1" type="float" value="0.5" />
-      <input name="in2" type="float" value="0.5" />
-      <input name="in3" type="float" value="0.5" />
-    </combine3>
-    <combine3 name="c" type="vector3">
-      <input name="in1" type="float" value="1" />
-      <input name="in2" type="float" value="1" />
-      <input name="in3" type="float" value="1" />
-    </combine3>
-    <combine3 name="d" type="vector3">
-      <input name="in1" type="float" value="0.263" />
-      <input name="in2" type="float" value="0.416" />
-      <input name="in3" type="float" value="0.557" />
-    </combine3>
     <cos name="node15" type="vector3">
       <input name="in" type="vector3" nodename="node23" />
     </cos>
     <multiply name="node19" type="vector3">
-      <input name="in1" type="vector3" nodename="c" />
+      <input name="in1" type="vector3" value="1, 1, 1" />
       <input name="in2" type="float" interfacename="t" />
     </multiply>
     <add name="node21" type="vector3">
       <input name="in1" type="vector3" nodename="node19" />
-      <input name="in2" type="vector3" nodename="d" />
+      <input name="in2" type="vector3" value="0.263, 0.416, 0.557" />
     </add>
     <convert name="node22" type="vector3">
       <input name="in" type="float" value="6.28318" />
@@ -44,11 +24,11 @@
       <input name="in2" type="vector3" nodename="node21" />
     </multiply>
     <multiply name="node24" type="vector3">
-      <input name="in1" type="vector3" nodename="b" />
+      <input name="in1" type="vector3" value="0.5, 0.5, 0.5" />
       <input name="in2" type="vector3" nodename="node15" />
     </multiply>
     <add name="node25" type="vector3">
-      <input name="in1" type="vector3" nodename="a" />
+      <input name="in1" type="vector3" value="0.5, 0.5, 0.5" />
       <input name="in2" type="vector3" nodename="node24" />
     </add>
     <output name="out" type="vector3" nodename="node25" />

@@ -144,10 +144,6 @@
     <input name="in1" type="float" nodename="progress3" />
     <input name="in2" type="float" value="2" />
   </modulo>
-  <combine2 name="tail_pos" type="vector2">
-    <input name="in1" type="float" value="0" />
-    <input name="in2" type="float" value="0" />
-  </combine2>
   <nodedef name="ND___loop__1" node="__loop__1">
     <input name="f" type="float" value="0" />
     <input name="CHANNEL" type="float" value="0" />
@@ -260,7 +256,7 @@
     <input name="UV" type="vector2" nodename="UV" />
     <input name="tail" type="float" value="0" />
     <input name="TAIL_SIZE" type="float" nodename="TAIL_SIZE" />
-    <input name="tail_pos" type="vector2" nodename="tail_pos" />
+    <input name="tail_pos" type="vector2" value="0, 0" />
     <output name="sway2" type="float" />
     <output name="tail2" type="float" />
     <output name="tail_pos2" type="vector2" />
@@ -527,25 +523,17 @@
     <input name="value1" type="float" nodename="in_tail" />
     <input name="value2" type="float" value="0.5" />
   </ifgreater>
-  <combine2 name="node105" type="vector2">
-    <input name="in1" type="float" value="0" />
-    <input name="in2" type="float" value="0" />
-  </combine2>
   <ifequal name="tail_norm2" type="vector2">
     <input name="value1" type="boolean" nodename="node101" />
     <input name="value2" type="boolean" value="true" />
     <input name="in1" type="vector2" nodename="tail_norm" />
-    <input name="in2" type="vector2" nodename="node105" />
+    <input name="in2" type="vector2" value="0, 0" />
   </ifequal>
   <mix name="tail_norm3" type="vector2">
-    <input name="fg" type="vector2" nodename="node109" />
+    <input name="fg" type="vector2" value="0, 0" />
     <input name="bg" type="vector2" nodename="tail_norm2" />
     <input name="mix" type="float" nodename="tail15" />
   </mix>
-  <combine2 name="node109" type="vector2">
-    <input name="in1" type="float" value="0" />
-    <input name="in2" type="float" value="0" />
-  </combine2>
   <subtract name="node113" type="vector2">
     <input name="in1" type="vector2" nodename="drop_pos" />
     <input name="in2" type="vector2" nodename="UV" />
@@ -558,15 +546,11 @@
     <input name="value1" type="float" value="0.015" />
     <input name="value2" type="float" nodename="to_drop" />
   </ifgreatereq>
-  <combine2 name="node121" type="vector2">
-    <input name="in1" type="float" value="0" />
-    <input name="in2" type="float" value="0" />
-  </combine2>
   <ifequal name="drop_norm2" type="vector2">
     <input name="value1" type="boolean" nodename="node117" />
     <input name="value2" type="boolean" value="true" />
     <input name="in1" type="vector2" nodename="drop_norm" />
-    <input name="in2" type="vector2" nodename="node121" />
+    <input name="in2" type="vector2" value="0, 0" />
   </ifequal>
   <convert name="node124" type="vector2">
     <input name="in" type="float" value="1" />

@@ -28,22 +28,13 @@
     <output name="out" type="vector2" default="0, 0" />
   </nodedef>
   <nodegraph name="NG_foo2" nodedef="ND_foo2">
-    <combine2 name="node3" type="vector2">
-      <input name="in1" type="float" value="4" />
-      <input name="in2" type="float" value="5" />
-    </combine2>
-    <output name="out" type="vector2" nodename="node3" />
+    <output name="out" type="vector2" value="4, 5" />
   </nodegraph>
   <nodedef name="ND_bar" node="bar">
     <output name="out" type="color3" default="0, 0, 0" />
   </nodedef>
   <nodegraph name="NG_bar" nodedef="ND_bar">
-    <combine3 name="node4" type="color3">
-      <input name="in1" type="float" value="1" />
-      <input name="in2" type="float" value="0" />
-      <input name="in3" type="float" value="0" />
-    </combine3>
-    <output name="out" type="color3" nodename="node4" />
+    <output name="out" type="color3" value="1, 0, 0" />
   </nodegraph>
   <nodedef name="ND_bar2" node="bar">
     <output name="out" type="boolean" default="False" />

@@ -1,12 +1,7 @@
 <?xml version="1.0"?>
 <materialx version="1.39">
-  <combine3 name="node4" type="color3">
-    <input name="in1" type="float" value="1" />
-    <input name="in2" type="float" value="0" />
-    <input name="in3" type="float" value="0" />
-  </combine3>
   <power name="c" type="color3">
-    <input name="in1" type="color3" nodename="node4" />
+    <input name="in1" type="color3" value="1, 0, 0" />
     <input name="in2" type="float" value="2.2" />
   </power>
   <standard_surface name="surface" type="surfaceshader">

@@ -60,14 +60,9 @@
     <input name="in1" type="color3" nodename="albedo" />
     <input name="in2" type="float" nodename="matao" />
   </multiply>
-  <combine3 name="node26" type="color3">
-    <input name="in1" type="float" value="0.5" />
-    <input name="in2" type="float" value="0.1" />
-    <input name="in3" type="float" value="0.1" />
-  </combine3>
   <multiply name="node27" type="color3">
     <input name="in1" type="color3" nodename="node22" />
-    <input name="in2" type="color3" nodename="node26" />
+    <input name="in2" type="color3" value="0.5, 0.1, 0.1" />
   </multiply>
   <normalmap name="node30" type="vector3">
     <input name="in" type="vector3" nodename="normal2" />

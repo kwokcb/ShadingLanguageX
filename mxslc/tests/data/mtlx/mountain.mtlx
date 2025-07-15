@@ -97,33 +97,13 @@
     <input name="in1" type="float" nodename="node16" />
     <input name="in2" type="float" value="0.5" />
   </add>
-  <combine3 name="water" type="color3">
-    <input name="in1" type="float" value="0.2" />
-    <input name="in2" type="float" value="0.2" />
-    <input name="in3" type="float" value="1" />
-  </combine3>
-  <combine3 name="beach" type="color3">
-    <input name="in1" type="float" value="0.7" />
-    <input name="in2" type="float" value="0.7" />
-    <input name="in3" type="float" value="0.3" />
-  </combine3>
-  <combine3 name="node27" type="color3">
-    <input name="in1" type="float" value="0.1" />
-    <input name="in2" type="float" value="0.6" />
-    <input name="in3" type="float" value="0.1" />
-  </combine3>
   <multiply name="trees" type="color3">
-    <input name="in1" type="color3" nodename="node27" />
+    <input name="in1" type="color3" value="0.1, 0.6, 0.1" />
     <input name="in2" type="float" nodename="tree_noise" />
   </multiply>
-  <combine3 name="rocks" type="color3">
-    <input name="in1" type="float" value="0.5" />
-    <input name="in2" type="float" value="0.5" />
-    <input name="in3" type="float" value="0.5" />
-  </combine3>
   <clerp name="c1" type="color3">
-    <input name="a" type="color3" nodename="water" />
-    <input name="b" type="color3" nodename="beach" />
+    <input name="a" type="color3" value="0.2, 0.2, 1" />
+    <input name="b" type="color3" value="0.7, 0.7, 0.3" />
     <input name="lower" type="float" value="0.0132" />
     <input name="upper" type="float" value="0.0158" />
     <input name="t" type="float" nodename="height" />
@@ -134,7 +114,7 @@
   </ifgreater>
   <clerp name="node40" type="color3">
     <input name="a" type="color3" nodename="trees" />
-    <input name="b" type="color3" nodename="rocks" />
+    <input name="b" type="color3" value="0.5, 0.5, 0.5" />
     <input name="lower" type="float" value="0.5" />
     <input name="upper" type="float" value="0.8" />
     <input name="t" type="float" nodename="height" />
