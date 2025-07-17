@@ -3,7 +3,7 @@
 * __Auto Keyword__
 ```
 auto pi = 3.14;  
-auto red = color3(1.0, 0.0, 0.0);`auto add_one(float x)
+auto red = color3(1.0, 0.0, 0.0);
 auto uv = texcoord<vec2>();
 
 auto add_one(float x)
