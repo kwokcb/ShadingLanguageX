@@ -10,10 +10,17 @@ except ImportError as e:
     sys.exit(1)
 
 
+def decompile_string(mtlx_content: str) -> str:    
+    """
+    Decompile a MaterialX string content to SLX string.
+    """
+    decompiler = Decompiler(mtlx_content)
+    return decompiler.decompile()
+
 def main():
     parser = argparse.ArgumentParser(description="Convert MaterialX files to SLX format.")
     parser.add_argument(dest='input_file', help="Path to the input MaterialX file (.mtlx)")
-    parser.add_argument("-o", "--output_file", dest="output_file", default="", type=str, help="Path to the output SLX file (.slx)")
+    parser.add_argument("-o", "--output_file", dest="output_file", default="", type=str, help="Path to the output SLX file (.slx). If not provided, output will be printed to stdout.")
     
     args = parser.parse_args()
     input_file = Path(args.input_file)
@@ -21,13 +28,18 @@ def main():
         print(f"Input file does not exist: {input_file}")
         sys.exit(1)
     
-    decompiler = Decompiler(input_file)
-    
-    # Decompile the MaterialX file
+    mtlx_content = ""
+    with open(input_file, 'r') as f:
+        mtlx_content = f.read()
+
     try:
-        mxsl_output = decompiler.decompile()
+        mxsl_output = decompile_string(mtlx_content)
     except Exception as e:
         print(f"Error during decompilation: {e}")
+        sys.exit(1)
+
+    if not mxsl_output:
+        print("No output produced from decompilation.")
         sys.exit(1)
     
     output_file = args.output_file
