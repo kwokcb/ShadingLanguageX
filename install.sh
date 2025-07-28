@@ -18,7 +18,7 @@ fi
 
 # Check Python version
 echo "Checking Python version..."
-$PYTHON_CMD -c "import sys; exit(0 if sys.version_info >= (3, 12) else 1)"
+$PYTHON_CMD -c "import sys; exit(0 if sys.version_info >= (3, 11) else 1)"
 if [ $? -ne 0 ]; then
     echo "Error: Python 3.12 or higher required"
     echo "Current version:"

@@ -1,4 +1,5 @@
 import MaterialX as mx
+from typing import Union
 from ..mx_wrapper import Uniform
 
-type Value = mx.Node | Uniform
+Value = Union[mx.Node, Uniform]

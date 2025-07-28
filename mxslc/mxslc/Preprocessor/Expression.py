@@ -1,11 +1,12 @@
 from abc import ABC, abstractmethod
 from pathlib import Path
+from typing import Union
 
 from ..CompileError import CompileError
 from ..Keyword import Keyword
 from ..Token import Token
 
-type Primitive = bool | int | float | str
+Primitive = Union[bool, int, float, str]
 
 
 class Expression(ABC):

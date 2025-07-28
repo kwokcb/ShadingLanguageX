@@ -33,7 +33,10 @@ class Token:
         if self.__type == FLOAT_LITERAL:
             self.__value = float(lexeme)
         if self.__type == INT_LITERAL:
-            self.__value = int(lexeme)
+            if type(lexeme) is str:
+                self.__value = (lexeme == 'True')
+            else:
+                self.__value = int(lexeme)
         if self.__type == STRING_LITERAL:
             self.__value = lexeme.strip('"')
         if self.__type == FILENAME_LITERAL:

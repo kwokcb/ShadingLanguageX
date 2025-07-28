@@ -67,9 +67,12 @@ class Scanner:
         if directive := self.__get_directive():
             return self.__token(directive)
         if word := self.__get_word():
-            if word in Keyword:
+            try:
+                # Check if word is a valid keyword by trying to create a Keyword from it
+                Keyword(word)
                 return self.__token(word)
-            else:
+            except ValueError:
+                # Not a keyword, treat as identifier
                 return self.__token(IDENTIFIER, word)
         if float_lit := self.__get_float_literal():
             return self.__token(FLOAT_LITERAL, float_lit)
