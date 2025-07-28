@@ -33,7 +33,7 @@ def main():
         sys.exit(1)
     
     mtlx_content = ""
-    with open(input_file, 'r') as f:
+    with open(input_file, 'r', encoding='utf-8') as f:
         mtlx_content = f.read()
 
     try:
