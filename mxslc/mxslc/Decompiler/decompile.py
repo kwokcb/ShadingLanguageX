@@ -1,5 +1,6 @@
 from pathlib import Path
 
+from .DecompileError import DecompileError
 from ..Argument import Argument
 from ..DataType import BOOLEAN, INTEGER, FLOAT, MULTI_ELEM_TYPES, STRING, FILENAME
 from ..Expressions import IdentifierExpression, LiteralExpression, Expression, IfExpression, UnaryExpression, \
@@ -51,6 +52,8 @@ def _deexecute(node: Node) -> Statement:
 
 
 def _node_to_expression(node: Node) -> Expression:
+    if node.source.getType() == "multioutput":
+        raise DecompileError("SLX does not currently support multioutput nodes", node)
     category = node.category
     data_type = node.data_type
     args = _inputs_to_arguments(node.inputs)
@@ -100,7 +103,7 @@ def _input_to_expression(input_: Input) -> Expression:
         return LiteralExpression(token)
     if input_.data_type in MULTI_ELEM_TYPES:
         return ConstructorCall(input_.data_type, _value_to_arguments(input_.literal_string))
-    raise AssertionError(f"Unknown input type: '{input_.data_type}'.")
+    raise DecompileError(f"Invalid input", input_)
 
 
 def _value_to_arguments(vec_str: str) -> list[Argument]:
