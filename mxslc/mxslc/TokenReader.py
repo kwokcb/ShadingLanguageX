@@ -56,7 +56,7 @@ class TokenReader(ABC):
             return token
         # raise compile error if not a match
         token = self._peek()
-        if token in Keyword and token_types == [IDENTIFIER]:
+        if token.type in Keyword.__members__.values() and token_types == [IDENTIFIER]:
             msg = f"'{token.lexeme}' is a protected keyword and cannot be used as an identifier."
         else:
             msg = f"Expected {_format_tokens(token_types)}, but found '{token.lexeme}'."
