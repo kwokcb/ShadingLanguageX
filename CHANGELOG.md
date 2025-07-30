@@ -1,4 +1,4 @@
-# Version 0.5.3-beta (in development)
+# Version 0.5.3-beta
 ## Added
 * __Inline Keyword ([docs](https://github.com/jakethorn/ShadingLanguageX/blob/main/docs/LanguageSpecification.md#inline))__  
 The `inline` keyword forces the statements in a function to be created directly in the enclosing
