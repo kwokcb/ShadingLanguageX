@@ -19,6 +19,7 @@ _overwrite_all_expected = False
     ("decompiler/squares", False),
     ("decompiler/toon", False),
     ("decompiler/waves", False),
+    ("decompiler/boombox", False),
 ])
 def test_decompiler(filename: str, overwrite_expected: bool) -> None:
     mtlx_path     = (Path(__file__).parent / "data" / "mtlx" / filename).with_suffix(".mtlx")
@@ -45,5 +46,5 @@ def test_decompiler(filename: str, overwrite_expected: bool) -> None:
     # 2nd test - compile the decompiled shader
     mxsl_path = expected_path
     actual_path = (Path(__file__).parent / "data" / "mxsl" / filename).with_suffix(".mtlx")
-    mxslc.compile_file(mxsl_path, actual_path)
+    mxslc.compile_file(mxsl_path, actual_path, validate=True)
     actual_path.unlink()
