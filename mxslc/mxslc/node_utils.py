@@ -65,10 +65,6 @@ def convert(in_: Node, output_type: DataType) -> Node:
     """
     Add convert node to the current states graph element.
     """
-    unconvertable_types = [STRING, FILENAME, *SHADER_TYPES]
-    assert in_.data_type not in unconvertable_types
-    assert output_type not in unconvertable_types
-
     node = create("convert", output_type)
     node.set_input("in", in_)
     return node
