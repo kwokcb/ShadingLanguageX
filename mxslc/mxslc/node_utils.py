@@ -11,12 +11,15 @@ def create(category: str, data_type: DataType | str) -> Node:
     return state.get_graph().add_node(category, data_type)
 
 
-def constant(value: Uniform) -> Node:
+def constant(value: Uniform = None, data_type: DataType = None) -> Node:
     """
     Add constant node to the current states graph element.
     """
-    node = create("constant", type_of(value))
-    node.set_input("value", value)
+    node = create("constant", data_type or type_of(value))
+    if value is not None:
+        node.add_input("value", value)
+    else:
+        node.add_input("value", data_type=data_type)
     return node
 
 

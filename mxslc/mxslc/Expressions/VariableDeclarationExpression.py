@@ -14,7 +14,7 @@ class VariableDeclarationExpression(IdentifierExpression):
         return VariableDeclarationExpression(self.__data_type.instantiate(template_type), self.__identifier)
 
     def _init(self, valid_types: set[DataType]) -> None:
-        node = node_utils.constant(self.__data_type.default())
+        node = node_utils.constant(data_type=self.__data_type)
         state.add_node(self.__identifier, node)
 
     def __str__(self) -> str:
