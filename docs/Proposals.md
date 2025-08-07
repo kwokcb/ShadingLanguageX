@@ -13,4 +13,12 @@
 # TODO -l --log argument that outputs a logfile with the error and stacktrace
 # TODO allow loop iteration variables to be ints/vecs/colors as well as floats
 # TODO namespaces (syntax: public/private? namespace <name>? {})
+# TODO global blocks
+# TODO finish interactive compiler
+# TODO improve decompiler
+# TODO add version directive
+# TODO add attributes to document
+# TODO #include can also include .mtlx files (decompile them during import process)
+# TODO most expressions can inherit from FunctionCall (or something like that)
+# there is no need to do any manual type check like that
 ```  
