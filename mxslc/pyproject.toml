@@ -17,8 +17,8 @@ dev = [
 [project.scripts]
 mxslc = "mxslc.main:main"
 
-[tool.setuptools]
-packages = ["mxslc"]
+[tool.setuptools.packages.find]
+include = ["mxslc", "mxslc.*"]
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]
