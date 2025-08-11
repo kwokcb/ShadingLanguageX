@@ -11,26 +11,27 @@
 3. [Data Types](#data-types)
 4. [Expressions](#expressions)
 5. [Statements](#statements)
-6. [Identifiers](#identifiers)
-7. [Reserved Keywords](#reserved-keywords)
-8. [Whitespace](#whitespace)
-9. [Comments](#comments)
-10. [Operators](#operators)
-11. [Variable Declarations](#variable-declarations)
-12. [Variable Assignments](#variable-assignments)
-13. [Constructors](#constructors)
-14. [If Expressions](#if-expressions)
-15. [Switch Expressions](#switch-expressions)
-16. [For Loops](#for-loops)
-17. [User Functions](#user-functions)
-18. [Statement Modifiers](#statement-modifiers)
-19. [Attributes](#attributes)
-20. [Node Constructors](#node-constructors)
-21. [Null Expression](#null-expression)
-22. [Standard Library](#standard-library)
-23. [Scope](#scope) 
-24. [Preprocessor Directives](#preprocessor-directives)
-25. [mxslc](#mxslc)
+6. [Literals](#literals)
+7. [Identifiers](#identifiers)
+8. [Reserved Keywords](#reserved-keywords)
+9. [Whitespace](#whitespace)
+10. [Comments](#comments)
+11. [Operators](#operators)
+12. [Variable Declarations](#variable-declarations)
+13. [Variable Assignments](#variable-assignments)
+14. [Constructors](#constructors)
+15. [If Expressions](#if-expressions)
+16. [Switch Expressions](#switch-expressions)
+17. [For Loops](#for-loops)
+18. [User Functions](#user-functions)
+19. [Statement Modifiers](#statement-modifiers)
+20. [Attributes](#attributes)
+21. [Node Constructors](#node-constructors)
+22. [Null Expression](#null-expression)
+23. [Standard Library](#standard-library)
+24. [Scope](#scope) 
+25. [Preprocessor Directives](#preprocessor-directives)
+26. [mxslc](#mxslc)
 
 # Introduction
 
@@ -198,21 +199,22 @@ auto randomvector<vec2, vec3, vec4>()
 Expressions are pieces of code that evaluate to a value, such as `1.0 + 1.0`. This document will cover each expression in detail
 in its own section. The following table gives a quick overview of all the expressions supported by ShadingLanguageX.
 
-| Expression                  | Example                              |
-|-----------------------------|--------------------------------------|
-| Binary Operator             | `a + b`                              |
-| Unary Operator              | `-a`                                 |
-| Ternary Relational Operator | `x < a < y`                          |
-| Swizzle Operator            | `a.xy`                               |
-| Indexing Operator           | `a[0]`                               |
-| Literal                     | `3.14`                               |
-| Identifier                  | `a`                                  |
-| Grouping Expression         | `(a + b)`                            |
-| If Expression               | `if (a < b) { x } else { y }`        |
-| Switch Expression           | `switch (a) { x, y, z }`             |
-| Function Call               | `my_function(a, b)`                  |
-| Constructor Call            | `vec3()`                             |
-| Node Constructor            | `{"mix", color3: bg=a, fg=b, mix=c}` |
+| Expression                      | Example                              |
+|---------------------------------|--------------------------------------|
+| Binary Operator                 | `a + b`                              |
+| Unary Operator                  | `-a`                                 |
+| Ternary Relational Operator     | `x < a < y`                          |
+| Swizzle Operator                | `a.xy`                               |
+| Indexing Operator               | `a[0]`                               |
+| Literal                         | `3.14`                               |
+| Identifier                      | `a`                                  |
+| Grouping Expression             | `(a + b)`                            |
+| If Expression                   | `if (a < b) { x } else { y }`        |
+| Switch Expression               | `switch (a) { x, y, z }`             |
+| Function Call                   | `my_function(a, b)`                  |
+| Constructor Call                | `vec3()`                             |
+| Node Constructor                | `{"mix", color3: bg=a, fg=b, mix=c}` |
+| Variable Declaration Expression | `separate2(float x, float y, uv)`    |
 
 # Statements
 
@@ -229,6 +231,20 @@ the statements supported by ShadingLanguageX.
 | Function Declaration  | `float add_one(float a) { return a + 1.0; }` |
 | For Loop              | `for (int i = 0:10) { a = add_one(a); }`     |
 | Expression Statement  | `standard_surface(base_color=color3(a));`    |
+
+# Literals
+
+Literals represent the fundamental data used by the system.
+
+| Data Type  | Formatting Examples                    |
+|------------|----------------------------------------|
+| `boolean`  | `true` `false`                         |
+| `integer`  | `79`                                   |
+| `float`    | `0.5` `2.` `.9` `2.5e6` `2.e3` `.9e-3` |
+| `string`   | `"tangent"`                            |
+| `filename` | `"../textures/brick.png"`              |
+
+See [Constructors](https://github.com/jakethorn/ShadingLanguageX/blob/main/docs/LanguageSpecification.md#constructors) for information on how to initialise vectors and colors.
 
 # Identifiers
 
@@ -250,7 +266,7 @@ float pi2 = 3.14 * 2.0;
 
 The following identifiers have a special meaning in ShadingLanguageX and cannot be used for user-defined variables or functions.
 
-`if` `else` `switch` `for` `return` `true` `false` `and` `or` `not` `void` `null` `T`
+`if` `else` `switch` `for` `return` `true` `false` `and` `or` `not` `void` `null` `T` `auto` `out` `inline` `const` `global`
 
 All data types and alias types are also reserved keywords.
 
@@ -258,7 +274,7 @@ All data types and alias types are also reserved keywords.
 
 ShadingLanguageX is an evolving language. Keywords might be added in each update which might cause shaders to break which 
 were previously working correctly. In general, try not to use identifiers that are popular keywords in other
-languages (e.g., `const` `struct` `typeof`) or a term that is prominantly used in the MaterialX specification (e.g., `node` `uniform` `varying`). 
+languages (e.g., `namespace` `struct` `typeof`) or a term that is prominantly used in the MaterialX specification (e.g., `node` `uniform` `varying`). 
 
 # Whitespace
 
@@ -359,14 +375,58 @@ As shown in the table above, precendence can be controlled using the Grouping Op
 
 # Variable Declarations
 
-`type name = initial-value;`  
+`type name = initial-value;`   
 `type` can be any supported data type as listed earlier.  
 `name` can be any valid identifier.  
 `initial-value` can be any valid expression that evaluates to `type`.   
 
+## Modifiers
+
+ShadingLanguageX supports two modifiers for variable declarations: `const` and `global`.
+
+### Const
+
+A variable declared with the `const` keyword cannot be assigned to after its initial declaration. For example:
+```
+const float x = 1.0;
+x = 2.0; // compile error
+```
+
+### Global
+
+The global keyword operates similarly to `uniform` from GLSL. Global variables do not require an initial value and are instead initialized by user-defined values passed to the compiler. For example:  
+```
+global filename albedo_path;
+global color3 tint;
+auto c = image<color3>(albedo_path) * tint;
+```
+```python
+from pathlib import Path
+import MaterialX as mx
+import mxslc
+globals = {
+    "albedo_path": Path(r"../brick.png"),
+    "tint": mx.Color3(1.0, 0.0, 0.0)
+}
+mxslc.compile_file("globals_example.mxsl", globals=globals)
+```
+```xml
+<?xml version="1.0"?>
+<materialx version="1.39">
+  <image name="node11" type="color3">
+    <input name="file" type="filename" value="..\brick.png" />
+  </image>
+  <multiply name="c" type="color3">
+    <input name="in1" type="color3" nodename="node11" />
+    <input name="in2" type="color3" value="1, 0, 0" />
+  </multiply>
+</materialx>
+```
+
+
 ### Notes
 
-* The `initial-value` is not optional as in most other languages.
+* The `initial-value` is not optional, except for global variables.
 
 ### Example
 
@@ -376,7 +436,9 @@ As shown in the table above, precendence can be controlled using the Grouping Op
 `int uv_channel = 3;`  
 `vec2 uv = 1.0 - texcoord(uv_channel);`  
 `string space = "world";`  
-`surfaceshader surface = standard_surface();`
+`surfaceshader surface = standard_surface();`  
+`const float PI = 3.14;`  
+`global float loop_n = 500.0;`
 
 # Variable Assignments
 
@@ -486,6 +548,18 @@ else
 };
 ```
 
+## If-Else Expressions
+
+If else expressions are also possible. You can include any number of `if else` clauses in the expression.
+```
+float x = if (cond1) { val1 } else if (cond2) { val2 } else { val3 };
+```
+You again do not need include the final `else` branch during a variable assignment:
+```
+float x = 0.0;
+x = if (cond1) { val1 } else if (cond2) { val2 };
+```
+
 # Switch Expressions
 
 ShaderLanguageX also does not support switch statements, but instead uses switch expressions, for the same reasons as if 
@@ -547,7 +621,7 @@ standard_surface(base_color=c);
 
 Users can declare there own functions in ShadingLanguageX using the following syntax:
 ```
-type name(param1_type param1_name, param2_type param2_name...)
+type name(out? param1_type param1_name, out? param2_type param2_name...)
 {
     statement*
     return value;
@@ -557,8 +631,8 @@ type name(param1_type param1_name, param2_type param2_name...)
 In this case, the return statement should also be omitted.  
 `name` can be any valid identifier.  
 `paramN_type` can be any supported data type and `paramN_name` can be any valid identifier. Functions can declare any number of parameters.  
-There is no concept of pointers or out parameters in ShadingLanguageX. Arguments are purely used to pass variables into the function.
-Functions can also access and update variables from enclosing scopes.
+Including the `out` keyword before a parameter turns it into an out parameter. See below for more information.  
+In addition to return values and out parameters, functions can also access and update variables from enclosing scopes.
 
 ## Calling Functions
 
@@ -707,11 +781,44 @@ vec2 uv = texcoord();
 vec2 inv_uv = one_minus<vec2>(uv);
 ```
 
+## Out Parameters
+
+Including the `out` keyword before a parameter turns it into an out parameter. These parameters can then be set inside the function
+and the value will be accessible when the function is called, similar to a return value. For example:
+```
+void sincos(float r, out float s, out float c)
+{
+    s = sin(r);
+    c = cos(r);
+}
+
+float s = 0.0;
+float c = 0.0;
+sincos(3.14, s, c);
+float x = min(s, c);
+```
+To compliment out parameters, variables can be declared as part of the function call (these are called variable declaration
+expressions). This means we don't need to separately declare the variables above the function. For example, the above shader
+can be rewritten as:
+```
+void sincos(float r, out float s, out float c)
+{
+    s = sin(r);
+    c = cos(r);
+}
+
+sincos(3.14, float s, float c);
+float x = min(s, c);
+```
+
+
 ### Notes
 
 * Functions can be declared inside other functions.
 * Functions must be declared prior to being called.  
 * Recursion is not possible in ShadingLanguageX.
+* MaterialX standard library nodes with multiple outputs (such as the separate nodes) use out parameters to return their
+values. The out parameters always come first in the function signature, e.g.: `void separate2(out float outx, out float outy, vec2 in)`
 
 # Statement Modifiers
 
@@ -1013,6 +1120,7 @@ options:
   -a, --main-args MAIN_ARGS        Arguments to be passed to the main function
   -i, --include-dirs INCLUDE_DIRS  Additional directories to search when including files
   -d, --define MACROS              Additional macro definitions
+  -v, --validate                   Validate the output MaterialX file
 ```
 
 ### Example

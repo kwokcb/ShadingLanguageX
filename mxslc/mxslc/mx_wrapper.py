@@ -398,6 +398,11 @@ class Document(GraphElement):
     def source(self) -> mx.Document:
         return super().source
 
+    def validate(self) -> tuple[bool, str]:
+        tmp = Document(self.xml)
+        tmp.load_standard_library()
+        return tmp.source.validate()
+
     def add_node_def(self, name: str, data_type: DataType, node_name: str) -> NodeDef:
         assert name.startswith("ND_")
         name = self.create_valid_child_name(name)
@@ -464,6 +469,18 @@ class Node(InterfaceElement):
             self.source.setName(name)
 
     @property
+    def data_type(self) -> DataType:
+        type_string = self.source.getType()
+        if type_string == "multioutput":
+            return VOID
+        else:
+            return DataType(type_string)
+
+    @data_type.setter
+    def data_type(self, data_type: DataType | str) -> None:
+        self.source.setType(str(data_type))
+
+    @property
     def is_null_node(self) -> bool:
         return self.category == Keyword.NULL
 
@@ -478,6 +495,9 @@ class Node(InterfaceElement):
 
     def remove(self) -> None:
         self.parent.remove_node(self.name)
+
+    def get_node_def(self) -> NodeDef:
+        return NodeDef(self.source.getNodeDef())
 
 
 #

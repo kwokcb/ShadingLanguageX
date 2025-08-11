@@ -6,7 +6,7 @@ from typing import Any
 from . import utils
 from .CompileError import CompileError
 from .DataType import DataType
-from .mx_wrapper import Node, NodeGraph, Output, GraphElement
+from .mx_wrapper import Node, NodeGraph, Output, GraphElement, Uniform
 from .Token import Token, IdentifierToken
 from .document import get_document
 
@@ -38,8 +38,11 @@ void main()
 
 class State(ABC):
     def __init__(self, parent: State | None):
+        self._nodes: dict[str, Node] = {}
+        self._consts: list[str] = []
         self.__parent = parent
         self.__functions: list[Function] = []
+        self.__globals: dict[str, Uniform] = {}
 
     #
     #   properties
@@ -59,7 +62,7 @@ class State(ABC):
     #
 
     @abstractmethod
-    def add_node(self, identifier: str | Token, node: Node) -> None:
+    def add_node(self, identifier: str | Token, node: Node, is_const=False) -> None:
         ...
 
     @abstractmethod
@@ -81,7 +84,7 @@ class State(ABC):
 
     def get_function(self, identifier: str | Token, template_type: DataType = None, valid_types: set[DataType] = None, args: list[Argument] = None) -> Function:
         identifier, name = _handle_identifier(identifier)
-        matching_funcs = self.__get_functions(name, template_type, valid_types, args)
+        matching_funcs = self.get_functions(name, template_type, valid_types, args)
         if len(matching_funcs) == 0:
             raise CompileError(f"Function signature '{utils.format_function(valid_types, name, template_type, args)}' does not exist.", identifier)
         elif len(matching_funcs) == 1:
@@ -99,7 +102,7 @@ class State(ABC):
 
     def get_function_parameter_types(self, valid_types: set[DataType], identifier: str | Token, template_type: DataType, args: list[Argument], param_index: int | str) -> set[DataType]:
         identifier, name = _handle_identifier(identifier)
-        matching_funcs = self.__get_functions(name, template_type, valid_types, args, strict_args=False)
+        matching_funcs = self.get_functions(name, template_type, valid_types, args, strict_args=False)
         return {
             f.parameters[param_index].data_type
             for f
@@ -107,7 +110,7 @@ class State(ABC):
             if param_index in f.parameters
         }
 
-    def __get_functions(self, name: str, template_type: DataType = None, valid_types: set[DataType] = None, args: list[Argument] = None, strict_args=True) -> list[Function]:
+    def get_functions(self, name: str, template_type: DataType = None, valid_types: set[DataType] = None, args: list[Argument] = None, strict_args=True) -> list[Function]:
         matching_funcs = [
             f
             for f
@@ -116,17 +119,34 @@ class State(ABC):
         ]
         if len(matching_funcs) == 0:
             if self.parent:
-                return self.parent.__get_functions(name, template_type, valid_types, args, strict_args)
+                return self.parent.get_functions(name, template_type, valid_types, args, strict_args)
             else:
                 return []
         else:
             return matching_funcs
 
+    #
+    #   add/get globals
+    #
+
+    def add_global(self, name: str, value: Uniform) -> None:
+        assert self.parent is None
+        if name in self.__globals:
+            raise CompileError(f"Global variable '{name}' was added more than once.")
+        self.__globals[name] = value
+
+    def get_global(self, identifier: str | Token) -> Uniform:
+        identifier, name = _handle_identifier(identifier)
+        if self.parent is not None:
+            raise CompileError(f"Global variables can only be defined in the global scope.", identifier)
+        if name not in self.__globals:
+            raise CompileError(f"No value provided for global variable '{name}'.", identifier)
+        return self.__globals[name]
+
 
 class InlineState(State):
     def __init__(self, parent: State = None):
         super().__init__(parent)
-        self.__nodes: dict[str, Node] = {}
 
     #
     #   properties
@@ -140,18 +160,20 @@ class InlineState(State):
     #   add/get/set nodes
     #
 
-    def add_node(self, identifier: str | Token, node: Node) -> None:
+    def add_node(self, identifier: str | Token, node: Node, is_const=False) -> None:
         assert node.parent == self.graph
         identifier, name = _handle_identifier(identifier)
-        if name in self.__nodes:
+        if name in self._nodes:
             raise CompileError(f"Variable name '{name}' already exists.", identifier)
-        self.__nodes[name] = node
+        self._nodes[name] = node
+        if is_const:
+            self._consts.append(name)
         node.name = name
 
     def get_node(self, identifier: str | Token) -> Node:
         identifier, name = _handle_identifier(identifier)
-        if name in self.__nodes:
-            return self.__nodes[name]
+        if name in self._nodes:
+            return self._nodes[name]
         else:
             if self.parent:
                 return self.parent.get_node(identifier or name)
@@ -162,8 +184,10 @@ class InlineState(State):
         assert node.parent == self.graph
         identifier, name = _handle_identifier(identifier)
 
-        if name in self.__nodes:
-            self.__nodes[name] = node
+        if name in self._nodes:
+            if name in self._consts:
+                raise CompileError(f"Variable '{name}' is const and cannot be assigned to.", identifier)
+            self._nodes[name] = node
             node.name = name
         elif self.parent:
             self.parent.set_node(identifier or name, node)
@@ -179,7 +203,6 @@ class NodeGraphState(State):
         super().__init__(parent)
         self.__node_def = node_graph.node_def if node_graph else None
         self.__node_graph = node_graph
-        self.__graph_nodes: dict[str, Node] = {}
         self.__implicit_args: dict[str, Node] = {}
         self.__implicit_outs: dict[str, Output] = {}
 
@@ -207,29 +230,31 @@ class NodeGraphState(State):
     #   add/get/set nodes
     #
 
-    def add_node(self, identifier: str | Token, node: Node) -> None:
+    def add_node(self, identifier: str | Token, node: Node, is_const=False) -> None:
         # check node was created in this node graph
         assert node.parent == self.graph
 
         # check node is not somehow already stored in state
-        assert node not in self.__graph_nodes.values()
+        assert node not in self._nodes.values()
 
         identifier, name = _handle_identifier(identifier)
 
         # fail if variable name already exists
-        if name in self.__graph_nodes:
+        if name in self._nodes:
             raise CompileError(f"Variable name '{name}' already exists.", identifier)
 
         # store node in state
-        self.__graph_nodes[name] = node
+        self._nodes[name] = node
+        if is_const:
+            self._consts.append(name)
         node.name = name
 
     def get_node(self, identifier: str | Token) -> Node:
         identifier, name = _handle_identifier(identifier)
 
         # return node if it exists
-        if name in self.__graph_nodes:
-            return self.__graph_nodes[name]
+        if name in self._nodes:
+            return self._nodes[name]
 
         # return locally updated global node if it exists
         if name in self.__implicit_outs:
@@ -254,8 +279,10 @@ class NodeGraphState(State):
         identifier, name = _handle_identifier(identifier)
 
         # set node if it exists
-        if name in self.__graph_nodes:
-            self.__graph_nodes[name] = node
+        if name in self._nodes:
+            if name in self._consts:
+                raise CompileError(f"Variable '{name}' is const and cannot be assigned to.", identifier)
+            self._nodes[name] = node
             node.name = name
             return
 
@@ -306,8 +333,8 @@ def exit_inline() -> None:
     _state = _state.parent
 
 
-def add_node(identifier: str | Token, node: Node) -> None:
-    _state.add_node(identifier, node)
+def add_node(identifier: str | Token, node: Node, is_const=False) -> None:
+    _state.add_node(identifier, node, is_const)
 
 
 def get_node(identifier: str | Token) -> Node:
@@ -338,12 +365,29 @@ def get_function_parameter_types(valid_types: set[DataType], identifier: str | T
     return _state.get_function_parameter_types(valid_types, identifier, template_type, args, param_index)
 
 
+def get_functions(name: str, template_type: DataType = None, valid_types: set[DataType] = None, args: list[Argument] = None, strict_args=True) -> list[Function]:
+    return _state.get_functions(name, template_type, valid_types, args, strict_args)
+
+
 def is_function(identifier: str | Token) -> bool:
     try:
         get_function(identifier)
         return True
     except CompileError:
         return False
+
+
+def add_global(name: str, value: Uniform) -> None:
+    _state.add_global(name, value)
+
+
+def add_globals(globals_: dict[str, Uniform]) -> None:
+    for name, value in globals_.items():
+        add_global(name, value)
+
+
+def get_global(identifier: str | Token) -> Uniform:
+    return _state.get_global(identifier)
 
 
 def get_graph() -> GraphElement:

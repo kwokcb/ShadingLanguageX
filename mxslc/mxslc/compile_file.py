@@ -9,16 +9,20 @@ from .Preprocessor.macros import undefine_all_macros, Macro, define_macro
 from .compile import compile_
 from .document import new_document, get_document
 from .file_utils import handle_input_path, handle_output_path
+from .mx_wrapper import Uniform
 from .post_process import post_process
 
 
 def compile_file(mxsl_path: str | Path,
                  mtlx_path: str | Path = None,
                  *,
+                 globals: dict[str, Uniform] = None,
                  main_func: str = None,
-                 main_args: Sequence[Value] = None,
+                 main_args: Sequence[Uniform] = None,
                  add_include_dirs: Sequence[Path] = None,
-                 add_macros: Sequence[str | Macro] = None) -> None:
+                 add_macros: Sequence[str | Macro] = None,
+                 validate=False) -> None:
+    globals = globals or {}
     main_args = main_args or []
     add_include_dirs = add_include_dirs or []
     add_macros = add_macros or []
@@ -31,6 +35,7 @@ def compile_file(mxsl_path: str | Path,
         undefine_all_macros()
         new_document()
         state.clear()
+        state.add_globals(globals)
 
         include_dirs = add_include_dirs + [mxsl_filepath.parent, Path(".")]
 
@@ -41,9 +46,11 @@ def compile_file(mxsl_path: str | Path,
         _call_main(mxsl_filepath, main_func, main_args)
         post_process()
 
-        success, message = get_document().validate()
-        if not success:
-            raise CompileError(message)
+        if validate:
+            success, message = get_document().validate()
+            if not success:
+                message += "\n" + get_document().xml
+                raise CompileError(message)
 
         with open(mtlx_filepath, "w") as file:
             file.write(get_document().xml)

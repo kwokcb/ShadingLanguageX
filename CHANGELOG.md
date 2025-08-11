@@ -1,8 +1,34 @@
-# Version 0.5.3-beta (in development)
+# Version 0.5.4-beta (In development)
 ## Added
-* __Inline Keyword ([docs](https://github.com/jakethorn/ShadingLanguageX/blob/main/docs/LanguageSpecification.md#statement-modifiers))__  
+* __If-Else Expressions ([docs](https://github.com/jakethorn/ShadingLanguageX/blob/main/docs/LanguageSpecification.md#if-else-expressions))__  
+If else expressions are now possible. You can include any number of `if else` clauses in the expression.
+
+
+* __Const Variables ([docs](https://github.com/jakethorn/ShadingLanguageX/blob/main/docs/LanguageSpecification.md#const))__  
+A variable declared with the `const` keyword cannot be assigned to after its initial declaration.
+
+
+* __Global Variables ([docs](https://github.com/jakethorn/ShadingLanguageX/blob/main/docs/LanguageSpecification.md#global))__  
+The global keyword operates similarly to `uniform` from GLSL. Global variables do not require an initial value and are instead initialized by user-defined values passed to the compiler.
+
+
+* __Improved Float Parsing__  
+Floating-point values can now be written in the scientific format and/or with zeros before or after the decimal point omitted.
+
+# Version 0.5.3-beta
+## Added
+* __Inline Keyword ([docs](https://github.com/jakethorn/ShadingLanguageX/blob/main/docs/LanguageSpecification.md#inline))__  
 The `inline` keyword forces the statements in a function to be created directly in the enclosing
 scope at each point that the function is called instead of compiling into a `NodeDef`+`NodeGraph`.
+
+
+* __Out Parameters ([docs](https://github.com/jakethorn/ShadingLanguageX/blob/main/docs/LanguageSpecification.md#out-parameters))__  
+Including the `out` keyword before a parameter turns it into an out parameter. These parameters can then be set inside the function
+and the value will be accessible when the function is called, similar to a return value.
+
+
+* __Variable Declaration Expressions__  
+To compliment out parameters, variables can now be declared as part of the function call, e.g.: `separate2(float x, float y, texcoord());`
 
 # Version 0.5.2-beta
 ## Added

@@ -2,14 +2,15 @@ from pathlib import Path
 
 from .DecompileError import DecompileError
 from ..Argument import Argument
-from ..DataType import BOOLEAN, INTEGER, FLOAT, MULTI_ELEM_TYPES, STRING, FILENAME
+from ..DataType import BOOLEAN, INTEGER, FLOAT, MULTI_ELEM_TYPES, STRING, FILENAME, VOID
 from ..Expressions import IdentifierExpression, LiteralExpression, Expression, IfExpression, UnaryExpression, \
     ConstructorCall, IndexingExpression, SwitchExpression, FunctionCall, NodeConstructor, BinaryExpression
 from ..Expressions.LiteralExpression import NullExpression
-from ..Statements import VariableDeclaration, Statement
+from ..Expressions.VariableDeclarationExpression import VariableDeclarationExpression
+from ..Statements import VariableDeclaration, ExpressionStatement, Statement
 from ..Token import IdentifierToken, Token, LiteralToken
 from ..file_utils import handle_input_path, handle_output_path
-from ..mx_wrapper import Document, Node, Input
+from ..mx_wrapper import Document, Node, Input, Output
 
 
 def decompile_file(mtlx_path: str | Path, mxsl_path: str | Path = None) -> None:
@@ -30,68 +31,70 @@ def decompile_string(mtlx_content: str) -> str:
 class Decompiler:
     def __init__(self, mtlx_filepath: Path):
         self.__doc = Document(mtlx_filepath)
+        self.__doc.load_standard_library()
+        self.__func_names = {nd.node_string for nd in self.__doc.node_defs}
         self.__nodes: list[Node] = self.__doc.get_nodes()
         self.__decompiled_nodes: list[Node] = []
         self.__mxsl = ""
 
     def decompile(self) -> str:
-        self.__decompile(self.__nodes)
+        self.__decompile_nodes(self.__nodes)
         return self.__mxsl
 
-    def __decompile(self, nodes: list[Node]) -> None:
+    def __decompile_nodes(self, nodes: list[Node]) -> None:
         for node in nodes:
             if node in self.__decompiled_nodes:
                 continue
             self.__decompiled_nodes.append(node)
             input_nodes = [i.connected_node for i in node.inputs if i.connected_node]
-            self.__decompile(input_nodes)
-            self.__mxsl += f"{_deexecute(node)}\n"
+            self.__decompile_nodes(input_nodes)
+            self.__mxsl += f"{self.__deexecute(node)}\n"
 
+    def __deexecute(self, node: Node) -> Statement:
+        identifier = IdentifierToken(node.name)
+        expr = self.__node_to_expression(node)
+        if node.data_type == VOID:
+            return ExpressionStatement(expr)
+        else:
+            return VariableDeclaration([], node.data_type, identifier, expr)
 
-def _deexecute(node: Node) -> Statement:
-    identifier = IdentifierToken(node.name)
-    expr = _node_to_expression(node)
-    return VariableDeclaration(node.data_type, identifier, expr)
-
-
-def _node_to_expression(node: Node) -> Expression:
-    if node.source.getType() == "multioutput":
-        raise DecompileError("SLX does not currently support multioutput nodes", node)
-    category = node.category
-    data_type = node.data_type
-    args = _inputs_to_arguments(node.inputs)
-    if category == "constant":
-        return _get_expression(args, 0)
-    if category in ["convert", "combine2", "combine3", "combine4"]:
-        return ConstructorCall(data_type, args)
-    if category == "extract":
-        return IndexingExpression(_get_expression(args, "in"), _get_expression(args, "index"))
-    if category == "switch":
-        values = [a.expression for a in args if "in" in a.name]
-        return SwitchExpression(_get_expression(args, "which"), values)
-    if category in _arithmetic_ops:
-        return BinaryExpression(_get_expression(args, 0), Token(_arithmetic_ops[category]), _get_expression(args, 1))
-    if category in _comparison_ops:
-        expr = BinaryExpression(_get_expression(args, "value1"), Token(_comparison_ops[category]), _get_expression(args, "value2"))
-        if data_type == BOOLEAN and len(args) <= 2:
-            return expr
-        return IfExpression(expr, _get_expression(args, "in1"), _get_expression(args, "in2"))
-    if category in _logic_ops:
-        return BinaryExpression(_get_expression(args, 0), Token(_logic_ops[category]), _get_expression(args, 1))
-    if category in _unary_ops:
-        return UnaryExpression(Token(_unary_ops[category]), _get_expression(args, "in"))
-    if category in _stdlib_functions:
-        return FunctionCall(IdentifierToken(category), None, args)
-    category_token = LiteralToken(category)
-    return NodeConstructor(category_token, data_type, args)
+    def __node_to_expression(self, node: Node) -> Expression:
+        category = node.category
+        args = _inputs_to_arguments(node.inputs)
+        if category == "constant":
+            return _get_expression(args, 0)
+        if category in ["convert", "combine2", "combine3", "combine4"]:
+            return ConstructorCall(node.data_type, args)
+        if category == "extract":
+            return IndexingExpression(_get_expression(args, "in"), _get_expression(args, "index"))
+        if category == "switch":
+            values = [a.expression for a in args if "in" in a.name]
+            return SwitchExpression(_get_expression(args, "which"), values)
+        if category in _arithmetic_ops:
+            return BinaryExpression(_get_expression(args, 0), Token(_arithmetic_ops[category]), _get_expression(args, 1))
+        if category in _comparison_ops:
+            expr = BinaryExpression(_get_expression(args, "value1"), Token(_comparison_ops[category]), _get_expression(args, "value2"))
+            if node.data_type == BOOLEAN and len(args) <= 2:
+                return expr
+            return IfExpression(expr, _get_expression(args, "in1"), _get_expression(args, "in2"))
+        if category in _logic_ops:
+            return BinaryExpression(_get_expression(args, 0), Token(_logic_ops[category]), _get_expression(args, 1))
+        if category in _unary_ops:
+            return UnaryExpression(Token(_unary_ops[category]), _get_expression(args, "in"))
+        if category in self.__func_names:
+            outputs = node.get_node_def().outputs
+            func_args = _outputs_to_arguments(node, outputs) + args
+            return FunctionCall(IdentifierToken(category), None, func_args)
+        category_token = LiteralToken(category)
+        return NodeConstructor(category_token, node.data_type, args)
 
 
 def _inputs_to_arguments(inputs: list[Input]) -> list[Argument]:
     args: list[Argument] = []
     for i, input_ in enumerate(inputs):
-        arg_expression = _input_to_expression(input_)
-        arg_identifier = IdentifierToken(input_.name)
-        arg = Argument(arg_expression, i, arg_identifier)
+        expr = _input_to_expression(input_)
+        identifier = IdentifierToken(input_.name)
+        arg = Argument(expr, i, identifier)
         args.append(arg)
     return args
 
@@ -99,7 +102,8 @@ def _inputs_to_arguments(inputs: list[Input]) -> list[Argument]:
 def _input_to_expression(input_: Input) -> Expression:
     node = input_.connected_node
     if node:
-        node_identifier = IdentifierToken(node.name)
+        name = node.name + (f"_{input_.output_string}" if input_.output_string else "")
+        node_identifier = IdentifierToken(name)
         return IdentifierExpression(node_identifier)
     if input_.data_type in [BOOLEAN, INTEGER, FLOAT, STRING, FILENAME]:
         token = LiteralToken(input_.literal)
@@ -116,6 +120,19 @@ def _value_to_arguments(vec_str: str) -> list[Argument]:
     return args
 
 
+def _outputs_to_arguments(node: Node, outputs: list[Output]) -> list[Argument]:
+    if len(outputs) < 2:
+        return []
+    args: list[Argument] = []
+    for i, output in enumerate(outputs):
+        expr_identifier = IdentifierToken(f"{node.name}_{output.name}")
+        expr = VariableDeclarationExpression(output.data_type, expr_identifier)
+        arg_identifier = IdentifierToken(output.name)
+        arg = Argument(expr, i, arg_identifier)
+        args.append(arg)
+    return args
+
+
 def _get_expression(args: list[Argument], index: int | str) -> Expression:
     if isinstance(index, int):
         if index < len(args):
@@ -128,14 +145,6 @@ def _get_expression(args: list[Argument], index: int | str) -> Expression:
         return NullExpression()
     raise AssertionError
 
-
-def _get_stdlib_functions() -> set[str]:
-    document = Document()
-    document.load_standard_library()
-    return {nd.node_string for nd in document.node_defs}
-
-
-_stdlib_functions = _get_stdlib_functions()
 
 _arithmetic_ops = {
     "add": "+",
