@@ -139,6 +139,20 @@ size_t Type::component_count() const
 
 namespace
 {
+    bool is_shader_compatible(const Type& shader_type, const Type& type)
+    {
+        assert(shader_type.is_shader());
+
+        // A shader argument can be an upstream shader output of the same type, or
+        // an empty type string representing an unconnected shader input.
+        // (An empty string literal is cast to the shader type during expression
+        // initialization and is therefore seen here as a shader type.)
+        if (type.is_shader())
+            return type.name() == shader_type.name();
+
+        return not type.has_name() and not type.has_fields();
+    }
+
     bool is_vector_compatible(const Type& vec_type, const Type& type)
     {
         assert(vec_type.is_vector());
@@ -174,6 +188,12 @@ bool Type::is_compatible(const TypePtr& other) const
         return true;
 
     if (other->is_vector() and is_vector_compatible(*other, *this))
+        return true;
+
+    if (is_shader() and is_shader_compatible(*this, *other))
+        return true;
+
+    if (other->is_shader() and is_shader_compatible(*other, *this))
         return true;
 
     if (has_name() and other->has_name())

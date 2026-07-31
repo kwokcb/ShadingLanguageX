@@ -24,6 +24,9 @@ public:
     inline static string Mat4 = "matrix44";
     inline static string Void = "void";
     inline static string Auto = "auto";
+    inline static string SurfaceShader = "surfaceshader";
+    inline static string DisplacementShader = "displacementshader";
+    inline static string VolumeShader = "volumeshader";
 
     template<typename T>
     static const string& of()
@@ -73,6 +76,11 @@ public:
     static bool is_vector(const string& type_name)
     {
         return type_name == Vec2 or type_name == Vec3 or type_name == Vec4 or type_name == Color3 or type_name == Color4;
+    }
+
+    static bool is_shader(const string& type_name)
+    {
+        return type_name == SurfaceShader or type_name == DisplacementShader or type_name == VolumeShader;
     }
 };
 

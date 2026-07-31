@@ -49,6 +49,7 @@ public:
     bool is_auto() const { return name_ == TypeName::Auto; }
     bool is_primitive() const { return has_name() and not has_fields(); }
     bool is_vector() const { return TypeName::is_vector(name_); }
+    bool is_shader() const { return TypeName::is_shader(name_); }
 
     bool is_resolved() const { return is_resolved_; }
 

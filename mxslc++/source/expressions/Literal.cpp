@@ -36,6 +36,22 @@ void Literal::init_impl(const vector<TypePtr>& types)
             type_ = Type::Filename;
         }
     }
+
+    // implicit cast from empty string to shader type
+    if (std::holds_alternative<string>(value_))
+    {
+        if (std::get<string>(value_).empty())
+        {
+            for (const TypePtr& target_type : types)
+            {
+                if (target_type->is_shader())
+                {
+                    type_ = target_type;
+                    break;
+                }
+            }
+        }
+    }
 }
 
 TypePtr Literal::type_impl() const
