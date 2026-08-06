@@ -33,6 +33,7 @@ namespace mxslc::decompile
         string node_def_to_function_definition(const mx::NodeDefPtr& node_def);
         string node_graph_to_function_definition(const string& node_graph_name);
         string node_graph_to_function_definition(const mx::NodeGraphPtr& node_graph);
+        string geom_info_to_statement(const mx::GeomInfoPtr& geom_info);
 
         string node_to_expression(const mx::NodePtr& node);
         string node_to_attributes(const mx::NodePtr& node);

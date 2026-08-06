@@ -73,6 +73,7 @@ add_library(mxslc_lib
         statements/IfStatement.cpp
         statements/BlockStatement.cpp
         statements/DocumentAttribute.cpp
+        statements/GeomInfoStatement.cpp
         statements/ClassDefinition.cpp
         statements/ConstructorDefinition.cpp
         utils/io_utils.cpp

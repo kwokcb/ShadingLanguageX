@@ -40,6 +40,7 @@ namespace mxslc
         StmtPtr block_statement();
         StmtPtr if_statement();
         StmtPtr document_attribute();
+        StmtPtr geominfo_statement();
 
         Attribute attribute();
         AttributeList attributes();

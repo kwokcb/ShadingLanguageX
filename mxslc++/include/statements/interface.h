@@ -25,6 +25,7 @@ using T##Ptr = unique_ptr<T>;
     TYPE_DEF(ExpressionStatement)
     TYPE_DEF(ForEachLoop)
     TYPE_DEF(FunctionDefinition)
+    TYPE_DEF(GeomInfoStatement)
     TYPE_DEF(IfStatement)
     TYPE_DEF(MultiVariableDefinition)
     TYPE_DEF(PrintStatement)

@@ -35,6 +35,7 @@
 #include "statements/ExpressionStatement.h"
 #include "statements/ForEachLoop.h"
 #include "statements/FunctionDefinition.h"
+#include "statements/GeomInfoStatement.h"
 #include "statements/IfStatement.h"
 #include "statements/interface.h"
 #include "statements/MultiVariableDefinition.h"
@@ -118,6 +119,11 @@ namespace mxslc
         if (peek() == TokenType::If)
         {
             return if_statement();
+        }
+
+        if (peek() == TokenType::Identifier and peek().lexeme() == "geominfo" and peek(1) == '(')
+        {
+            return geominfo_statement();
         }
 
         ModifierList mods = modifiers();
@@ -363,6 +369,42 @@ namespace mxslc
         Token token = match("@@"s);
         Attribute attr = attribute();
         return create_statement<DocumentAttribute>(std::move(token), std::move(attr));
+    }
+
+    StmtPtr Parser::geominfo_statement()
+    {
+        Token token = match(TokenType::Identifier);
+        if (token.lexeme() != "geominfo")
+            throw CompileError{token, "Expected geominfo"};
+
+        match('(');
+        const string name = match(TokenType::String).literal<string>();
+        match(',');
+        const string geom = match(TokenType::String).literal<string>();
+        match(')');
+
+        match('{');
+        vector<statements::GeomPropDefinition> geom_props;
+        while (not consume('}'))
+        {
+            Token geomprop_token = match(TokenType::Identifier, TokenType::Geomprop);
+            if (geomprop_token.lexeme() != "geomprop")
+                throw CompileError{geomprop_token, "Expected geomprop"};
+
+            match('(');
+            statements::GeomPropDefinition geom_prop;
+            geom_prop.name = match(TokenType::String).literal<string>();
+            match(',');
+            geom_prop.type = match(TokenType::String).literal<string>();
+            match(',');
+            geom_prop.value = match(TokenType::String).literal<string>();
+            match(')');
+            match(';');
+            geom_props.push_back(std::move(geom_prop));
+        }
+
+        consume(';');
+        return create_statement<GeomInfoStatement>(std::move(token), name, geom, std::move(geom_props));
     }
 
     Attribute Parser::attribute()

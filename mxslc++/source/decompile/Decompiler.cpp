@@ -90,6 +90,19 @@ namespace mxslc::decompile
             if (str.size() >= 2)
                 str.resize(str.size() - 2);
         }
+
+        string escape_string_literal(const string& value)
+        {
+            string result;
+            result.reserve(value.size());
+            for (const char c : value)
+            {
+                if (c == '\\' or c == '"')
+                    result += '\\';
+                result += c;
+            }
+            return result;
+        }
     }
 
     Decompiler::Decompiler(const fs::path& src_path)
@@ -125,6 +138,11 @@ namespace mxslc::decompile
         for (const mx::NodeGraphPtr& node_graph : document_->getNodeGraphs())
         {
             global_code_ += node_graph_to_function_definition(node_graph);
+        }
+
+        for (const mx::GeomInfoPtr& geom_info : document_->getGeomInfos())
+        {
+            global_code_ += geom_info_to_statement(geom_info);
         }
 
         for (const mx::NodePtr& node : document_->getNodes())
@@ -307,6 +325,21 @@ namespace mxslc::decompile
         }
 
         return func_def + var_def;
+    }
+
+    string Decompiler::geom_info_to_statement(const mx::GeomInfoPtr& geom_info)
+    {
+        string result = "geominfo(\"" + escape_string_literal(geom_info->getName()) + "\", \"" +
+                        escape_string_literal(geom_info->getGeom()) + "\")\n{\n";
+
+        for (const mx::GeomPropPtr& geom_prop : geom_info->getGeomProps())
+        {
+            result += "\tgeomprop(\"" + escape_string_literal(geom_prop->getName()) + "\", \"" +
+                      escape_string_literal(geom_prop->getType()) + "\", \"" +
+                      escape_string_literal(geom_prop->getValueString()) + "\");\n";
+        }
+
+        return result + "}\n";
     }
 
     string Decompiler::node_to_expression(const mx::NodePtr& node)
