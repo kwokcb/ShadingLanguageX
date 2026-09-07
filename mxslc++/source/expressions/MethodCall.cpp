@@ -60,11 +60,7 @@ namespace mxslc::expressions
 
         func_ = runtime_utils::resolve_method(instance_->type(), types, name_, template_type_, args_, is_argumentless_);
 
-        for (const Argument& arg : args_)
-        {
-            assert(arg.is_initialized());
-            arg.validate(func_->parameters()[arg]);
-        }
+        validate_arguments();
     }
 
     VarPtr MethodCall::evaluate_impl() const
@@ -82,13 +78,15 @@ namespace mxslc::expressions
         }
         else
         {
-            if (func_->is_parameterless())
-                return serialize_utils::create_node_graph_value(func_);
+            const ConstMethodCallPtr self = shared_from_child<MethodCall>();
+            if (func_->is_nodegraph())
+                return serializer().write_node_graph_value(self);
             else
-                return serializer().write_node(instance_, func_, args_, attrs_);
+                return serializer().write_node(self);
         }
     }
 
+    // inline only
     VarPtr MethodCall::copy_instance_to_scope() const
     {
         VarPtr instance_copy = instance_->copy();
@@ -97,6 +95,7 @@ namespace mxslc::expressions
         return instance_copy;
     }
 
+    // inline only
     void MethodCall::update_instance(const VarPtr& local_copy) const
     {
         if (not instance_->equals(local_copy))

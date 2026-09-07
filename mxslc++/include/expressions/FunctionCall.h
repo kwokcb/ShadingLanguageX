@@ -22,6 +22,9 @@ namespace mxslc::expressions
         FunctionCall(string name, TypePtr template_type, optional<ArgumentList> args, AttributeList attrs);
         FunctionCall(string name, TypePtr template_type, optional<ArgumentList> args, AttributeList attrs, Token token);
 
+        FuncPtr function() const { return func_; }
+        const ArgumentList& arguments() const { return args_; }
+
         ExprPtr monomorphize(const TypePtr& template_type) const override;
 
         string to_string() const override;
@@ -31,6 +34,7 @@ namespace mxslc::expressions
         TypePtr type_impl() const override;
         VarPtr evaluate_impl() const override;
 
+        void validate_arguments() const;
         void evaluate_arguments() const;
         VarPtr inline_invoke() const;
         void update_out_arguments() const;

@@ -50,6 +50,15 @@ namespace mxslc::serialize::values
         output->setConnectedNode(node_);
     }
 
+    void NodeValue::set_as_node_graph_input(const mx::NodeGraphPtr& node_graph, const string& input_name) const
+    {
+        if (node_graph->getParent() != node_->getParent())
+            throw CompileError{"Invalid node graph input. You cannot reference variables from an enclosing function in a nodegraph function."};
+
+        const mx::InputPtr input = node_graph->addInput(input_name);
+        input->setConnectedNode(node_);
+    }
+
     string NodeValue::to_string() const
     {
         return "node (" + node_->getCategory() + ", " + node_->getName() + ")";

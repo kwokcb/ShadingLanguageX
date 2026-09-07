@@ -18,7 +18,6 @@
 #include "runtime/Type.h"
 #include "runtime/utils/FunctionResolver.h"
 #include "runtime/utils/monomorphize.h"
-#include "serialize/serializer_utils.h"
 
 namespace mxslc::expressions
 {
@@ -92,11 +91,7 @@ namespace mxslc::expressions
 
         func_ = runtime_utils::resolve_function(types, name_, template_type_, args_, is_argumentless_);
 
-        for (const Argument& arg : args_)
-        {
-            assert(arg.is_initialized());
-            arg.validate(func_->parameters()[arg]);
-        }
+        validate_arguments();
 
         if (func_->has_class_type() and method_call_ == nullptr)
         {
@@ -130,10 +125,25 @@ namespace mxslc::expressions
         }
         else
         {
-            if (func_->is_parameterless())
-                return serialize_utils::create_node_graph_value(func_);
+            const ConstFunctionCallPtr self = shared_from_child<FunctionCall>();
+            if (func_->is_nodegraph())
+                return serializer().write_node_graph_value(self);
             else
-                return serializer().write_node(func_, args_, attrs_);
+                return serializer().write_node(self);
+        }
+    }
+
+    void FunctionCall::validate_arguments() const
+    {
+        for (const Argument& arg : args_)
+        {
+            const Parameter& param = func_->parameters()[arg];
+
+            assert(arg.is_initialized());
+            arg.validate(param);
+
+            if (func_->is_nodegraph() and not param.is_out())
+                throw CompileError{"Arguments cannot be passed to nodegraph functions"};
         }
     }
 

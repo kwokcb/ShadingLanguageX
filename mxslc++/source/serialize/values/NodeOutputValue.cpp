@@ -4,6 +4,8 @@
 
 #include "serialize/values/NodeOutputValue.h"
 
+#include <cassert>
+
 #include "runtime/Type.h"
 #include "utils/mtlx_utils.h"
 #include "serialize/values/interface.h"
@@ -49,6 +51,16 @@ namespace mxslc::serialize::values
         const mx::OutputPtr output = mtlx_utils::add_or_get_output(node_graph, type_, output_name);
         output->setOutputString(output_name_);
         output->setConnectedNode(node_);
+    }
+
+    void NodeOutputValue::set_as_node_graph_input(const mx::NodeGraphPtr& node_graph, const string& input_name) const
+    {
+        if (node_graph->getParent() != node_->getParent())
+            throw CompileError{"Invalid node graph input. You cannot reference variables from an enclosing function in a nodegraph function."};
+
+        const mx::InputPtr input = node_graph->addInput(input_name);
+        input->setOutputString(output_name_);
+        input->setConnectedNode(node_);
     }
 
     string NodeOutputValue::to_string() const

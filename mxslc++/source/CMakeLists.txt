@@ -116,6 +116,7 @@ add_library(mxslc_lib
         serialize/values/NodeGraphValue.cpp
         serialize/values/NodeGraphOutputValue.cpp
         serialize/values/interface.cpp
+        serialize/FunctionCallHistory.cpp
         preprocess/preprocess.cpp
         preprocess/Macro.cpp
         preprocess/parse_primitive.cpp
