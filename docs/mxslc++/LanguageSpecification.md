@@ -1793,7 +1793,7 @@ nodegraph float foo(float a = 1, float b = r)
   <randomfloat name="r" type="float" />
   <nodegraph name="NG_foo">
     <input name="a" type="float" value="1" />
-    <input name="b" type="color3" nodename="r" />
+    <input name="b" type="float" nodename="r" />
     <add name="var__0" type="float">
       <input name="in1" type="float" interfacename="a" />
       <input name="in2" type="float" interfacename="b" />

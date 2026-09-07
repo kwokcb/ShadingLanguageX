@@ -7,8 +7,8 @@
     <input name="seed" type="integer" value="2" />
   </randomfloat>
   <nodegraph name="NG_foo">
-    <input name="nonlocal_in__r" type="color3" nodename="r" />
-    <input name="nonlocal_in__s" type="color3" nodename="s" />
+    <input name="nonlocal_in__r" type="float" nodename="r" />
+    <input name="nonlocal_in__s" type="float" nodename="s" />
     <add name="var__0" type="float">
       <input name="in1" type="float" interfacename="nonlocal_in__r" />
       <input name="in2" type="float" interfacename="nonlocal_in__s" />

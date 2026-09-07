@@ -16,6 +16,7 @@ namespace mxslc::mtlx_utils
 {
     mx::InputPtr add_or_get_input(const mx::NodePtr& node, const string& type, const string& name);
     mx::InputPtr add_or_get_input(const mx::NodePtr& node, const TypePtr& type, const string& name);
+    mx::InputPtr add_or_get_input(const mx::NodeGraphPtr& node_graph, const TypePtr& type, const string& name);
     mx::OutputPtr add_or_get_output(const mx::NodeGraphPtr& node_graph, const TypePtr& type, const string& name);
     mx::NodeDefPtr get_node_def(const mx::NodePtr& node, const mx::DocumentPtr& mtlx_lib);
     mx::NodeDefPtr get_node_def(const mx::NodePtr& node, const string& mtlx_version = DEFAULT_MTLX_VERSION, const vector<fs::path>& include_dirs = {});

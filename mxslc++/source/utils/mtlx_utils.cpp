@@ -23,6 +23,15 @@ namespace mxslc::mtlx_utils
         return add_or_get_input(node, type->name(), name);
     }
 
+    mx::InputPtr add_or_get_input(const mx::NodeGraphPtr& node_graph, const TypePtr& type, const string& name)
+    {
+        mx::InputPtr input = node_graph->getInput(name);
+        if (not input)
+            input = node_graph->addInput(name, type->name());
+
+        return input;
+    }
+
     mx::OutputPtr add_or_get_output(const mx::NodeGraphPtr& node_graph, const TypePtr& type, const string& name)
     {
         const mx::NodeDefPtr node_def = node_graph->getNodeDef();

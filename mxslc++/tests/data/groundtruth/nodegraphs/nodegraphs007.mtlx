@@ -8,8 +8,8 @@
   </randomfloat>
   <checkerboard name="c" type="color3" />
   <nodegraph name="NG_foo">
-    <input name="a" type="color3" nodename="var__0" />
-    <input name="b" type="color3" nodename="var__1" />
+    <input name="a" type="float" nodename="var__0" />
+    <input name="b" type="float" nodename="var__1" />
     <randomfloat name="var__0" type="float">
       <input name="in" type="float" interfacename="a" />
     </randomfloat>

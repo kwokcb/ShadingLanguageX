@@ -58,7 +58,7 @@ namespace mxslc::serialize::values
         if (node_graph->getParent() != node_->getParent())
             throw CompileError{"Invalid node graph input. You cannot reference variables from an enclosing function in a nodegraph function."};
 
-        const mx::InputPtr input = node_graph->addInput(input_name);
+        const mx::InputPtr input = mtlx_utils::add_or_get_input(node_graph, type_, input_name);
         input->setOutputString(output_name_);
         input->setConnectedNode(node_);
     }

@@ -3,8 +3,8 @@
   <randomfloat name="r" type="float" />
   <randomfloat name="s" type="float" />
   <nodegraph name="NG_foo">
-    <input name="x" type="color3" nodename="r" />
-    <input name="y" type="color3" nodename="s" />
+    <input name="x" type="float" nodename="r" />
+    <input name="y" type="float" nodename="s" />
     <add name="var__0" type="float">
       <input name="in1" type="float" interfacename="x" />
       <input name="in2" type="float" interfacename="y" />
