@@ -14,23 +14,24 @@
 6. [Literals](#literals)
 7. [Identifiers](#identifiers)
 8. [Reserved Keywords](#reserved-keywords)
-9. [Whitespace](#whitespace)
-10. [Comments](#comments)
-11. [Operators](#operators)
-12. [Variable Definition](#variable-definition)
-13. [Variable Assignment](#variable-assignment)
-14. [Named Constructor](#named-constructor)
-15. [If Expression](#if-expression)
-16. [If Statement](#if-statement)
-17. [Switch Expression](#switch-expression)
-18. [Compile-Time Evaluation](#compile-time-evaluation)
-19. [For Loop](#for-loop)
-20. [Functions](#functions)
-21. [User-Defined Types](#user-defined-types-1)
-22. [Unnamed Constructor](#unnamed-constructor)
-23. [Operator Overloading](#operator-overloading)
-24. [Print Statement](#print-statement)
-25. [Attributes](#attributes)
+9. [Modifiers](#modifiers)
+10. [Whitespace](#whitespace)
+11. [Comments](#comments)
+12. [Operators](#operators)
+13. [Variable Definition](#variable-definition)
+14. [Variable Assignment](#variable-assignment)
+15. [Named Constructor](#named-constructor)
+16. [If Expression](#if-expression)
+17. [If Statement](#if-statement)
+18. [Switch Expression](#switch-expression)
+19. [Compile-Time Evaluation](#compile-time-evaluation)
+20. [For Loop](#for-loop)
+21. [Functions](#functions)
+22. [User-Defined Types](#user-defined-types-1)
+23. [Unnamed Constructor](#unnamed-constructor)
+24. [Operator Overloading](#operator-overloading)
+25. [Print Statement](#print-statement)
+26. [Attributes](#attributes)
 27. [Null Expression](#null-expression)
 28. [Standard Library](#standard-library)
 29. [Scope](#scope)
@@ -423,13 +424,31 @@ float pi2 = 3.14 * 2.0;
 The following identifiers have a special meaning in ShadingLanguageX and cannot be used for user-defined variables or functions.
 
 `if` `else` `switch` `for` `from` `to` `return` `true` `false` `void` `null` `T` `auto` `out` `ref` `inline` `const` `mutable` 
-`global` `default` `using` `class` `this` `print` `typeof` `break`
+`global` `default` `using` `class` `this` `print` `typeof` `break` `comptime` `nodegraph` `nodedef`
+
+
+# Modifiers
+
+Variables, functions and expressions can be prefixed with modifiers. For example:
+
+```
+const float PI = 3.14;
+
+inline float get_area(float r) 
+{ 
+    return PI * r ^ 2; 
+}
+
+float area = comptime get_area(10);
+```
+
+Modifiers can also optionally be surrounded by double square brackets, e.g., `[[inline]]` or `[[comptime]]`.
 
 ### Note
 
 ShadingLanguageX is an evolving language. Keywords might be added in each update which might cause shaders to break which
 were previously working correctly. In general, try not to use identifiers that are popular keywords in similar
-languages (e.g., `namespace` `struct` `typeof`) or a term that is prominantly used in the MaterialX specification (e.g., `node` `uniform` `varying`).
+languages (e.g., `namespace` `struct` `in`) or a term that is prominently used in the MaterialX specification (e.g., `node` `uniform` `varying`).
 
 # Whitespace
 
@@ -1740,9 +1759,9 @@ comptime float foo(float a, float b)
     return (1 + a - 2 * b / 3) ^ 4;
 }
 
-float f = foo(1, 2);
+float f = foo(1, 2) + randomfloat();
 ```
-```
+```xml
 <?xml version="1.0"?>
 <materialx version="1.39">
   <randomfloat name="var__0" type="float" />
@@ -1753,12 +1772,49 @@ float f = foo(1, 2);
 </materialx>
 ```
 
+## NodeGraph Functions
+
+Similar to inline functions, `nodegraph` functions change the way functions are represented in MaterialX. In this case,
+the function compiles to a NodeGraph without the additional NodeDef element.
+Parameters to `nodegraph` functions must define an initial value and arguments cannot be passed to them, with the exception
+of out parameters.
+
+```
+float r = randomfloat();
+
+nodegraph float foo(float a = 1, float b = r)
+{
+    return a + b;
+}
+```
+```xml
+<?xml version="1.0"?>
+<materialx version="1.39">
+  <randomfloat name="r" type="float" />
+  <nodegraph name="NG_foo">
+    <input name="a" type="float" value="1" />
+    <input name="b" type="color3" nodename="r" />
+    <add name="var__0" type="float">
+      <input name="in1" type="float" interfacename="a" />
+      <input name="in2" type="float" interfacename="b" />
+    </add>
+    <output name="out" type="float" nodename="var__0" />
+  </nodegraph>
+</materialx>
+```
+
 ## Parameterless Functions
 
-Similar to inline functions, parameterless functions change the way functions are represented in MaterialX. In this case,
-the function is represented just as a `NodeGraph` without the `NodeDef`.  
+Parameterless functions represent constant functions in ShadingLanguageX and by default will compile to a NodeGraph (without a NodeDef). They do not have parameters and cannot access 
+variables from enclosing scopes.
 The syntax for parameterless functions is the same as for normal functions, except that the parameter list is replaced with
-the `=>` (fat arrow) operator during definition and the argument list is removed entirely when calling the function:
+the `=>` (fat arrow) operator during definition and the argument list is removed entirely when calling the function.
+
+Parameterless functions are pure functions, i.e., they are deterministic and cannot have any side effects, as such they
+cannot access nonlocal variables like regular functions. They can call other functions (parameterless or not), given
+that those functions also do not access nonlocal variables. Otherwise, they behave just like regular functions; they share the
+same modifiers and can be declared as `inline` or `default`, can be declared as a class method, can contain `global` variables, can be templated, etc.
+
 ```
 float viewing_angle =>
 {
@@ -1779,23 +1835,15 @@ standard_surface(base_color = randomcolor() * viewing_angle);
   </dotproduct>
   <output name="out" type="float" nodename="node3" />
 </nodegraph>
-
 <randomcolor name="node1" type="color3" />
-
 <multiply name="node2" type="color3">
   <input name="in1" type="color3" nodename="node1" />
   <input name="in2" type="float" nodegraph="NG_viewing_angle" />
 </multiply>
-
 <standard_surface name="node3" type="surfaceshader">
   <input name="base_color" type="color3" nodename="node2" />
 </standard_surface>
 ```
-
-Parameterless functions are pure functions, i.e., they are deterministic and cannot have any side effects, as such they
-cannot access nonlocal variables like regular functions. They can call other functions (parameterless or not), given 
-that those functions also do not access nonlocal variables. Otherwise, they behave just like regular functions; they share the
-same modifiers and can be declared as `inline` or `default`, can be declared as a class method, can contain `global` variables, can be templated, etc.
 
 ### Example
 
