@@ -3,11 +3,16 @@
 //
 
 #include "utils/mtlx_utils.h"
+
+#include <MaterialXFormat/XmlIo.h>
+
 #include "runtime/Type.h"
 #include "utils/string_utils.h"
 #include "errors/CompileError.h"
+#include "errors/MaterialXValidateError.h"
 #include "utils/io_utils.h"
 #include "utils/load_mtlx.h"
+#include "utils/Logger.h"
 
 namespace mxslc::mtlx_utils
 {
@@ -66,7 +71,7 @@ namespace mxslc::mtlx_utils
 
     mx::NodeDefPtr get_node_def(const mx::NodePtr& node, const string& mtlx_version, const vector<fs::path>& include_dirs)
     {
-        const mx::DocumentPtr mtlx_lib = get_materialx_library(
+        const mx::DocumentPtr mtlx_lib = load_materialx_library(
             mtlx_version,
             include_dirs.empty() ? io_utils::get_default_search_directories() : include_dirs
         );
@@ -89,7 +94,7 @@ namespace mxslc::mtlx_utils
 
     mx::NodeDefPtr get_node_def(const mx::NodeGraphPtr& node_graph, const string& mtlx_version, const vector<fs::path>& include_dirs)
     {
-        const mx::DocumentPtr mtlx_lib = get_materialx_library(
+        const mx::DocumentPtr mtlx_lib = load_materialx_library(
             mtlx_version,
             include_dirs.empty() ? io_utils::get_default_search_directories() : include_dirs
         );
@@ -106,5 +111,21 @@ namespace mxslc::mtlx_utils
     void remove_port(const mx::PortElementPtr& port)
     {
         port->getParent()->removeChild(port->getName());
+    }
+
+    void validate(const mx::DocumentPtr& doc)
+    {
+        const auto [doc_major, doc_minor] = doc->getVersionIntegers();
+        const auto [lib_major, lib_minor, lib_build] = mx::getVersionIntegers();
+        if (doc_major == lib_major and doc_minor == lib_minor)
+        {
+            string message = mx::writeToXmlString(doc);
+            if (not doc->validate(&message))
+                throw MaterialXValidateError{message};
+        }
+        else
+        {
+            Logger::warning("Document version (" + doc->getVersionString() + ") is too old to be validated.");
+        }
     }
 }

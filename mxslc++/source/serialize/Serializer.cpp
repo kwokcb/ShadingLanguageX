@@ -141,9 +141,9 @@ namespace mxslc::serialize
         assert(func->is_nodedef());
         assert(not func->is_parameterless());
 
+        const mx::NodeDefPtr node_def = func->node_def();
         const ArgumentList args = func_call->arguments();
-
-        ParameterValues input_values = args.evaluate(func->parameters());
+        const ParameterValues input_values = args.evaluate(func->parameters());
 
         if (reduce_graph_ or comptime_scope_.top())
         {
@@ -164,13 +164,13 @@ namespace mxslc::serialize
 
             if (param.is_in())
             {
-                write_node_input(node, param.name(), input_value, input_attrs);
+                write_node_input(node, param.name(), param.type(), input_value, input_attrs);
             }
 
             if (param.is_out())
             {
                 const string output_name = with_prefix(OUT_PARAMETER_PREFIX, param.name());
-                const VarPtr output = serialize_utils::create_node_output_value(node, param.type(), output_name, input_attrs);
+                const VarPtr output = serialize_utils::create_node_output_value(node, node_def, param.type(), output_name, input_attrs);
                 input_value->copy(output);
             }
         }
@@ -180,11 +180,11 @@ namespace mxslc::serialize
         {
             assert(instance->type() == func->class_type());
 
-            write_node_input(node, "this", instance);
+            write_node_input(node, THIS_IN_PREFIX, instance);
 
             if (func->mutates_instance())
             {
-                const VarPtr output = serialize_utils::create_node_output_value(node, instance->type(), "out_this");
+                const VarPtr output = serialize_utils::create_node_output_value(node, node_def, instance->type(), THIS_OUT_PREFIX);
                 instance->copy(output);
             }
         }
@@ -200,7 +200,7 @@ namespace mxslc::serialize
         for (const VarPtr& var : func->nonlocal_outputs())
         {
             const string output_name = with_prefix(NONLOCAL_OUT_PREFIX, var->name());
-            const VarPtr nonlocal_output = serialize_utils::create_node_output_value(node, var->type(), output_name);
+            const VarPtr nonlocal_output = serialize_utils::create_node_output_value(node, node_def, var->type(), output_name);
             var->copy(nonlocal_output);
         }
 
@@ -436,9 +436,9 @@ namespace mxslc::serialize
     {
         if (func->has_class_type())
         {
-            write_node_def_input(node_def, "this", func->class_type());
+            write_node_def_input(node_def, THIS_IN_PREFIX, func->class_type());
 
-            const VarPtr instance = serialize_utils::create_interface_value(func->class_type(), "this");
+            const VarPtr instance = serialize_utils::create_interface_value(func->class_type(), THIS_IN_PREFIX);
             instance->set_modifiers(TokenType::Mutable);
             instance->add_to_scope("this");
         }
@@ -459,16 +459,26 @@ namespace mxslc::serialize
             const VarPtr instance = scope().get_variable("this");
             func->set_mutates_instance(not instance->equals(original_instance));
             if (func->mutates_instance())
-                write_node_graph_output(node_graph, "out__this", instance);
+                write_node_graph_output(node_graph, THIS_OUT_PREFIX, instance);
         }
     }
 
     void Serializer::write_node_input(const mx::NodePtr& node, const string& input_name, const VarPtr& var) const
     {
-        write_node_input(node, input_name, var, AttributeList{});
+        write_node_input(node, input_name, var->type(), var);
     }
 
     void Serializer::write_node_input(const mx::NodePtr& node, const string& input_name, const VarPtr& var, const AttributeList& attrs) const
+    {
+        write_node_input(node, input_name, var->type(), var, attrs);
+    }
+
+    void Serializer::write_node_input(const mx::NodePtr& node, const string& input_name, const TypePtr& input_type, const VarPtr& var) const
+    {
+        write_node_input(node, input_name, input_type, var, AttributeList{});
+    }
+
+    void Serializer::write_node_input(const mx::NodePtr& node, const string& input_name, const TypePtr& input_type, const VarPtr& var, const AttributeList& attrs) const
     {
         if (var->has_value())
         {
@@ -479,7 +489,7 @@ namespace mxslc::serialize
         {
             for (size_t i = 0; i < var->child_count(); ++i)
             {
-                write_node_input(node, with_prefix(input_name, var->type(), i), var->child(i), attrs);
+                write_node_input(node, with_prefix(input_name, input_type, i), input_type->field_type(i), var->child(i), attrs);
             }
         }
     }

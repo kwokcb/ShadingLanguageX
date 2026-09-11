@@ -115,22 +115,13 @@ namespace mxslc
 
         TypePtr get_type(const mx::NodeDefPtr& nd)
         {
-            vector<TypePtr> subtypes;
-            subtypes.reserve(nd->getOutputCount());
+            vector<Field> fields;
+            fields.reserve(nd->getOutputCount());
             for (const mx::OutputPtr& output : nd->getActiveOutputs())
-                subtypes.push_back(Type::of(output));
+                fields.emplace_back(Type::of(output), output->getName());
 
-            const TypePtr type = subtypes.size() == 1 ? subtypes.at(0) : create_type(std::move(subtypes));
+            const TypePtr type = fields.size() == 1 ? fields[0].type() : create_type(std::move(fields));
             return Runtime::get().scope().resolve_type(type);
-        }
-
-        vector<string> get_output_names(const mx::NodeDefPtr& nd)
-        {
-            vector<string> names;
-            names.reserve(nd->getOutputCount());
-            for (const mx::OutputPtr& o : nd->getActiveOutputs())
-                names.push_back(o->getName());
-            return names;
         }
 
         FuncPtr to_function(const mx::NodeDefPtr& nd, const unordered_set<string>& default_node_defs)
@@ -146,14 +137,13 @@ namespace mxslc
             const string template_type_name = string_utils::get_postfix(nd->getName(), '_');
             TypePtr template_type = scope.has_type(template_type_name) ? scope.get_type(template_type_name) : nullptr;
             ParameterList params = get_parameters(nd);
-            vector<string> output_names = get_output_names(nd);
             FuncPtr func = create_function(std::move(mods), std::move(type), name, std::move(template_type), std::move(params), nd);
             func->init();
             return func;
         }
     }
 
-    void load_library(const mx::DocumentPtr& doc)
+    void add_library_to_scope(const mx::DocumentPtr& doc)
     {
         Scope& scope = Runtime::get().scope();
 
@@ -172,31 +162,37 @@ namespace mxslc
         }
     }
 
-    void load_library(const fs::path& filepath)
+    void add_library_to_scope(const fs::path& filepath)
     {
         const mx::DocumentPtr doc = mx::createDocument();
         mx::readFromXmlFile(doc, filepath.string());
-        load_library(doc);
+        add_library_to_scope(doc);
     }
 
-    mx::DocumentPtr get_materialx_library(const string& version, const vector<fs::path>& include_dirs)
+    mx::DocumentPtr load_materialx_library(const string& version, const vector<fs::path>& include_dirs)
+    {
+        const mx::DocumentPtr doc = mx::createDocument();
+        load_materialx_library(version, include_dirs, doc);
+        return doc;
+    }
+
+    void load_materialx_library(const string& version, const vector<fs::path>& include_dirs, const mx::DocumentPtr& doc)
     {
         string searched_dirs;
 
         for (const fs::path& include_dir : include_dirs)
         {
             const fs::path lib_dir = include_dir / "libraries";
-            searched_dirs += lib_dir.string() + "\n";
+            searched_dirs += lib_dir.string() + '\n';
 
             if (not fs::is_directory(lib_dir))
                 continue;
 
             const mx::FilePathVec fpv{version};
             const mx::FileSearchPath fsp{lib_dir.string()};
-            const mx::DocumentPtr doc = mx::createDocument();
             const mx::StringSet loaded = mx::loadLibraries(fpv, fsp, doc);
             if (not loaded.empty())
-                return doc;
+                return;
         }
 
         throw CompileError{"MaterialX version " + version + " libraries could not be found.\nSearched directories:\n" + searched_dirs};
