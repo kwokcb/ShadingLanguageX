@@ -152,10 +152,9 @@ jobs:
       - name: Upload VSCode extension artifact
         uses: actions/upload-artifact@v7
         with:
-          name: mxsl-vscode
+          name: mxslc-vscode
           path: tools/vscode_extension/mxsl-language-*.vsix
           if-no-files-found: warn
-
 
   deploy:
     name: Deploy browser app to GitHub Pages
