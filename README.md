@@ -5,10 +5,77 @@
 [![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://github.com/jakethorn/ShadingLanguageX/blob/main/LICENSE)
 ![version](https://img.shields.io/badge/version-0.3.0_beta-blue)
 
-__ShadingLanguageX__ is a high level programming language that can be used to create complex [MaterialX](https://materialx.org/) shaders. 
+__ShadingLanguageX__ is a high level programming language for [MaterialX](https://materialx.org/) that makes it easier to express complex shading algorithms.  
 Click [here](https://youtu.be/n0-5Tx9cS58?si=tRpTGt7ZWPGW0eh0) to see the ASWF talk from SIGGRAPH 2025.
 
-  
+```
+// squares.mxsl
+
+global float scale;
+
+float u, v = texcoord() * scale;
+float seed = floor(u) + floor(v) * scale;
+color3 c = randomcolor(seed);
+
+surfaceshader surf = standard_surface(base_color=c, specular_roughness=1);
+material mat = surfacematerial(surf);
+```
+Compile using python:
+```python
+import mxslc
+mxslc.compile_file_to_file("squares.mxsl", globals={"scale": 10.0})
+```
+or executable:
+```bash
+> ./mxslc.exe squares.mxsl -g tiling 10.0
+```
+![](https://github.com/jakethorn/ShadingLanguageX/blob/main/examples/screenshots/squares.png)
+
+
+# Getting Started
+
+__ShadingLanguageX__ source files are compiled to MaterialX (.mtlx) files using its open source compiler (`mxslc`). The 
+compiler is written in C++, but provides Python and JavaScript bindings. The python bindings can be downloaded from PyPI using `pip install mxslcxx`.
+
+```python
+import mxslc
+
+code = """
+const vec2 uv = position().xy;
+
+mutable float scale = 2;
+mutable float height = 0;
+
+for (int i from 0 to 3)
+{
+    float scale2 = scale * scale;
+    height += noise2d(texcoord = uv / scale2) * scale2;
+    scale *= 2;
+}
+
+surfacematerial(
+    standard_surface(
+        base_color = color3{0.820, 0.796, 0.761},
+        metalness = 0.0,
+        specular_roughness = 1.0
+    ),
+    null,
+    displacement(height)
+);
+"""
+
+mxslc.compile_string_to_file(code, "brownian_mountain.mtlx")
+```
+
+See the [User Guide](https://github.com/jakethorn/ShadingLanguageX/blob/main/docs/UserGuide.md) for more information
+about how to install and use ShadingLanguageX.
+
+# Language Features
+For information about __ShadingLanguageX__ features and syntax, see the [language specification document](https://github.com/jakethorn/ShadingLanguageX/blob/main/docs/LanguageSpecification.md).  
+Examples of __ShadingLanguageX__ shaders in addition to the one below can be found in the [basic examples document](https://github.com/jakethorn/ShadingLanguageX/blob/main/docs/BasicExamples.md) 
+and the [examples directory](https://github.com/jakethorn/ShadingLanguageX/tree/main/examples).
+
+
 ![](examples/screenshots/readme_example.png)
 
 
@@ -35,59 +102,6 @@ Currently, MaterialX shaders can be made either using the official MaterialX API
 * __Manage Complexity and Reuse Code__ - Similarly, graph editors can become difficult to use when developing shaders with a large number of nodes and often have limited function reusability features between shaders. __ShadingLanguageX__ provides for loops, user-defined functions and `#include` directives that make it easier to create shaders with thousands of nodes and reuse code between projects.
 * __Shader Variations__ - __ShadingLanguageX__ also provides mechanisms to easily create shader variations either by passing in values at compile time or defining macros to change the shaders behaviour each time its run.
 
-
-# Getting Started
-
-## Installation
-__ShadingLanguageX__ source files are compiled to MaterialX (.mtlx) files using its open source compiler (`mxslc`). The 
-compiler is written in C++, but provides Python and JavaScript bindings. The python bindings can be downloaded from PyPI 
-using `pip install mxslcxx`.
-
-`mxslc` is supported on Windows, MacOS and Linux and the Python bindings have been tested on Python 3.9+.
-
-```python
-import mxslc
-mxslc.compile_file_to_file("my_shader.mxsl")
-```
-Alternatively, you can build the compiler executable from the C++ code and call it from the command line.
-```
-> ./mxslc.exe my_shader.mxsl
-```
-Both examples will output a `my_shader.mtlx` file which can then be used as you would any other MaterialX file. 
-Both compilation methods have the same input signature, a mandatory path to a __ShadingLanguageX__ source file or string and then several 
-optional arguments, such as setting the output files directory and name.
-
-See the [User Guide](https://github.com/jakethorn/ShadingLanguageX/blob/main/docs/UserGuide.md) for more information
-about how to install and use ShadingLanguageX.
-
-## Language Specification
-For information about __ShadingLanguageX__ features and syntax, see the [language specification document](https://github.com/jakethorn/ShadingLanguageX/blob/main/docs/LanguageSpecification.md).  
-Examples of __ShadingLanguageX__ shaders in addition to the one below can be found in the [basic examples document](https://github.com/jakethorn/ShadingLanguageX/blob/main/docs/BasicExamples.md) 
-and the [examples directory](https://github.com/jakethorn/ShadingLanguageX/tree/main/examples).
-
-## Example
-```
-// squares.mxsl
-
-global float scale;
-
-float u, v = texcoord() * scale;
-float seed = floor(u) + floor(v) * scale;
-color3 c = randomcolor(seed);
-
-surfaceshader surf = standard_surface(base_color=c, specular_roughness=1);
-material mat = surfacematerial(surf);
-```
-Compile using python:
-```python
-import mxslc
-mxslc.compile_file_to_file("squares.mxsl", globals={"scale": 10.0})
-```
-or executable:
-```bash
-> ./mxslc.exe squares.mxsl -g tiling 10.0
-```
-![](https://github.com/jakethorn/ShadingLanguageX/blob/main/examples/screenshots/squares.png)
 
 # Showcases
 |               Interior Mapping + Procedural Rain               |               Procedural Waves                |               Brownian Mountain                |
