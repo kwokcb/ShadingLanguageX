@@ -29,10 +29,12 @@ declaring a variable (e.g., `vec3 up = vec3{0.0, 1.0, 0.0};`) compiles to a `con
 
 # Why Use ShadingLanguageX?
 
-Currently, MaterialX shaders can be made either using the official MaterialX API, or using a graph editor software. __ShadingLanguageX__ offers an additional way to create MaterialX shaders that provides several benefits over existing methods.
-* __Start and Iterate Quickly__ The MaterialX API can be quite verbose to use when writing shaders because it tries to remain agonistic to the current nodes provided by the specification, and needs to provide control over every aspect of MaterialX. Developers can write their own wrappers around the API, but this takes time and knowledge about MaterialX and either C++ or Python. __ShadingLanguageX__ provides less functionality than the MaterialX API, but in return provides a language with a simple syntax, that was developed specifically for building MaterialX shaders. This allows developers to get started and iterate on ideas quickly. There is no setup code to write, just the shaders and a call to the compiler.
-* __Manage Compexity and Reuse Code__ Similarly, graph editors can become difficult to use when developing shaders with a large number of nodes and often have limited function reusability features between shaders. __ShadingLanguageX__ provides for loops, user-defined functions and `#include` directives that make it easier to create shaders with thousands of nodes and reuse code between projects.
-* __Shader Readability__ Another benefit of __ShadingLanguageX__ is that it is very readable. As mentioned previously, the MaterialX API can be quite verbose, obscuring the logic of the shader and staring at a network of nodes is not much easier.  __ShadingLanguageX__ has a concise syntax targetted specifically for MaterialX shaders which results in code with logic that is more easily understandable.
+Currently, MaterialX shaders can be made either using the official MaterialX API, or using a graph editor software. __ShadingLanguageX__ offers a third way to create MaterialX shaders that provides several benefits over existing methods when creating complex shaders.
+* __Express Complex Logic__ - The MaterialX API can be quite verbose to use when using it to create shaders because it needs to provide control over every aspect of MaterialX. Developers can write their own wrappers around the API, but this takes time and knowledge about MaterialX. __ShadingLanguageX__ provides less functionality than the MaterialX API, but in return provides a more streamlined language that was developed specifically for building MaterialX shaders. This allows developers to express algorithms with far fewer lines of code. There is also no setup code to write, just the shaders and a call to the compiler.
+![](examples/screenshots/slx_python_comp.png)  
+  
+* __Manage Complexity and Reuse Code__ - Similarly, graph editors can become difficult to use when developing shaders with a large number of nodes and often have limited function reusability features between shaders. __ShadingLanguageX__ provides for loops, user-defined functions and `#include` directives that make it easier to create shaders with thousands of nodes and reuse code between projects.
+* __Shader Variations__ - __ShadingLanguageX__ also provides mechanisms to easily create shader variations either by passing in values at compile time or defining macros to change the shaders behaviour each time its run.
 
 
 # Showcases
@@ -86,7 +88,6 @@ color3 c = randomcolor(seed);
 
 surfaceshader surf = standard_surface(base_color=c, specular_roughness=1);
 material mat = surfacematerial(surf);
-
 ```
 Compile using python:
 ```python
