@@ -8,7 +8,6 @@
 __ShadingLanguageX__ is a high level programming language that can be used to create complex [MaterialX](https://materialx.org/) shaders. 
 Click [here](https://youtu.be/n0-5Tx9cS58?si=tRpTGt7ZWPGW0eh0) to see the ASWF talk from SIGGRAPH 2025.
 
-
   
 ![](examples/screenshots/readme_example.png)
 
@@ -35,14 +34,6 @@ Currently, MaterialX shaders can be made either using the official MaterialX API
   
 * __Manage Complexity and Reuse Code__ - Similarly, graph editors can become difficult to use when developing shaders with a large number of nodes and often have limited function reusability features between shaders. __ShadingLanguageX__ provides for loops, user-defined functions and `#include` directives that make it easier to create shaders with thousands of nodes and reuse code between projects.
 * __Shader Variations__ - __ShadingLanguageX__ also provides mechanisms to easily create shader variations either by passing in values at compile time or defining macros to change the shaders behaviour each time its run.
-
-
-# Showcases
-|               Interior Mapping + Procedural Rain               |               Procedural Waves                |
-|:-------------------------------------------:|:---------------------------------------------:|
-|     ![](docs/BasicExamples/interior_mapping_with_rain.gif)      | ![](examples/screenshots/waves.gif) |
-|            __Procedural Brick__             |        __Shader Art (by Kishimisu)__        |
-|     ![](examples/screenshots/procedural_brick.png)     |    ![](examples/screenshots/shaderart.png)     |
 
 
 # Getting Started
@@ -97,6 +88,13 @@ or executable:
 > ./mxslc.exe squares.mxsl -g tiling 10.0
 ```
 ![](https://github.com/jakethorn/ShadingLanguageX/blob/main/examples/screenshots/squares.png)
+
+# Showcases
+|               Interior Mapping + Procedural Rain               |               Procedural Waves                |               Brownian Mountain                |
+|:-------------------------------------------:|:---------------------------------------------:|:---------------------------------------------:|
+|     ![](docs/BasicExamples/interior_mapping_with_rain.gif)      | ![](examples/screenshots/waves.gif) | ![](docs/BasicExamples/mountain.png) |
+|            __Procedural Brick__             |        __Shader Art (by Kishimisu)__        |        __Disintegration__        |
+|     ![](examples/screenshots/procedural_brick.png)     |    ![](examples/screenshots/shaderart.png)     |    ![](examples/screenshots/disintergrate.png)     |
 
 # Contributing
 Please try out __ShadingLanguageX__ and start a discussion about a feature you'd like to see or an issue if you find a bug, or feel free to contribute directly to the project by opening a pull request!
