@@ -1,8 +1,11 @@
 # (mxslc++) Version 0.3.0
 
-* Added `comptime` modifier for functions, variables and expressions
+* Added `comptime` modifier for
+[functions](https://github.com/jakethorn/ShadingLanguageX/blob/main/docs/LanguageSpecification.md#comptime-functions),
+[variables](https://github.com/jakethorn/ShadingLanguageX/blob/main/docs/LanguageSpecification.md#variable-definition) and
+[expressions](https://github.com/jakethorn/ShadingLanguageX/blob/main/docs/LanguageSpecification.md#compile-time-expressions)
 * Added debugger
-* Added `nodegraph` and `nodedef` modifiers ([link]())
+* Added `nodegraph` and `nodedef` modifiers ([link](https://github.com/jakethorn/ShadingLanguageX/blob/main/docs/LanguageSpecification.md#nodegraph-functions))
 * Added MaterialX validation and associated compile option
 * Added `default` expressions ([link](https://github.com/jakethorn/ShadingLanguageX/blob/main/docs/LanguageSpecification.md#default-expression))
 * Added BasicExamples document ([link](https://github.com/jakethorn/ShadingLanguageX/blob/main/docs/BasicExamples.md))
