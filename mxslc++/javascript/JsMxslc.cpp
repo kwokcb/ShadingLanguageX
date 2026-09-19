@@ -40,12 +40,6 @@
 
 #include "common.h"
 
-// Injected by CMake from the shared VERSION file (see the root CMakeLists.txt).
-// The fallback keeps the bindings compilable in ad-hoc builds without CMake.
-#ifndef MXLSC_VERSION
-#define MXLSC_VERSION "0.0.0"
-#endif
-
 namespace ems = emscripten;
 
 namespace
@@ -134,14 +128,6 @@ namespace
             rethrow_as_js_error(e, "Error");
         }
     }
-
-    // Return the mxslc engine version (from the shared VERSION file, injected by
-    // CMake as MXLSC_VERSION). A plain function pointer is required here:
-    // embind's ems::function cannot deduce a lambda.
-    std::string get_version()
-    {
-        return std::string(MXLSC_VERSION);
-    }
 }
 
 EMSCRIPTEN_BINDINGS(mxslc)
@@ -162,10 +148,6 @@ EMSCRIPTEN_BINDINGS(mxslc)
 
     ems::function("compileSlxToMtlx", &compile_slx_to_mtlx);
     ems::function("decompileMtlxToSlx", &decompile_mtlx_to_slx);
-
-    // Engine version, so the consumer (e.g. the VS Code extension) can report
-    // and verify which mxslc build it is running against.
-    ems::function("getVersion", &get_version);
 
     ems::register_vector<std::string>("StringVector");
     ems::function("getMtlxDefinitionNames", &get_mtlx_definition_names);

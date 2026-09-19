@@ -385,7 +385,11 @@ namespace mxslc::preprocess
 
     void Preprocessor::check_for_circular_dependency(const fs::path& path) const
     {
-        CompileError e{"Circular dependency detected in " + path_->filename().string() + " when including " + path.filename().string()};
+        // The root of a compile started from a string has no file of its own,
+        // so path_ may be unset. The message is built eagerly, so it must not
+        // dereference path_ unconditionally.
+        CompileError e{"Circular dependency detected" + (path_ ? " in " + path_->filename().string() : string{}) +
+            " when including " + path.filename().string()};
 
         if (path_ == path)
             throw e;
