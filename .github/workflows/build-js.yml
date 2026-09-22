@@ -14,19 +14,48 @@ name: Build JavaScript (WASM)
 #          gh workflow run build-js.yml --ref <branch> -f deploy=true
 #      (UI: Actions -> Build JavaScript (WASM) -> Run workflow -> tick Deploy)
 #
+#  Build + attach assets to a release:
+#    * Publish automatically on a GitHub release
+#    * Allow manual dispatch with:
+#          gh workflow run build-js.yml --ref <tag> -f upload_to_release=true
+#      (UI: Actions -> Build JavaScript (WASM) -> Run workflow -> tick Upload)
+#
 #  Note: a manual test-deploy publishes that branch's build to Pages and
 #  overwrites the live site until the next merge to `main`.
+#
+#  Note: release assets include the JS/WASM package, VS Code extension,
+#  and the GitHub browser page.
 # ============================================================================
 
 on:
-  # Runs on PR open/update/merge (build validation) and manual dispatch.
+  # Runs on PR open/update/merge (build validation), a published release
+  # (attach JS/WASM + VS Code assets), and manual dispatch.
   # No push trigger: builds happen on PR events, and deploy only on a merged PR
   # to main (or a manual dispatch with `deploy` enabled, for testing).
+  # `closed` is listed explicitly: the deploy gate reads
+  # github.event.pull_request.merged, which is only populated on that activity
+  # type, so without it the automatic deploy could never fire.
   pull_request:
+    types:
+      - opened
+      - synchronize
+      - reopened
+      - closed
+
+  # A published release to attach the JS/WASM and VS Code assets to.
+  release:
+    types:
+      - published
+
   workflow_dispatch:
     inputs:
       deploy:
         description: 'Deploy to GitHub Pages (enable to test-deploy this branch)'
+        required: false
+        default: false
+        type: boolean
+      upload_to_release:
+        description: 'Upload web assets to the release'
         required: false
         default: false
         type: boolean
@@ -40,6 +69,12 @@ jobs:
   build_js:
     name: Build mxslc JavaScript / WASM
     runs-on: ubuntu-latest
+
+    # `contents: write` is needed to attach assets to a release.
+    permissions:
+      contents: write
+      pages: write
+      id-token: write
 
     steps:
       - name: Check out mxslc
@@ -156,6 +191,53 @@ jobs:
           path: tools/vscode_extension/mxsl-language-*.vsix
           if-no-files-found: warn
 
+      # Attach the just-built assets to the release. Runs only when publishing
+      # a release, or via a manual dispatch. 
+      - name: Attach web assets to release
+        if: >
+          (github.event_name == 'release' &&
+           github.event.action == 'published') ||
+          (github.event_name == 'workflow_dispatch' &&
+           github.event.inputs.upload_to_release == 'true')
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          # Pinned so gh does not depend on the checkout's git remote.
+          GH_REPO: ${{ github.repository }}
+          TAG: ${{ github.event.release.tag_name || github.ref_name }}
+        run: |
+          BIN=mxslc++/javascript/build/mxslc/javascript/bin
+          PAGES=mxslc++/javascript/browser
+
+          # JsMxslc module: .js + .wasm + .data side by side at the zip root.
+          zip -j mxslc_JsMxslc_package.zip \
+            "$BIN/JsMxslc.js" "$BIN/JsMxslc.wasm" "$BIN/JsMxslc.data"
+
+          # GitHub Pages site: contents at the zip root so it can be unzipped
+          # straight into a web server. Hidden files are skipped, matching
+          # upload-pages-artifact's default.
+          (cd "$PAGES" && zip -rq "$GITHUB_WORKSPACE/mxslc_github_pages.zip" *)
+
+          echo "Target tag: $TAG"
+          assets=(mxslc_JsMxslc_package.zip mxslc_github_pages.zip)
+
+          # The extension build above is best-effort, so the .vsix may be
+          # missing; in that case just omit the extension zip.
+          shopt -s nullglob
+          vsix=(tools/vscode_extension/mxsl-language-*.vsix)
+          if (( ${#vsix[@]} == 0 )); then
+            echo "Warning: no .vsix was produced; omitting mxslc_vscode_extension.zip."
+          else
+            zip -j mxslc_vscode_extension.zip "${vsix[@]}"
+            assets+=(mxslc_vscode_extension.zip)
+          fi
+
+          if gh release view "$TAG" > /dev/null 2>&1; then
+            echo "Uploading assets to release $TAG..."
+            gh release upload "$TAG" "${assets[@]}" --clobber
+          else
+            echo "Warning: release $TAG does not exist. Skipping asset upload."
+          fi
+
   deploy:
     name: Deploy browser app to GitHub Pages
     needs: build_js
@@ -179,4 +261,3 @@ jobs:
       - name: Deploy to GitHub Pages
         id: deployment
         uses: actions/deploy-pages@v5
-
