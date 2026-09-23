@@ -25,6 +25,11 @@ namespace mxslc::mtlx_utils
 
     mx::NodeGraphPtr get_node_graph(const mx::NodeDefPtr& node_def);
 
+    // A port binding is exclusive: value, nodename, output, nodegraph or
+    // interfacename. Clears the existing ones so a new binding can be applied,
+    // unless new_value is empty, in which case nothing is cleared.
+    void clear_binding(const mx::PortElementPtr& port, const string& new_value);
+
     void set_interface(const mx::PortElementPtr& port, const string& interface_name);
     void remove_port(const mx::PortElementPtr& port);
     void validate(const mx::DocumentPtr& doc);
