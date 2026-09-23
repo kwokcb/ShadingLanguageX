@@ -26,6 +26,9 @@ namespace mxslc::serialize::values
 
     void InterfaceValue::set_as_node_input(const mx::InputPtr& input) const
     {
+        input->removeAttribute(mx::PortElement::NODE_NAME_ATTRIBUTE);
+        input->removeAttribute(mx::PortElement::OUTPUT_ATTRIBUTE);
+        input->removeAttribute(mx::PortElement::NODE_GRAPH_ATTRIBUTE);
         mtlx_utils::set_interface(input, name_);
     }
 
