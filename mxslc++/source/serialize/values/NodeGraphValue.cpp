@@ -32,13 +32,7 @@ namespace mxslc::serialize::values
 
     void NodeGraphValue::set_as_node_input(const mx::InputPtr& input) const
     {
-        if (name_.size())
-        {
-            input->removeAttribute(mx::ValueElement::VALUE_ATTRIBUTE);
-            input->removeAttribute(mx::PortElement::OUTPUT_ATTRIBUTE);
-            input->removeAttribute(mx::PortElement::NODE_NAME_ATTRIBUTE);            
-            input->removeAttribute(mx::ValueElement::INTERFACE_NAME_ATTRIBUTE);            
-        }
+        mtlx_utils::clear_binding(input, name_);
         input->setNodeGraphString(name_);
     }
 
@@ -54,13 +48,7 @@ namespace mxslc::serialize::values
     void NodeGraphValue::set_as_node_graph_input(const mx::NodeGraphPtr& node_graph, const string& input_name) const
     {
         const mx::InputPtr input = mtlx_utils::add_or_get_input(node_graph, type_, input_name);
-        if (name_.size())
-        {
-            input->removeAttribute(mx::ValueElement::VALUE_ATTRIBUTE);
-            input->removeAttribute(mx::PortElement::OUTPUT_ATTRIBUTE);
-            input->removeAttribute(mx::PortElement::NODE_NAME_ATTRIBUTE);            
-            input->removeAttribute(mx::ValueElement::INTERFACE_NAME_ATTRIBUTE);            
-        }
+        mtlx_utils::clear_binding(input, name_);
         input->setNodeGraphString(name_);
     }
 

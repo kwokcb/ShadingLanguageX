@@ -41,9 +41,6 @@ namespace mxslc::serialize::values
 
     void NodeOutputValue::set_as_node_input(const mx::InputPtr& input) const
     {
-        input->removeAttribute("value");
-        input->removeAttribute(mx::PortElement::NODE_GRAPH_ATTRIBUTE);
-        input->removeAttribute(mx::ValueElement::INTERFACE_NAME_ATTRIBUTE);
         input->setOutputString(output_name_);
         input->setConnectedNode(node_);
     }
@@ -61,9 +58,6 @@ namespace mxslc::serialize::values
             throw CompileError{"Invalid node graph input. You cannot reference variables from an enclosing function in a nodegraph function."};
 
         const mx::InputPtr input = mtlx_utils::add_or_get_input(node_graph, type_, input_name);
-        input->removeAttribute(mx::ValueElement::VALUE_ATTRIBUTE);
-        input->removeAttribute(mx::PortElement::NODE_GRAPH_ATTRIBUTE);
-        input->removeAttribute(mx::ValueElement::INTERFACE_NAME_ATTRIBUTE);
         input->setOutputString(output_name_);
         input->setConnectedNode(node_);
     }
