@@ -126,19 +126,20 @@ namespace mxslc::decompile
         }
     }
 
-    Decompiler::Decompiler(const fs::path& src_path)
+    Decompiler::Decompiler(const fs::path& src_path, DecompileOptions options) : options_{std::move(options)}
     {
         document_ = mx::createDocument();
         mx::readFromXmlFile(document_, src_path.string());
     }
 
-    Decompiler::Decompiler(const string& source)
+    Decompiler::Decompiler(const string& source, DecompileOptions options) : options_{std::move(options)}
     {
         document_ = mx::createDocument();
         mx::readFromXmlString(document_, source);
     }
 
-    Decompiler::Decompiler(mx::DocumentPtr document) : document_{std::move(document)}
+    Decompiler::Decompiler(mx::DocumentPtr document, DecompileOptions options)
+        : options_{std::move(options)}, document_{std::move(document)}
     {
 
     }
@@ -324,7 +325,16 @@ namespace mxslc::decompile
         // attributes (e.g. `@nodegroup`, `@version`, `@doc`) as `@` declarations
         // above the function definition.
         const string attrs = node_graph->hasNodeDefString() ? node_def_to_attributes(node_graph->getNodeDef()) : "";
-        const string func_def = "\n" + attrs + signature + "\n{\n" + function_code_ + "\n}\n";
+
+        // Optionally emit the `[[nodedef]]` / `[[nodegraph]]` modifier so the kind
+        // of graph survives a decompile -> compile roundtrip. Attributes are parsed
+        // before modifiers, so the modifier goes after `attrs`.
+        const bool emit_nodegraph_modifier = options_.emit_function_modifiers and not node_graph->hasNodeDefString();
+        string modifier;
+        if (options_.emit_function_modifiers)
+            modifier = node_graph->hasNodeDefString() ? "[[nodedef]]\n" : "[[nodegraph]]\n";
+
+        const string func_def = "\n" + attrs + modifier + signature + "\n{\n" + function_code_ + "\n}\n";
 
         // If the nodegraph has interface inputs, also emit a variable that calls
         // the function with default argument values for external references.
@@ -335,7 +345,9 @@ namespace mxslc::decompile
             const string func_name = get_node_graph_identifier(node_graph);
             const string var_name = func_name + "_out";
             const string var_type = outputs_to_data_type(node_graph->getOutputs());
-            const string args = inputs_to_arguments(inputs);
+            // A `[[nodegraph]]` function cannot be passed arguments, so the call
+            // must rely on the parameters' default values instead.
+            const string args = emit_nodegraph_modifier ? "" : inputs_to_arguments(inputs);
             var_def = var_type + " " + var_name + " = " + func_name + "(" + args + ");\n";
             node_graph_var_names_[node_graph->getName()] = var_name;
         }
