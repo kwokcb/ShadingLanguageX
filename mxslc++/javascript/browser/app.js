@@ -47,8 +47,9 @@ const engine = {
         });
     },
 
-    // Compile MXSL source to MTLX XML. Maps the shared plain options object
-    // onto a WASM CompileOptions instance. Returns the MTLX string.
+    // Compile MXSL source to MTLX XML.
+    // Maps the options object to a CompileOptions instance. 
+    // Returns the MTLX string.
     compile(source, options) {
         const opts = new mx.CompileOptions();
         opts.version = options.version;
@@ -60,8 +61,8 @@ const engine = {
         return result;
     },
 
-    // Decompile MTLX XML to MXSL source using the given options. Maps the
-    // shared plain options object onto a WASM DecompileOptions instance.
+    // Decompile MTLX XML to MXSL. 
+    // Maps the options object to a DecompileOptions instance.
     // Returns the MXSL string.
     decompile(source, options) {
         const opts = new mx.DecompileOptions();

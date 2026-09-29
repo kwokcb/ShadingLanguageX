@@ -16,8 +16,7 @@ namespace
 {
     using mxslc::decompile::DecompileOptions;
 
-    // A compound nodegraph with one interface input and one
-    // output.
+    // Compound nodegraph test.
     const string NODE_GRAPH_MTLX =
         "<?xml version=\"1.0\"?>\n"
         "<materialx version=\"1.39\">\n"
@@ -31,9 +30,7 @@ namespace
         "  </nodegraph>\n"
         "</materialx>\n";
 
-    // A definition + functional nodegraph. The
-    // definitions has `nodegroup` metadata so the ordering of the `@` attribute
-    // relative to the `[[nodedef]]` modifier can be checked.
+    // Definition test which also tests attribute vs tag ordering.
     const string NODE_DEF_MTLX =
         "<?xml version=\"1.0\"?>\n"
         "<materialx version=\"1.39\">\n"
@@ -69,7 +66,7 @@ TEST(decompile_options_tests, modifiers_are_emitted_when_enabled)
     DecompileOptions options;
     options.emit_function_modifiers = true;
 
-    // A compound nodegraph gets `[[nodegraph]]`; a definition gets `[[nodedef]]`.
+    // Nodegraphs emit `[[nodegraph]]`,  `[[nodedef]]`.
     const string node_graph = decompile(NODE_GRAPH_MTLX, options);
     EXPECT_NE(node_graph.find("[[nodegraph]]"), string::npos) << node_graph;
     EXPECT_EQ(node_graph.find("[[nodedef]]"), string::npos) << node_graph;
@@ -91,8 +88,6 @@ TEST(decompile_options_tests, modifiers_are_emitted_when_enabled)
     EXPECT_NE(node_graph.find("scale(float x"), string::npos) << node_graph;
     EXPECT_NE(node_graph.find("= scale();"), string::npos) << node_graph;
 
-    // The emitted modifier must be accepted by the compiler, so the decompile ->
-    // compile roundtrip preserves the graph kind.
     const string mtlx = mxslc::compile_to_string(node_graph);
     EXPECT_NE(mtlx.find("<materialx"), string::npos) << mtlx;
     EXPECT_NE(mtlx.find("nodegraph"), string::npos) << mtlx;

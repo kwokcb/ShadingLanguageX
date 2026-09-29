@@ -239,8 +239,7 @@ function toggleDecompileOptions() {
     toggleSection('decompile-options-body', 'decompile-options-toggle-label');
 }
 
-// Read compile options from the page. The shape is engine-specific; the WASM
-// engine maps these onto its CompileOptions object internally.
+// Read compile options from the page. 
 function getCompileOptions() {
     return {
         version: document.getElementById('opt-version').value,
@@ -250,8 +249,7 @@ function getCompileOptions() {
     };
 }
 
-// Read decompile options from the page. The shape is engine-specific; the WASM
-// engine maps these onto its DecompileOptions object internally.
+// Read decompile options from the page. 
 function getDecompileOptions() {
     return {
         emit_function_modifiers: document.getElementById('opt-emit-modifiers').checked,

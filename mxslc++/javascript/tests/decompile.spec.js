@@ -1,7 +1,7 @@
 import { test, expect } from '@playwright/test';
 import { loadMxslc } from './testHelpers.js';
 
-// A compound nodegraph with one interface input and one output.
+// Compound nodegraph test.
 const NODE_GRAPH_MTLX = `<?xml version="1.0"?>
 <materialx version="1.39">
   <nodegraph name="NG_scale">
@@ -14,7 +14,7 @@ const NODE_GRAPH_MTLX = `<?xml version="1.0"?>
   </nodegraph>
 </materialx>`;
 
-// A NodeDef together with the functional nodegraph that implements it.
+// Definition test which also tests attribute vs tag ordering.
 const NODE_DEF_MTLX = `<?xml version="1.0"?>
 <materialx version="1.39">
   <nodedef name="ND_fwidth" node="fwidth" nodegroup="math">
@@ -72,7 +72,7 @@ test.describe('Decompile (MTLX -> SLX)', () =>
         const opts = new mx.DecompileOptions();
         opts.emitFunctionModifiers = true;
 
-        // A compound nodegraph emits `[[nodegraph]]`; a definition gets `[[nodedef]]`.
+        // Check for `[[nodegraph]]` and `[[nodedef]]` as appropriate.
         const nodeGraphSlx = mx.decompileMtlxToSlx(NODE_GRAPH_MTLX, opts);
         expect(nodeGraphSlx).toContain('[[nodegraph]]');
         expect(nodeGraphSlx).not.toContain('[[nodedef]]');
@@ -96,10 +96,6 @@ test.describe('Decompile (MTLX -> SLX)', () =>
         expect(nodeGraphSlx).toContain('scale(float x');
         expect(nodeGraphSlx).toContain('= scale();');
 
-        // The emitted modifier must be accepted by the compiler, so the decompile
-        // -> compile roundtrip preserves the graph kind. Compiling the decompiled
-        // SLX back to MTLX must not throw "Arguments cannot be passed to nodegraph
-        // functions".
         const compileOpts = new mx.CompileOptions();
         let mtlx;
         expect(() => { mtlx = mx.compileSlxToMtlx(nodeGraphSlx, compileOpts); }).not.toThrow();
