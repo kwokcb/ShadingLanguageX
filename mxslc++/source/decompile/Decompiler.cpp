@@ -281,6 +281,28 @@ namespace mxslc::decompile
         return result;
     }
 
+    string Decompiler::node_graph_to_attributes(const mx::NodeGraphPtr& node_graph)
+    {
+        string result;
+
+        // NodeGraph-level attributes, e.g. `@fileprefix "..."`, `@colorspace
+        // "..."`, `@namespace "..."`, `@doc "..."`.  These are emitted as `@`
+        // declarations above the function definition so that they are re-applied
+        // to the NodeGraph element when compiled back to MTLX.  The `nodedef`
+        // attribute is skipped because it is re-expressed by the modifier, and all
+        // other structural attributes are skipped because they are re-expressed by
+        // the function signature and body.
+        for (const string& attr_name : node_graph->getAttributeNames())
+        {
+            if (attr_name == mx::InterfaceElement::NODE_DEF_ATTRIBUTE)
+                continue;
+            if (not contains(structural_attributes(), attr_name))
+                result += "@" + attr_name + " \"" + node_graph->getAttribute(attr_name) + "\"\n";
+        }
+
+        return result;
+    }
+
     string Decompiler::node_def_to_function_definition(const string& node_def_name)
     {
         return node_def_to_function_definition(document_->getNodeDef(node_def_name));
@@ -323,8 +345,11 @@ namespace mxslc::decompile
 
         // If this nodegraph implements a NodeDef, emit the NodeDef's metadata
         // attributes (e.g. `@nodegroup`, `@version`, `@doc`) as `@` declarations
-        // above the function definition.
-        const string attrs = node_graph->hasNodeDefString() ? node_def_to_attributes(node_graph->getNodeDef()) : "";
+        // above the function definition.  A compound nodegraph instead carries its
+        // own metadata attributes (e.g. `@fileprefix`, `@colorspace`).
+        const string attrs = node_graph->hasNodeDefString()
+            ? node_def_to_attributes(node_graph->getNodeDef())
+            : node_graph_to_attributes(node_graph);
 
         // Optionally emit the `[[nodedef]]` / `[[nodegraph]]` modifier so the kind
         // of graph survives a decompile -> compile roundtrip. Attributes are parsed

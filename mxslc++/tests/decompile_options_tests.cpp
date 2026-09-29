@@ -54,7 +54,7 @@ namespace
 
 TEST(decompile_options_tests, modifiers_are_off_by_default)
 {
-    // Both a free nodegraph and a NodeDef graph omit the modifiers by default.
+    // Nodegraphs omit the modifiers by default.
     const string node_graph = mxslc::decompile::decompile_to_string(NODE_GRAPH_MTLX);
     EXPECT_EQ(node_graph.find("[[nodegraph]]"), string::npos) << node_graph;
     EXPECT_EQ(node_graph.find("[[nodedef]]"), string::npos) << node_graph;
@@ -69,7 +69,7 @@ TEST(decompile_options_tests, modifiers_are_emitted_when_enabled)
     DecompileOptions options;
     options.emit_function_modifiers = true;
 
-    // A free nodegraph gets `[[nodegraph]]`; a NodeDef graph gets `[[nodedef]]`.
+    // A compound nodegraph gets `[[nodegraph]]`; a definition gets `[[nodedef]]`.
     const string node_graph = decompile(NODE_GRAPH_MTLX, options);
     EXPECT_NE(node_graph.find("[[nodegraph]]"), string::npos) << node_graph;
     EXPECT_EQ(node_graph.find("[[nodedef]]"), string::npos) << node_graph;

@@ -1,7 +1,7 @@
 import { test, expect } from '@playwright/test';
 import { loadMxslc } from './testHelpers.js';
 
-// A free nodegraph (no NodeDef reference) with one interface input and one output.
+// A compound nodegraph with one interface input and one output.
 const NODE_GRAPH_MTLX = `<?xml version="1.0"?>
 <materialx version="1.39">
   <nodegraph name="NG_scale">
@@ -57,7 +57,7 @@ test.describe('Decompile (MTLX -> SLX)', () =>
 
     test('omits graph modifiers by default', () =>
     {
-        // Both a free nodegraph and a NodeDef graph omit the modifiers by default.
+        // Both a compound nodegraph and a functional nodegraph omit the modifiers by default.
         const nodeGraphSlx = mx.decompileMtlxToSlx(NODE_GRAPH_MTLX);
         expect(nodeGraphSlx).not.toContain('[[nodegraph]]');
         expect(nodeGraphSlx).not.toContain('[[nodedef]]');
@@ -72,7 +72,7 @@ test.describe('Decompile (MTLX -> SLX)', () =>
         const opts = new mx.DecompileOptions();
         opts.emitFunctionModifiers = true;
 
-        // A free nodegraph gets `[[nodegraph]]`; a NodeDef graph gets `[[nodedef]]`.
+        // A compound nodegraph emits `[[nodegraph]]`; a definition gets `[[nodedef]]`.
         const nodeGraphSlx = mx.decompileMtlxToSlx(NODE_GRAPH_MTLX, opts);
         expect(nodeGraphSlx).toContain('[[nodegraph]]');
         expect(nodeGraphSlx).not.toContain('[[nodedef]]');

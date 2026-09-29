@@ -38,6 +38,7 @@ namespace mxslc::decompile
         string node_to_expression(const mx::NodePtr& node);
         string node_to_attributes(const mx::NodePtr& node);
         string node_def_to_attributes(const mx::NodeDefPtr& node_def);
+        string node_graph_to_attributes(const mx::NodeGraphPtr& node_graph);
         string outputs_to_data_type(const vector<mx::OutputPtr>& outputs);
         string port_to_expression(const mx::PortElementPtr& port);
         string outputs_to_expression(const vector<mx::OutputPtr>& outputs);
