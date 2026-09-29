@@ -12,9 +12,10 @@ namespace mxslc::decompile
     struct DecompileOptions
     {
         // Emit the `[[nodegraph]]` / `[[nodedef]]` function modifier above each
-        // function produced from an MTLX nodegraph or nodedef. A graph that
-        // implements a definition emits `[[nodedef]]`; a compound nodegraph emits
-        // `[[nodegraph]]`. When false (default) no modifiers are emitted.
+        // function produced from an MTLX nodegraph or nodedef. 
+        // - A definition emits `[[nodedef]]`
+        // - A nodegraph emitts `[[nodegraph]]`
+        // Default is to not emit.
         bool emit_function_modifiers{false};
     };
 }

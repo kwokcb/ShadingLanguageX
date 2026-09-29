@@ -343,17 +343,13 @@ namespace mxslc::decompile
 
         in_function_ = false;
 
-        // If this nodegraph implements a NodeDef, emit the NodeDef's metadata
-        // attributes (e.g. `@nodegroup`, `@version`, `@doc`) as `@` declarations
-        // above the function definition.  A compound nodegraph instead carries its
-        // own metadata attributes (e.g. `@fileprefix`, `@colorspace`).
+        // Emit metadata attributes as appropriate
         const string attrs = node_graph->hasNodeDefString()
             ? node_def_to_attributes(node_graph->getNodeDef())
             : node_graph_to_attributes(node_graph);
 
-        // Optionally emit the `[[nodedef]]` / `[[nodegraph]]` modifier so the kind
-        // of graph survives a decompile -> compile roundtrip. Attributes are parsed
-        // before modifiers, so the modifier goes after `attrs`.
+        // Optionally emit the `[[nodedef]]` or `[[nodegraph]]` modifier 
+        // after attributtes.
         const bool emit_nodegraph_modifier = options_.emit_function_modifiers and not node_graph->hasNodeDefString();
         string modifier;
         if (options_.emit_function_modifiers)
