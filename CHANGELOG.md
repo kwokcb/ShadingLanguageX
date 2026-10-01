@@ -1,3 +1,14 @@
+# (mxslc++) Version 0.3.1
+
+* Added [BasicExample.md](https://github.com/jakethorn/ShadingLanguageX/blob/main/docs/BasicExamples.md) document
+* Added GitHub workflow to automatically add js/wasm artifacts to releases
+* Added support for in-memory resource files (contributed by [@kwok](https://github.com/kwokcb))
+* Added [B-Spline example](https://github.com/jakethorn/ShadingLanguageX/blob/main/examples/bspline.mxsl) (contributed by [@kwok](https://github.com/kwokcb))
+* Updated README.md and other documentation
+* Updated [Decompiler](https://github.com/jakethorn/ShadingLanguageX/blob/main/docs/UserGuide.md#decompiler)
+* Bug fixes
+
+
 # (mxslc++) Version 0.3.0
 
 * Added `comptime` modifier for
