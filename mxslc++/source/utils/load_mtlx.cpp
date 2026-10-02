@@ -4,6 +4,9 @@
 
 #include "utils/load_mtlx.h"
 
+#include <map>
+#include <mutex>
+
 #include <MaterialXFormat/Util.h>
 #include <MaterialXFormat/XmlIo.h>
 
@@ -190,9 +193,18 @@ namespace mxslc
 
     mx::DocumentPtr load_materialx_library(const string& version, const vector<fs::path>& include_dirs)
     {
-        const mx::DocumentPtr doc = mx::createDocument();
-        load_materialx_library(version, include_dirs, doc);
-        return doc;
+        // cache matx lib between calls to increase performance
+        static unordered_map<string, mx::DocumentPtr> cache;
+
+        if (not contains(cache, version))
+        {
+            mx::DocumentPtr doc = mx::createDocument();
+            load_materialx_library(version, include_dirs, doc);
+
+            cache.emplace(version, doc);
+        }
+
+        return cache.at(version);
     }
 
     void load_materialx_library(const string& version, const vector<fs::path>& include_dirs, const mx::DocumentPtr& doc)
