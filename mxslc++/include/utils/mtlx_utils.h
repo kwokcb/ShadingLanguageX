@@ -26,18 +26,11 @@ namespace mxslc::mtlx_utils
 
     mx::InputPtr add_or_get_input(const mx::InterfaceElementPtr& element, const string& type, const string& name);
     mx::InputPtr add_or_get_input(const mx::InterfaceElementPtr& element, const TypePtr& type, const string& name);
-
     mx::OutputPtr add_or_get_output(const mx::NodeGraphPtr& node_graph, const TypePtr& type, const string& name);
 
     mx::NodeDefPtr get_node_def(const mx::NodePtr& node);
     mx::NodeDefPtr get_node_def(const mx::NodeGraphPtr& node_graph, const mx::DocumentPtr& mtlx_lib);
-
     mx::NodeGraphPtr get_node_graph(const mx::NodeDefPtr& node_def);
-
-    // A port binding is exclusive: value, nodename, output, nodegraph or
-    // interfacename. Clears the existing ones so a new binding can be applied,
-    // unless new_value is empty, in which case nothing is cleared.
-    void clear_binding(const mx::PortElementPtr& port, const string& new_value);
 
     void set_value(const mx::InputPtr& input, const Primitive& value);
     void set_value(const mx::InterfaceElementPtr& element, const string& input_name, const Primitive& value);
@@ -48,7 +41,7 @@ namespace mxslc::mtlx_utils
     void set_interface(const mx::PortElementPtr& port, const string& interface_name);
     void set_value_string(const mx::PortElementPtr& port, const string& value_string);
 
-
+    void clear_binding(const mx::PortElementPtr& port, const string& new_value);
     void remove_port(const mx::PortElementPtr& port);
 
     void validate(const mx::DocumentPtr& doc);

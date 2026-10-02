@@ -105,18 +105,6 @@ namespace mxslc::mtlx_utils
         return nullptr;
     }
 
-    void clear_binding(const mx::PortElementPtr& port, const string& new_value)
-    {
-        if (new_value.empty())
-            return;
-
-        port->removeAttribute(mx::ValueElement::VALUE_ATTRIBUTE);
-        port->removeAttribute(mx::PortElement::OUTPUT_ATTRIBUTE);
-        port->removeAttribute(mx::PortElement::NODE_NAME_ATTRIBUTE);
-        port->removeAttribute(mx::ValueElement::INTERFACE_NAME_ATTRIBUTE);
-        port->removeAttribute(mx::PortElement::NODE_GRAPH_ATTRIBUTE);
-    }
-
     void set_value(const mx::InputPtr& input, const Primitive& value)
     {
         clear_binding(input, value.to_string());
@@ -173,6 +161,18 @@ namespace mxslc::mtlx_utils
     {
         clear_binding(port, value_string);
         port->setValueString(value_string);
+    }
+
+    void clear_binding(const mx::PortElementPtr& port, const string& new_value)
+    {
+        if (new_value.empty())
+            return;
+
+        port->removeAttribute(mx::ValueElement::VALUE_ATTRIBUTE);
+        port->removeAttribute(mx::PortElement::OUTPUT_ATTRIBUTE);
+        port->removeAttribute(mx::PortElement::NODE_NAME_ATTRIBUTE);
+        port->removeAttribute(mx::ValueElement::INTERFACE_NAME_ATTRIBUTE);
+        port->removeAttribute(mx::PortElement::NODE_GRAPH_ATTRIBUTE);
     }
 
     void remove_port(const mx::PortElementPtr& port)
