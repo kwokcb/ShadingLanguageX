@@ -8,20 +8,10 @@
 __ShadingLanguageX (SLX)__ is a high level programming language for [MaterialX](https://materialx.org/) that makes it easier to express complex shading algorithms.  
 
 <p align="center">
-  <img src="https://github.com/jakethorn/ShadingLanguageX/blob/main/examples/screenshots/new_readme_example.png" />
+  <img src="https://github.com/jakethorn/ShadingLanguageX/blob/main/examples/screenshots/new_read_example.png" />
 </p>
 
 # Getting Started
-
-## Learning ShadingLanguageX
-
-For information about the features and syntax of SLX, see the [Language Specification](https://github.com/jakethorn/ShadingLanguageX/blob/main/docs/LanguageSpecification.md).
-This document covers everything about SLX, from variable definition syntax to preprocessor directives.  
-
-Examples of SLX shaders in addition to the ones in this document can be found in the [Basic Examples](https://github.com/jakethorn/ShadingLanguageX/blob/main/docs/BasicExamples.md) document
-and the [Examples](https://github.com/jakethorn/ShadingLanguageX/tree/main/examples) directory.
-
-Finally, see the [User Guide](https://github.com/jakethorn/ShadingLanguageX/blob/main/docs/UserGuide.md) for more information about how to install and use the SLX compiler (mxslc).
 
 ## Code Editors
 
@@ -68,6 +58,16 @@ mtlx = mxslc.compile_string_to_string(code)
 <p align="center">
   <img src="https://github.com/jakethorn/ShadingLanguageX/blob/main/examples/screenshots/squares.png" />
 </p>
+
+## Learning ShadingLanguageX
+
+For information about the features and syntax of SLX, see the [Language Specification](https://github.com/jakethorn/ShadingLanguageX/blob/main/docs/LanguageSpecification.md).
+This document covers everything about SLX from variable definition syntax to preprocessor directives.  
+
+Examples of SLX shaders in addition to the ones in this document can be found in the [Basic Examples](https://github.com/jakethorn/ShadingLanguageX/blob/main/docs/BasicExamples.md) document
+and the [Examples](https://github.com/jakethorn/ShadingLanguageX/tree/main/examples) directory.
+
+Finally, see the [User Guide](https://github.com/jakethorn/ShadingLanguageX/blob/main/docs/UserGuide.md) for more information about how to install and use the SLX compiler (mxslc).
 
 # How It Works
 
